@@ -3,7 +3,9 @@
 // data
 //-----------------
 
-M.datapath = (typeof _v=='number'?'../':'')+'_data';
+M.datapath = document.location.host.match(/github/i)
+							? 'https://raw.githubusercontent.com/nyem69/coronavirus_tracker/master/_data'
+							: (typeof _v=='number'?'../':'')+'_data';
 
 M.config = {
 
