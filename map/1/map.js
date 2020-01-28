@@ -48,7 +48,9 @@ function mapInit(sel, cb)	{
 
 		if (M.timer.resize) window.clearTimeout(M.timer.resize);
 		M.timer.resize = window.setTimeout(function(){
-			layoutResize();
+
+			eventLayoutResize();
+
 			window.setTimeout(function(){
 
 				var width = +sel.style('width').replace('px',''),

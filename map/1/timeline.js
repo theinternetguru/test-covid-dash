@@ -5,7 +5,7 @@
 //==================================================================
 function timeline(data, date, cb)	{
 	var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
-			dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+			dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
 	if (dbg){ console.group(f); console.time(f) };
 
 
@@ -31,7 +31,7 @@ function timeline(data, date, cb)	{
 //==================================================================
 function timelineCases(sel, data, date, cb)	{
 	var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
-			dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+			dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
 	if (dbg){ console.group(f); console.time(f) };
 
 
@@ -42,7 +42,8 @@ function timelineCases(sel, data, date, cb)	{
 //	var w = innerWidth-100,
 	var w = innerWidth-100,
 			h = +d3.select('.content-timeline').style('height').replace('px','') - 2,
-			bh = h - 20;
+			bh = h - 30;
+
 
 
 
@@ -99,96 +100,316 @@ function timelineCases(sel, data, date, cb)	{
 	dbg&&console.log('dates', dates);
 
 
+
+
+
+	//-----------------------------------
+	// x,y scales, axis
+	//-----------------------------------
+
+
 	var x = d3.scaleTime().domain([ moment(minDate),moment(maxDate) ]).range([0,w]);
 
 	var maxConfirmed = d3.max(dates, d=>d.confirmed);
+	var y = d3.scaleLinear().domain([0,maxConfirmed]).range([0,bh-10]);
 
-	var scaleHeight = d3.scaleLinear().domain([0,maxConfirmed]).range([0,bh-10]);
-//	var scaleHeight = d3.scaleSqrt().domain([0,maxConfirmed]).range([0,70]);
 
 	var bw = x( moment(minDate).add(1,'days') ) - x( moment(minDate) );
 	dbg&&console.log('bw', bw);
 
 
 
+	var xAxis = d3.axisBottom(x)
+	        //.ticks(d3.timeHour, 12)
+	        .ticks(d3.timeDay,7)
+	        //.ticks(d3.timeMonth,1)
+	        .tickSize(-bh)
+	        .tickFormat(function() { return null; });
+
+	var scaleYAxis = d3.scaleLinear()
+				.domain([0, maxConfirmed]) 			// start with 0
+				.range([ bh, 0 ]); 							// reverse scale
+
+	var axisY = d3.axisLeft(y)
+				//.tickValues([1,5,10,15,20,25])
+				//.ticks(5)
+				//.tickFormat(function(d){ return d ? 'RM'+f2(d): null })
+				.tickFormat(function() { return null; });
+			;
 
 
 
 
-	var tl = sel.selectAll('.timeline-container').data([1])
-	tl.exit().remove();
-	tl.enter()
-		.append('div')
-			.attr('class','timeline-container')
-			.styles({
-				display:'flex',
-				'align-content':'stretch',
-				width:'100%',
-				height:bh+'px',
-				overflow:'hidden',
-			})
-			.call(sel=>{
-
-
-				//-----------------------------------
-				// play-btn
-				//-----------------------------------
-				sel
-					.append('div')
-					.attr('class','play-btn')
-					.styles({
-						flex:'0 0 100px',
-						'text-align':'center',
-					})
-					.call(timelineCases_playButton);
-
-
-				//-----------------------------------
-				// timeline
-				//-----------------------------------
-				sel
-					.append('div')
-					.attr('class','timeline')
-					.styles({
-						flex:'1 1 '+w+'px',
-						margin:0,
-						padding:0,
-//						width:w+'px',
-//						height:h+'px',
-						overflow:'hidden',
-					});
 
 
 
-			})
-		.merge(tl)
-			.call(sel=>{
+	//-----------------------------------
+	// layout
+	//-----------------------------------
 
-				var g = sel.select('.timeline').selectAll('svg').data([dates]);
-				g.exit().remove();
-				g.enter()
-					.append('svg')
-						.attrs({
-							viewBox:[0,0,w,h].join(' '),
-						})
+	sel.call(timelineCases_layout, w, h, bh, dates, minDate, maxDate, minDataDate, maxDataDate);
+
+
+	fEnd();
+
+
+
+
+
+
+
+	//-----------------------------------
+	// timelineCases_layout
+	//-----------------------------------
+
+	function timelineCases_layout(sel)	{
+
+		var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
+				dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+		if (dbg){ console.group(f); console.time(f) };
+
+
+		var tl = sel.selectAll('.timeline-container').data([1])
+		tl.exit().remove();
+		tl.enter()
+			.append('div')
+				.attr('class','timeline-container')
+				.styles({
+					display:'flex',
+					'align-content':'stretch',
+					width:'100%',
+					height:h+'px',
+					overflow:'hidden',
+				})
+				.call(sel=>{
+
+
+					//-----------------------------------
+					// play-btn
+					//-----------------------------------
+					sel
+						.append('div')
+						.attr('class','play-btn')
 						.styles({
-							width:'100%',
-							height:'100%',
+							flex:'0 0 100px',
+							'text-align':'center',
 						})
-					.merge(g)
-						.call(sel=>{
+						.call(timelineCases_playButton);
 
-							sel.call(timelineCases_timelineBar);
 
+					//-----------------------------------
+					// timeline
+					//-----------------------------------
+					sel
+						.append('div')
+						.attr('class','timeline')
+						.styles({
+							flex:'1 1 '+w+'px',
+							margin:0,
+							padding:0,
+	//						width:w+'px',
+	//						height:h+'px',
+							overflow:'hidden',
 						});
 
 
 
+				})
+			.merge(tl)
+				.call(sel=>{
+
+					var g = sel.select('.timeline').selectAll('svg').data([dates]);
+					g.exit().remove();
+					g.enter()
+						.append('svg')
+							.attrs({
+								viewBox:[0,0,w,h].join(' '),
+							})
+//							.styles({
+//								width:'100%',
+//								height:'100%',
+//							})
+							.call(sel=>{
+
+								sel.append('g')
+									.attr('class','chart');
+
+								sel.append('g')
+									.attr('class','decor')
+									.call(sel=>{
+
+
+										//--------------------------
+										// axes
+										//--------------------------
+										sel.append('g').attr('class','axes')
+											.call(sel=>{
+
+												sel.append('line')
+													.attrs({
+														class:'y-axis',
+														x1:0,
+														y1:0,
+														x2:0,
+														y2:bh,
+														stroke:'#fff',
+														transform:'translate(0,0)',
+													});
+
+												sel.append('line')
+													.attrs({
+														class:'x-axis',
+														x1:0,
+														y1:bh,
+														x2:w,
+														y2:bh,
+														stroke:'#666',
+													});
+
+
+											});
+
+
+										//--------------------------
+										// x-ticks
+										//--------------------------
+
+										sel.append('g').attr('class','x-ticks')
+											.attr('transform','translate(0,0)') // animate this along x-axis
+											.call(sel=>{
+
+												//--------------------------
+												// x-ticks-confirmed
+												//--------------------------
+												sel.append('g').attr('class','x-tick-confirmed')
+													.attr('transform','translate(0,'+bh+')') // animate this along y-axis
+													.call(sel=>{
+
+														sel.append('line')
+															.attrs({
+																class:'x-tick-confirmed-line',
+																x1:0,
+																y1:0,
+																x2:bw*2,
+																y2:0,
+																stroke:'#fff',
+															});
+
+														sel.append('text')
+															.attrs({
+																class:'x-tick-confirmed-text',
+																x:bw*3,
+																y:7,
+																fill:'#fff',
+																'font-weight':700,
+																'text-anchor':'begin',
+															});
+
+													});
+
+												//--------------------------
+												// x-ticks-deaths
+												//--------------------------
+
+												sel.append('g').attr('class','x-tick-deaths')
+													.attr('transform','translate(0,'+bh+')') // animate this along y-axis
+													.call(sel=>{
+
+														sel.append('line')
+															.attrs({
+																class:'x-tick-confirmed-line',
+																x1:0,
+																y1:0,
+																x2:bw*2,
+																y2:0,
+																stroke:'#fff',
+															});
+
+														sel.append('text')
+															.attrs({
+																class:'x-tick-deaths-text',
+																x:bw*3,
+																y:7,
+																fill:'#fff',
+																'font-weight':700,
+																'text-anchor':'begin',
+															});
+
+													});
+
+											});
+
+									});
+
+
+
+							})
+						.merge(g)
+							.call(sel=>{
+
+								sel.select('.chart')
+									.call(timelineCases_timelineBar);
+
+
+								sel.call(timelineCases_animateTicks, maxDataDate);
+
+							});
+
+
+
+				});
+
+
+		fEnd();
+
+	}
+
+
+	//-----------------------------------
+	// animateTicks
+	//-----------------------------------
+	function timelineCases_animateTicks(sel, dt)	{
+
+		sel.select('.decor')
+			.datum(dates.find(d=>d.key==dt))
+			.call(sel=>{
+
+
+				sel.select('.y-axis')
+					.transition()
+						.duration(M.current.playSpeed)
+							.attr('transform',d=>'translate('+x(moment(d.key))+',0)');
+
+
+				sel.select('.x-ticks')
+					.transition()
+						.duration(M.current.playSpeed/2)
+						//.attr('transform',d=>'translate('+x(moment( d.key ))+','+(bh-y(d.confirmed)-1)+')')
+							.attr('transform',d=>'translate('+x(moment( d.key ))+',0)');
+
+
+				sel.select('.x-tick-confirmed')
+					.transition()
+						.delay(M.current.playSpeed/2)
+						.duration(M.current.playSpeed/2)
+							.attr('transform',d=>'translate(0,'+(bh-y(d.confirmed)-1)+')');
+
+
+				sel.select('.x-tick-deaths')
+					.transition()
+						.delay(M.current.playSpeed/2)
+						.duration(M.current.playSpeed/2)
+							.attr('transform',d=>'translate(0,'+(bh-y(d.deaths)-1)+')');
+
+				sel.select('.x-tick-confirmed-text')
+					.text(d=>comma(d.confirmed));
+
+				sel.select('.x-tick-deaths-text')
+					.text(d=>comma(d.deaths));
+
 			});
 
-
-
-
+	}
 
 
 	//-----------------------------------
@@ -196,6 +417,11 @@ function timelineCases(sel, data, date, cb)	{
 	//-----------------------------------
 
 	function timelineCases_playButton(sel)	{
+
+		var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
+				dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+		if (dbg){ console.group(f); console.time(f) };
+
 
 		sel
 			.append('div')
@@ -210,10 +436,13 @@ function timelineCases(sel, data, date, cb)	{
 				})
 				.on('click', function(d){
 
-					M.current.idle = moment();
 
 					var sel = d3.select(this).select('.btn-play'),
 							tf = sel.classed('fa-play');
+
+					//eventClick('timeline-play-'+!tf);
+					//eventClick(category,action,label,value)
+					eventClick('timeline','play', tf ? 'pause' : 'play',!tf)
 
 					sel
 						.classed('fa-play', tf ? false : true)
@@ -310,7 +539,7 @@ function timelineCases(sel, data, date, cb)	{
 
 					if (tf)	{
 
-						M.current.playSpeed = 1000;
+						M.current.playSpeed = 300;
 
 						//M.current.idx = 0;
 						// set start at minDataDate - 1
@@ -331,16 +560,31 @@ function timelineCases(sel, data, date, cb)	{
 					.attr('class','fas fa-play fa-2x btn-play')
 					.style('color','lime');
 
+
+
+
+		fEnd();
 	}
 
 
 
 
 	//-----------------------------------
-	// timelineCases_playButton
+	// timelineCases_timelineBar
 	//-----------------------------------
 
 	function timelineCases_timelineBar(sel)	{
+
+		var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
+				dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+		if (dbg){ console.group(f); console.time(f) };
+
+
+
+
+
+
+
 
 		var b = sel.selectAll('.bar').data(d=>d,d=>d.key);
 		b.exit().remove();
@@ -370,7 +614,7 @@ function timelineCases(sel, data, date, cb)	{
 						})
 						.on('mouseover',function(d,i){
 
-							M.current.idle = moment();
+							eventClick();
 
 							if (!M.timer.play)	{
 								d3.select(this)
@@ -381,7 +625,7 @@ function timelineCases(sel, data, date, cb)	{
 						})
 						.on('mouseout',function(d,i){
 
-							M.current.idle = moment();
+							eventClick();
 
 							if (!M.timer.play)	{
 								d3.select(this)
@@ -393,7 +637,10 @@ function timelineCases(sel, data, date, cb)	{
 						})
 						.on('click', function(d){
 
-							M.current.idle = moment();
+							eventClick('timeline','filter', 'select date '+d.key,d.key);
+
+							dbg&&console.log(d3.select(this.parentNode.parentNode.parentNode).node().tagName);
+
 
 							if (!M.timer.play)	{
 
@@ -409,6 +656,9 @@ function timelineCases(sel, data, date, cb)	{
 												.attr('fill',k=>k.key!=d.key ? chroma('crimson').darken().hex() : 'crimson');
 
 									});
+
+								d3.select(this.parentNode.parentNode.parentNode)
+									.call(timelineCases_animateTicks, d.key);
 
 								renderMap(M.data[M.current.data], d.key);
 
@@ -453,10 +703,10 @@ function timelineCases(sel, data, date, cb)	{
 					sel.select('.bar-confirmed')
 						.transition()
 							.delay((d,i)=>i*20)
-							.duration(1000)
+							.duration(M.current.playSpeed)
 							.attrs({
-								y:d=>bh - scaleHeight(d.confirmed),
-								height:d=>scaleHeight(d.confirmed),
+								y:d=>bh - y(d.confirmed),
+								height:d=>y(d.confirmed),
 							});
 
 					//-----------------------------------
@@ -466,19 +716,23 @@ function timelineCases(sel, data, date, cb)	{
 					sel.select('.bar-deaths')
 						.transition()
 							.delay((d,i)=>i*20)
-							.duration(1000)
+							.duration(M.current.playSpeed)
 							.attrs({
-								y:d=>bh - scaleHeight(d.deaths),
-								height:d=>scaleHeight(d.deaths),
+								y:d=>bh - y(d.deaths),
+								height:d=>y(d.deaths),
 							});
 
 
 				});
 
 
+
+
+		fEnd();
 	}
 
 
-	fEnd();
 }
+
+
 

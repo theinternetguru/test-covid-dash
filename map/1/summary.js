@@ -72,15 +72,15 @@ function summaryCases(sel, data, date, cb)	{
 				{
 					key:'New',
 					value: latest.length&&prev.length && d3.sum(latest, d=>d.confirmed) - d3.sum(prev, d=>d.confirmed)||0,
-					bgcolor:chroma(M.theme.colors[0]).darken().hex(),
 					color:chroma(M.theme.colors[0]).brighten().hex(),
+					bgcolor:M.theme.colors[0],
 				},
 
 				{
 					key:'Total',
 					value: d3.sum(latest, d=>d.confirmed),
-					bgcolor:M.theme.colors[0],
 					color:chroma(M.theme.colors[0]).brighten().hex(),
+					bgcolor:chroma(M.theme.colors[0]).darken().hex(),
 				},
 
 			],
@@ -97,15 +97,15 @@ function summaryCases(sel, data, date, cb)	{
 				{
 					key:'New',
 					value: latest.length&&prev.length && d3.sum(latest, d=>d.deaths) - d3.sum(prev, d=>d.deaths)||0,
-					bgcolor:chroma(M.theme.colors[1]).darken().hex(),
 					color:M.theme.colors[1],
+					bgcolor:M.theme.colors[1],
 				},
 
 				{
 					key:'Total',
 					value: d3.sum(latest, d=>d.deaths),
-					bgcolor:M.theme.colors[1],
 					color:M.theme.colors[1],
+					bgcolor:chroma(M.theme.colors[1]).darken().hex(),
 				},
 
 			],
@@ -119,7 +119,7 @@ function summaryCases(sel, data, date, cb)	{
 
 		cases.push(
 			{
-				key:'Countries Affected',
+				key:'Affected Regions/Countries',
 				color:chroma(M.theme.colors[2]).brighten().hex(),
 				bgcolor:chroma(M.theme.colors[2]).darken().darken().darken().hex(),
 				data:[
@@ -127,15 +127,15 @@ function summaryCases(sel, data, date, cb)	{
 					{
 						key:'New',
 						value: latest.length&&prev.length && latestCtry.length - prevCtry.length || 0,
-						bgcolor:chroma(M.theme.colors[2]).darken().hex(),
 						color:chroma(M.theme.colors[2]).brighten().hex(),
+						bgcolor:M.theme.colors[2],
 					},
 
 					{
 						key:'Total',
 						value: latestCtry.length,
-						bgcolor:M.theme.colors[2],
 						color:chroma(M.theme.colors[2]).brighten().hex(),
+						bgcolor:chroma(M.theme.colors[2]).darken().hex(),
 					},
 
 				],

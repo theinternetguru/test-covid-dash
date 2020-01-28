@@ -3,7 +3,7 @@
 // data
 //-----------------
 
-M.datapath = document.location.host.match(/github/i)
+M.datapath = document.location.host.match(/github|coronavirus\.analitik\.my/i)
 							? 'https://raw.githubusercontent.com/nyem69/coronavirus_tracker/master/_data'
 							: (typeof _v=='number'?'../':'')+'_data';
 
