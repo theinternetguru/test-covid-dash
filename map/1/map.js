@@ -1,19 +1,17 @@
 
 
-var leafletMap;
-
 
 //==================================================================
 //
 //==================================================================
 function map(cb)	{
-	var f = arguments.callee.toString().replace(/function\s+/,'').split('(')[0]+'-'+fc++,
-			dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+	var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
+			dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
 	if (dbg){ console.group(f); console.time(f) };
 
 
 
-	d3.select('.content')
+	d3.select('.content-map')
 		.call(sel=>{
 			sel.selectAll('*').remove();
 			sel.call(mapInit, fEnd);
@@ -30,16 +28,41 @@ function map(cb)	{
 //
 //==================================================================
 function mapInit(sel, cb)	{
-	var f = arguments.callee.toString().replace(/function\s+/,'').split('(')[0]+'-'+fc++,
-			dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+	var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
+			dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
 	if (dbg){ console.group(f); console.time(f) };
 
 
-
-
-
 	var width = +sel.style('width').replace('px',''),
-			height = innerHeight - +d3.select('nav').style('height').replace('px','');
+			navHeight = +d3.select('nav').style('height').replace('px',''),
+			summaryHeight = +d3.select('.content-summary').style('height').replace('px',''),
+			timelineHeight = +d3.select('.content-timeline').style('height').replace('px',''),
+			height = d3.max([200,innerHeight - navHeight - summaryHeight - timelineHeight]);
+
+
+
+	window.addEventListener('resize', function(){
+
+		var width = +sel.style('width').replace('px',''),
+				navHeight = +d3.select('nav').style('height').replace('px',''),
+				summaryHeight = +d3.select('.content-summary').style('height').replace('px',''),
+				timelineHeight = +d3.select('.content-timeline').style('height').replace('px',''),
+				height = d3.max([200,innerHeight - navHeight - summaryHeight - timelineHeight]);
+
+		d3.select('#map')
+			.styles({
+				width:width+'px',
+				height:height+'px',
+			})
+			.select('svg')
+				.styles({
+					width:width+'px',
+					height:height+'px',
+				});
+
+	});
+
+
 
 	sel
 		.append('div')
@@ -57,26 +80,50 @@ function mapInit(sel, cb)	{
 						xmlns:'http://www.w3.org/2000/svg',
 						width:width+'px',
 						height:height+'px',
+					})
+					.call(sel=>{
+
+						sel.append('rect')
+							.attrs({
+								class:'bg-rect',
+								//x:-(1e6/3),
+								//y:-(1e6/3),
+								width:1e6,
+								height:1e6,
+								opacity:1,
+								fill:'#D4DADC',
+								//fill:chroma('purple').darken(30).hex(),
+							});
+
 					});
 
 
 
+	function centered(ll)	{
+		return {
+			x: ll[0][0]+(ll[1][0]-ll[0][0])/2,
+			y: ll[0][1]+(ll[1][1]-ll[0][1])/2,
+		};
+	}
 
-//	// malaysia centric
-//	var ll = [[99.5,0],[120,8]];
-//	var center = {
-//		x: ll[0][0]+(ll[1][0]-ll[0][0])/2,
-//		y: ll[0][1]+(ll[1][1]-ll[0][1])/2,
-//	};
-//
+	// initial center of map
+	var my = centered([[99.5,0],[120,8]]),
+			cases = centered([[-36.98, -120.959],[48.83, 146.77]]),
+			wuhan = {y:25,x:114.093};
 
-  leafletMap = L.map('map', {
-  		scrollWheelZoom: false,
-  	})
-  	//.setView([30.657,114.093],5)
-  	.setView([40,20],2);
-  	//.setView([center.y, center.x], 6);
 
+  M.leafletMap = L.map('map', {
+		//scrollWheelZoom: false,
+		//maxBounds: bounds,
+	})
+  	.setView(
+  		innerWidth>1000 ? [cases.y,cases.x] : [wuhan.y, wuhan.x],
+  		innerWidth>1000 ? 2 : 3
+  	);
+
+	dbg&&console.log('getBounds()', M.leafletMap.getBounds());
+
+	//M.leafletMap.setMaxBounds(M.leafletMap.getBounds());
 
 
 	//----------
@@ -114,7 +161,10 @@ function mapInit(sel, cb)	{
 		CartoDB_Positron: L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
 			attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
 			subdomains: 'abcd',
-			maxZoom: 19
+			maxZoom: 19,
+			minZoom: 2,
+			opacity:1,
+//			opacity:1,
 		}),
 
 	};
@@ -131,8 +181,8 @@ function mapInit(sel, cb)	{
 	    'CartoDB_Positron'	: layers.CartoDB_Positron,
 	};
 
-	L.control.layers(baseLayers).addTo(leafletMap);
-  layers.CartoDB_Positron.addTo(leafletMap);
+	L.control.layers(baseLayers).addTo(M.leafletMap);
+  layers.CartoDB_Positron.addTo(M.leafletMap);
 
 
 
@@ -145,15 +195,15 @@ function mapInit(sel, cb)	{
   function projectPoint(x, y) {
   	if (x && y)	{
 	  	//console.log('x,y',x,y);
-	    var point = leafletMap.latLngToLayerPoint(new L.LatLng(y, x));
+	    var point = M.leafletMap.latLngToLayerPoint(new L.LatLng(y, x));
 	    this.stream.point(point.x, point.y);
 	  }
   }
 	//Create a d3.geo.path to convert GeoJson to SVG
   var transform = d3.geoTransform({point: projectPoint});
 
-  var point = d3.geoPath().projection(transform);
-  point.pointRadius(5);
+  M.point = d3.geoPath().projection(transform);
+  M.point.pointRadius(5);
 
 
 	//----------
@@ -161,12 +211,12 @@ function mapInit(sel, cb)	{
 	//----------
   function projectPath(x, y) {
   	//console.log('x,y',x,y);
-    var p = leafletMap.latLngToLayerPoint(new L.LatLng(y, x));
+    var p = M.leafletMap.latLngToLayerPoint(new L.LatLng(y, x));
     this.stream.point(p.x, p.y);
   }
 
   var transformPath = d3.geoTransform({point: projectPath});
-  var path = d3.geoPath().projection(transformPath);
+  M.path = d3.geoPath().projection(transformPath);
 
 
 
@@ -176,77 +226,54 @@ function mapInit(sel, cb)	{
 	//----------
 
 	//adds an SVG element to Leaflet’s overlay pane
-  var svg = d3.select(leafletMap.getPanes().overlayPane).append("svg");
-  var g = svg.append("g").attr("class", "leaflet-zoom-hide");
+	d3.select(M.leafletMap.getPanes().overlayPane)
+		.call(sel=>{
+
+			sel.append("svg")
+					.attr('class','map-container')
+			    .attr('overflow','visible')
+			    .call(sel=>{
+
+			    	sel.call(defsGooey, 10,10,5,50);
+
+
+					  sel.append("g")
+							.attr("class", "leaflet-zoom-hide markers-container");
+
+			    });
+
+		});
+
+ //svgmap = d3.select('.map-container');
 
 
 
 
-
-  leafletMap.on('movestart', mapmovestart);
-  leafletMap.on('moveend', mapmove);
-
-	function mapmovestart(e){
-		svg.style('display','none');
-	}
-
-  function mapmove(e) {
-    //redrawPoints();
-		svg.style('display','block');
-		dbg&&console.log('moveend', leafletMap.getBounds());
-  }
-
-
-		//----------
-		// bounds
-		//----------
-		var mkr = {
-			type:"FeatureCollection",
-			features:[
-				{
-					type:'Feature',
-					geometry:{
-						type:'Point',
-						coordinates:[-180,-90],
-					}
-				},
-				{
-					type:'Feature',
-					geometry:{
-						type:'Point',
-						coordinates:[180,90],
-					}
-				}
-			]
-		};
-    //dbg&&console.log('mkr', mkr);
-
-//    var bounds = point.bounds(markers);
-    var bounds = point.bounds(mkr);
-
-    var topLeft = bounds[0];
-    var bottomRight = bounds[1];
-		var margin = 0;
-
-    svg
-    	.attr("width", bottomRight[0] - topLeft[0] + (margin*2))
-      .attr("height", bottomRight[1] - topLeft[1] + (margin*2))
-      .attr('overflow','visible')
-      .style("left", topLeft[0] - margin + "px")
-      .style("top", topLeft[1] - margin + "px");
-
-		svg.call(defsGooey, 10,10,5,50);
-
-//    g.attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")")
-    g.attr("transform", "translate(" + -(topLeft[0]+margin) + "," + -(topLeft[1]+margin) + ")")
 
 
 //	window.setTimeout(function(){
 //		var points = [
 //			[-64.78407323879503,-196.5715026855469],[83.19212875892394,243.23318481445315]
 //		];
-//		leafletMap.flyToBounds(points);
+//		M.leafletMap.flyToBounds(points);
 //	},2000);
+
+
+
+//	var points = M.data.martinedoesgis
+//		.filter(d=>d.latitude&&d.longitude)
+//		.map(d=>[d.latitude,d.longitude]);
+//
+//	dbg&&console.log({points});
+////
+////	var polygon = turf.polygon([points]);
+////	var center = turf.centerOfMass(polygon);
+////
+////	dbg&&console.log({polygon});
+////	dbg&&console.log({center});
+//
+//
+//	M.leafletMap.flyToBounds(points);
 
 
 	fEnd();
@@ -256,6 +283,29 @@ function mapInit(sel, cb)	{
 
 
 
+
+//==================================================================
+//
+//==================================================================
+function mapBound()	{
+
+	if (innerWidth > 640)	{
+
+		var lat = d3.extent(M.data.martine,d=>d.latitude),
+				lng = d3.extent(M.data.martine,d=>d.longitude);
+
+		//M.leafletMap.setMaxBounds(M.leafletMap.getBounds());
+		var bounds = [
+		    [lat[0], lng[0]],
+		    [lat[1], lng[1]]
+		];
+
+		dbg&&console.log('bounds', bounds);
+		M.leafletMap.fitBounds(bounds);
+
+	}
+
+}
 
 
 //==================================================================

@@ -7,9 +7,15 @@ M.filters={};
 
 M.requireds='config,load,map,render'.split(/\s*,\s*/).concat([
 	'bno',
+	'summary',
+	'timeline',
 ]);
 
 
+M.current.playSpeed = 1500;
+//M.current.loop = !!M.current.loop;
+M.current.loop = true;
+M.current.idle = moment();
 
 
 //#############################################################################
@@ -34,7 +40,7 @@ var required = reqs.map(function(d){
 requirejs(required, function() {
 
 	M.tabs = [
-		{key:'bno', 				label:'BNO',				active:true, disabled:false},
+		{key:'render', 				label:'Novel Coronavirus (2019-nCoV)',				active:true, disabled:false},
 //		{key:'loader', 			fn:loader,			label:'Load', 			disabled:true},
 //		{key:'sheetdata', 	fn:sheetdata,		label:'Data', 			disabled:true},
 //		{key:'mapping', 		fn:mapping,			label:'Mapping', 		disabled:true},
@@ -81,17 +87,31 @@ function main(cb)	{
 
 
 	layout();
-	//viz(fEnd);
+	map();
 
 	load(function(){
 		viz(fEnd)
 	});
 
 
-	map();
+	window.setInterval(checkIdle, 1000 * 60);
+
 
 }
 
+
+
+function checkIdle() {
+
+	d3.select('.today-date').html('Today: '+moment().format('DD MMM YYYY'));
+
+	if (!M.current.play)	{
+		if (moment().diff(M.current.idle,'minutes') > 1)	{
+			$('.btn-play').click();
+		}
+	}
+
+}
 
 
 
@@ -123,162 +143,147 @@ function layoutBoostrap(sel, cb)	{
 
 
 
-	//==================================================================
-	//
-	//==================================================================
-	function layoutHdrForm(sel, cb)	{
-
-		var f = arguments.callee.toString().replace(/function\s+/,'').split('(')[0]+':'+fCounter++,
-				dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
-		if (dbg){ console.group(f); console.time(f) };
-
-
-		/*
-		    <form class="form-inline my-2 my-lg-0">
-		      <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-		      <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
-		    </form>
-
-		*/
-		sel
-			.append('form').attr('class','form-inline my-2 my-lg-0')
-			.call(function(sel)	{
-
-				sel.append('input')
-					.attrs({
-						class:'form-control mr-sm-2 input-search',
-						type:'text',
-						//placeholder:'search',
-						'aria-label':'search',
-					})
-					.on('keyup', function(){
-
-						var sel = d3.select(this);
-						var q = sel.property('value');
-
-
-						if (M.timer.search) window.clearTimeout(M.timer.search);
-						window.setTimeout(function(){
-
-							d3.select(this.parentNode)
-								.select('.btn-search')
-								.classed('btn-primary', q.length==0 ? true : false )
-								.classed('btn-secondary', q.length==0 ? false : true )
-
-							dbg&&console.log('q',q);
-							M.filters[ M.current.tab ] = q;
-
-							search();
-
-						}, 500);
-
-					});
-
-
-				sel.append('div').attr('class','btn-group')
-					.call(function(sel)	{
-
-
-						sel.append('button')
-							.attrs({
-								class:'btn btn-secondary my-2 my-sm-0 btn-search',
-								type:'button'
-							})
-							.on('click', function(){
-
-								var q = d3.select(this.parentNode.parentNode)
-									.select('input').property('value');
-
-								dbg&&console.log('q',q);
-								M.filters[ M.current.tab ] = q;
-								search();
-
-							})
-							//.html('Cari');
-							.append('i').attr('class','fas fa-search btn-search')
-
-
-						sel.append('button')
-							.attrs({
-								class:'btn btn-secondary my-2 my-sm-0',
-								type:'button'
-							})
-							.on('click', function(){
-
-								d3.select(this.parentNode.parentNode)
-									.select('input').property('value','');
-
-								delete (M.filters[M.current.tab]);
-								search();
-
-							})
-							.append('i').attr('class','fas fa-times')
-							//										.html('Reset');
-
-					});
-
-
-			});
-
-
-
-		fEnd();
-	}
-
-
-
-
-
-	//==================================================================
-	//
-	//==================================================================
+	//-----------------
+	// main layout
+	//-----------------
 
 	sel
 		.call(function(sel)	{
 
+			//-----------------
+			// heights
+			//-----------------
 			sel
 				.append('nav').attr('class','navbar navbar-expand-lg navbar-light bg-dark')
-					.call(sel=>{
-
-
-  					sel.append('button')
-  						.attrs({
-  							class:'navbar-toggler',
-  							type:'button',
-  							'data-toggle':'collapse',
-  							'data-target':'#navbarTogglerDemo02',
-  							'aria-controlst':'navbarTogglerDemo02',
-  							'aria-expanded':"false",
-  							'aria-label':"Toggle navigation"
-  						})
-							.append('span')
-								.attr('class','navbar-toggler-icon');
-
-						sel
-							.append('div')
-								.attr('class','collapse navbar-collapse navbar-tab-container')
-								.attr('id','navbarTogglerDemo02')
-							.call(sel=>{
-
-								sel.call(layoutHdrButtons);
-
-								// search form
-								//sel.call(layoutHdrForm);
-
-							});
-
+					.styles({
+						margin:0,
+						padding:0,
+						height: (innerHeight*.05)+'px'),
+						background:'#000',
 					});
-
 
 			sel
 				.append('div').attr('class','container-fluid')
-					.style('padding',0)
-					.style('margin',0)
-				.append('div').attr('class','content')
-					.style('padding',0)
-					.style('margin',0);
+					.styles({
+						padding:0,
+						margin:0,
+					})
+					.append('div').attr('class','content')
+						.styles({
+							padding:0,
+							margin:0,
+						})
+						.call(sel=>{
+
+							sel.append('div').attr('class','content-summary')
+								.styles({
+									margin:0,
+									padding:0,
+									height: (innerHeight*.2)+'px',
+									background:'#000',
+									color:'#fff',
+									border:'1px solid #000',
+								});
+
+							sel.append('div').attr('class','content-map')
+								.styles({
+									margin:0,
+									padding:0,
+									height:(innerHeight*(.2+.2+.05)+'px',
+								});
+
+							sel.append('div').attr('class','content-timeline')
+								.styles({
+									margin:0,
+									padding:0,
+									height:(innerHeight*.2)+'px',
+									background:'#000',
+									color:'#fff',
+								});
+
+						});
+
 
 		});
+
+	//-----------------------------------
+	// nav content
+	//-----------------------------------
+
+	sel.select('nav')
+		.append('div')
+		.styles({
+			display:'flex',
+			width:'100%',
+		})
+		.call(sel=>{
+
+			sel
+				.append('div')
+					.attr('class','today-date')
+					.styles({
+						flex:'1 1 auto',
+						'text-align':'left',
+						color:'#fff',
+						'text-shadow': '#000 1px 0 10px',
+						'font-weight':700,
+						padding:'0 0 0 24px',
+					})
+					.html('Today: '+moment().format('DD MMM YYYY'));
+
+			sel
+				.append('div')
+					.styles({
+						flex:'1 1 auto',
+						'text-align':'center',
+						color:'crimson',
+						'text-shadow': '#000 1px 0 10px',
+						'font-weight':700,
+						//padding:'0 0 0 24px',
+					})
+					.html('Novel Coronavirus (2019-nCoV)');
+
+
+			sel
+				.append('div')
+					.attr('class','display-date')
+					.styles({
+						flex:'1 1 auto',
+						'text-align':'right',
+						color:'lime',
+						'text-shadow': '#000 1px 0 10px',
+						'font-weight':700,
+						padding:'0 24px 0 0',
+					})
+					.html('');
+
+		});
+
+
+//
+//  					sel.append('button')
+//  						.attrs({
+//  							class:'navbar-toggler',
+//  							type:'button',
+//  							'data-toggle':'collapse',
+//  							'data-target':'#navbarTogglerDemo02',
+//  							'aria-controlst':'navbarTogglerDemo02',
+//  							'aria-expanded':"false",
+//  							'aria-label':"Toggle navigation"
+//  						})
+//							.append('span')
+//								.attr('class','navbar-toggler-icon');
+//
+//						sel
+//							.append('div')
+//								.attr('class','collapse navbar-collapse navbar-tab-container')
+//								.attr('id','navbarTogglerDemo02')
+//							.call(sel=>{
+//
+//								sel.call(layoutHdrButtons);
+//
+//							});
+
 
 
 
@@ -344,11 +349,13 @@ function layoutHdrButtons(sel, cb)	{
 							})
 							.styles({
 								'margin-right':'12px',
+								'border-radius':0,
 								//background: d=> d.active ? null : '#ddd',
 								//border: d=> d.active ? null : '#999',
 							})
 							.on('click', function(d){
 
+								M.current.idle = moment();
 								M.current.tab = d.key;
 
 								d3.select(this.parentNode.parentNode)
@@ -442,29 +449,35 @@ function viz(cb)	{
 	var btn = d3.select('nav')
 		.selectAll('li').data();
 
-	var active = btn.filter(function(d){ return d.active });
+	if (btn.length)	{
+		var active = btn.filter(function(d){ return d.active });
+
+		if (M.timer.viz) window.clearTimeout(M.timer.viz);
+		M.timer.viz = window.setTimeout(function(){
+
+			dbg&&console.log('active', active);
+
+			d3.select('.content')
+				.call(function(sel)	{
+
+					dbg&&console.log('active[0].key', active[0].key);
+					if (typeof window[ active[0].key ]==='function')	{
+						sel.call( window[ active[0].key ], fEnd);
+					}else	{
+						console.warn('No visualizer to call!');
+					}
 
 
-	if (M.timer.viz) window.clearTimeout(M.timer.viz);
-	M.timer.viz = window.setTimeout(function(){
+				});
 
-		dbg&&console.log('active', active);
+		}, 500);
+
+	}else	{
 
 		d3.select('.content')
-			.call(function(sel)	{
+			.call( window[M.tabs.find(d=>d.active).key] , fEnd);
 
-				dbg&&console.log('active[0].key', active[0].key);
-				if (typeof window[ active[0].key ]==='function')	{
-					sel.call( window[ active[0].key ], fEnd);
-				}else	{
-					console.warn('No visualizer to call!');
-				}
-
-
-			});
-
-	}, 500);
-
+	}
 
 }
 

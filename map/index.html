@@ -9,6 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
 <meta http-equiv="imagetoolbar" content="no">
 <link type="text/css" rel="stylesheet" href="//lib.analitik.my/font/league-spartan-master/Variable/league-spartan.css"/>
 <link type="text/css" rel="stylesheet" href="//lib.analitik.my/font/awesome/5.8.0/css/all.min.css"/>
@@ -18,7 +19,11 @@
 <link type="text/css" rel="stylesheet" href="//lib.analitik.my/purecookie/PureCookie-master/english - english/purecookie.css"/>
 <script type="text/javascript" src="//lib.analitik.my/jquery/jquery-3.3.1.slim.min.js"></script>
 <script type="text/javascript" src="//lib.analitik.my/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+
+<script type="text/javascript" src="//lib.analitik.my/d3/5.15.0/d3.min.js"></script>
+<!--
 <script type="text/javascript" src="//lib.analitik.my/d3/5.9.7/d3.min.js"></script>
+-->
 <script type="text/javascript" src="//lib.analitik.my/d3-array/2.2.0/d3-array.v2.min.js"></script>
 <script type="text/javascript" src="//lib.analitik.my/d3/4.12.0/d3-selection-multi.v1.min.js"></script>
 <script type="text/javascript" src="//lib.analitik.my/d3/plugins/d3.comparator.js"></script>
@@ -44,6 +49,16 @@
 		background:#fff;
 		color:#000;
   }
+
+  .leaflet-control-attribution.leaflet-control {
+  	background:#333;
+  	color:#ccc;
+  }
+
+	.cookieConsentContainer {
+		z-index: 9999;
+	}
+
 </style>
 
 <body>

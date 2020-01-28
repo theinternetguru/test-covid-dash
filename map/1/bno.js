@@ -4,8 +4,8 @@
 //
 //==================================================================
 function bno(cb)	{
-	var f = arguments.callee.toString().replace(/function\s+/,'').split('(')[0]+'-'+fc++,
-			dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+	var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
+			dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
 	if (dbg){ console.group(f); console.time(f) };
 
 
@@ -26,8 +26,8 @@ function bno(cb)	{
 	//
 	//==================================================================
 	function bno_load(cb)	{
-		var f = arguments.callee.toString().replace(/function\s+/,'').split('(')[0]+'-'+fc++,
-				dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+		var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
+				dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
 		if (dbg){ console.group(f); console.time(f) };
 
 
@@ -74,8 +74,8 @@ function bno(cb)	{
 	//
 	//==================================================================
 	function bno_prep(cb)	{
-		var f = arguments.callee.toString().replace(/function\s+/,'').split('(')[0]+'-'+fc++,
-				dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+		var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
+				dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
 		if (dbg){ console.group(f); console.time(f) };
 
 
@@ -92,8 +92,8 @@ function bno(cb)	{
 	//
 	//==================================================================
 	function bno_map(cb)	{
-		var f = arguments.callee.toString().replace(/function\s+/,'').split('(')[0]+'-'+fc++,
-				dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+		var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
+				dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
 		if (dbg){ console.group(f); console.time(f) };
 
 
