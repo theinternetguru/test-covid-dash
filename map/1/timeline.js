@@ -223,6 +223,7 @@ function timelineCases(sel, data, date, cb)	{
 					g.enter()
 						.append('svg')
 							.attrs({
+								class:'svg-timeline',
 								viewBox:[0,0,w,h].join(' '),
 							})
 //							.styles({
@@ -236,6 +237,7 @@ function timelineCases(sel, data, date, cb)	{
 
 								sel.append('g')
 									.attr('class','decor')
+									.attr('pointer-events','none')
 									.call(sel=>{
 
 
@@ -300,9 +302,32 @@ function timelineCases(sel, data, date, cb)	{
 																class:'x-tick-confirmed-text',
 																x:bw*3,
 																y:7,
-																fill:'#fff',
-																'font-weight':700,
 																'text-anchor':'begin',
+																transform:'translate(0,0)',
+															})
+															.call(sel=>{
+
+																sel.append('tspan')
+																	.attrs({
+																		class:'x-tick-confirmed-text-value',
+																		x:bw*2,
+																		//dy:'1em',
+																		fill:'#fff',
+																		'font-weight':700,
+																	})
+																	;
+
+																sel.append('tspan')
+																	.attrs({
+																		class:'x-tick-confirmed-text-label',
+																		x:bw*2,
+																		dy:'1em',
+																		fill:'magenta',
+																		'font-weight':600,
+																		'font-size':'8px',
+																	})
+																	.text('CONFIRMED');
+
 															});
 
 													});
@@ -328,11 +353,34 @@ function timelineCases(sel, data, date, cb)	{
 														sel.append('text')
 															.attrs({
 																class:'x-tick-deaths-text',
-																x:bw*3,
-																y:7,
-																fill:'#fff',
-																'font-weight':700,
+																x:bw*2,
+																y:14,
 																'text-anchor':'begin',
+															})
+															.call(sel=>{
+
+
+																sel.append('tspan')
+																	.attrs({
+																		class:'x-tick-deaths-text-label',
+																		x:bw*2,
+																		//dy:'1em',
+																		fill:'crimson',
+																		'font-weight':600,
+																		'font-size':'8px',
+																	})
+																	.text('DEATHS');
+
+																sel.append('tspan')
+																	.attrs({
+																		class:'x-tick-deaths-text-value',
+																		x:bw*2,
+																		dy:'-.5em',
+																		fill:'#fff',
+																		'font-weight':700,
+																	})
+																	;
+
 															});
 
 													});
@@ -342,6 +390,7 @@ function timelineCases(sel, data, date, cb)	{
 									});
 
 
+								sel.call(timelineCases_animateTicks, maxDataDate);
 
 							})
 						.merge(g)
@@ -350,8 +399,6 @@ function timelineCases(sel, data, date, cb)	{
 								sel.select('.chart')
 									.call(timelineCases_timelineBar);
 
-
-								sel.call(timelineCases_animateTicks, maxDataDate);
 
 							});
 
@@ -370,6 +417,13 @@ function timelineCases(sel, data, date, cb)	{
 	//-----------------------------------
 	function timelineCases_animateTicks(sel, dt)	{
 
+		var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
+				dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+		if (dbg){ console.group(f); console.time(f) };
+
+		dbg&&console.log('dt',dt);
+		dbg&&console.log('datum',dates.find(d=>d.key==dt));
+
 		sel.select('.decor')
 			.datum(dates.find(d=>d.key==dt))
 			.call(sel=>{
@@ -377,7 +431,7 @@ function timelineCases(sel, data, date, cb)	{
 
 				sel.select('.y-axis')
 					.transition()
-						.duration(M.current.playSpeed)
+						.duration(M.current.playSpeed/2)
 							.attr('transform',d=>'translate('+x(moment(d.key))+',0)');
 
 
@@ -390,25 +444,35 @@ function timelineCases(sel, data, date, cb)	{
 
 				sel.select('.x-tick-confirmed')
 					.transition()
-						.delay(M.current.playSpeed/2)
+						//.delay(M.current.playSpeed/2)
 						.duration(M.current.playSpeed/2)
-							.attr('transform',d=>'translate(0,'+(bh-y(d.confirmed)-1)+')');
+							.attr('transform',d=>'translate('+(y(d.confirmed)-y(d.deaths) < 20 ? -bw : 0)+','+(bh-y(d.confirmed))+')');
 
 
 				sel.select('.x-tick-deaths')
 					.transition()
-						.delay(M.current.playSpeed/2)
+						//.delay(M.current.playSpeed/2)
 						.duration(M.current.playSpeed/2)
-							.attr('transform',d=>'translate(0,'+(bh-y(d.deaths)-1)+')');
+							.attr('transform',d=>'translate(0,'+(bh-y(d.deaths))+')');
 
-				sel.select('.x-tick-confirmed-text')
+				sel.select('.x-tick-confirmed-text-value')
 					.text(d=>comma(d.confirmed));
 
-				sel.select('.x-tick-deaths-text')
+				sel.select('.x-tick-deaths-text-value')
 					.text(d=>comma(d.deaths));
+
+
+				sel.select('.x-tick-confirmed-text')
+					//.attr('data-gap',d=>y(d.confirmed)-y(d.deaths))
+					.attr('text-anchor',d=>y(d.confirmed)-y(d.deaths) < 20 ? 'end' : 'begin')
+					.transition()
+						.delay(M.current.playSpeed/2)
+						.duration(M.current.playSpeed/2)
+							.attr('transform',d=>y(d.confirmed)-y(d.deaths) < 20 ? 'translate('+(-bw*2.5)+',0)' : 'translate(0,0)')
 
 			});
 
+		fEnd();
 	}
 
 
@@ -516,10 +580,10 @@ function timelineCases(sel, data, date, cb)	{
 
 							var dt = dates[M.current.idx++].key;
 
-							d3.selectAll('.bar-bg')
-									.transition()
-										.attr('fill',(d,i)=>d.key!=dt ? '#171717' : 'lime' )
-										.attr('opacity',(d,i)=>d.key!=dt ? (i%2==0?.5:.25) : .8 );
+//							d3.selectAll('.bar-bg')
+//									.transition()
+//										.attr('fill',(d,i)=>d.key!=dt ? '#171717' : 'lime' )
+//										.attr('opacity',(d,i)=>d.key!=dt ? (i%2==0?.5:.25) : .8 );
 
 							d3.selectAll('.bar-confirmed')
 									.transition()
@@ -528,6 +592,9 @@ function timelineCases(sel, data, date, cb)	{
 							d3.selectAll('.bar-deaths')
 									.transition()
 										.attr('fill',k=>k.key!=dt ? chroma('crimson').darken().hex() : 'crimson');
+
+							d3.select('.svg-timeline')
+								.call(timelineCases_animateTicks, dt);
 
 							renderMap(M.data[M.current.data], dt);
 
@@ -637,7 +704,12 @@ function timelineCases(sel, data, date, cb)	{
 						})
 						.on('click', function(d){
 
-							eventClick('timeline','filter', 'select date '+d.key,d.key);
+							dbg&&console.group('CLICK');
+							dbg&&console.log('d',d);
+
+							var dt = d.key;
+
+							eventClick('timeline','filter', 'select date '+dt,dt);
 
 							dbg&&console.log(d3.select(this.parentNode.parentNode.parentNode).node().tagName);
 
@@ -649,20 +721,22 @@ function timelineCases(sel, data, date, cb)	{
 
 										sel.selectAll('.bar-confirmed')
 											.transition()
-												.attr('fill',k=>k.key!=d.key ? chroma('purple').darken().hex() : 'purple');
+												.attr('fill',k=>k.key!=dt ? chroma('purple').darken().hex() : 'purple');
 
 										sel.selectAll('.bar-deaths')
 											.transition()
-												.attr('fill',k=>k.key!=d.key ? chroma('crimson').darken().hex() : 'crimson');
+												.attr('fill',k=>k.key!=dt ? chroma('crimson').darken().hex() : 'crimson');
 
 									});
 
 								d3.select(this.parentNode.parentNode.parentNode)
-									.call(timelineCases_animateTicks, d.key);
+									.call(timelineCases_animateTicks, dt);
 
-								renderMap(M.data[M.current.data], d.key);
+								renderMap(M.data[M.current.data], dt);
 
 							}
+
+							dbg&&console.groupEnd('CLICK');
 
 						});
 
