@@ -32,33 +32,52 @@ function mapInit(sel, cb)	{
 			dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
 	if (dbg){ console.group(f); console.time(f) };
 
+//
+//	var width = +sel.style('width').replace('px',''),
+//			navHeight = +d3.select('nav').style('height').replace('px',''),
+//			summaryHeight = +d3.select('.content-summary').style('height').replace('px',''),
+//			timelineHeight = +d3.select('.content-timeline').style('height').replace('px',''),
+//			//height = d3.max([200,innerHeight - navHeight - summaryHeight - timelineHeight]);
+//			height = innerHeight - navHeight - summaryHeight - timelineHeight;
 
 	var width = +sel.style('width').replace('px',''),
-			navHeight = +d3.select('nav').style('height').replace('px',''),
-			summaryHeight = +d3.select('.content-summary').style('height').replace('px',''),
-			timelineHeight = +d3.select('.content-timeline').style('height').replace('px',''),
-			height = d3.max([200,innerHeight - navHeight - summaryHeight - timelineHeight]);
-
+			height = +d3.select('.content-map').style('height').replace(/\D+$/,'');
 
 
 	window.addEventListener('resize', function(){
 
-		var width = +sel.style('width').replace('px',''),
-				navHeight = +d3.select('nav').style('height').replace('px',''),
-				summaryHeight = +d3.select('.content-summary').style('height').replace('px',''),
-				timelineHeight = +d3.select('.content-timeline').style('height').replace('px',''),
-				height = d3.max([200,innerHeight - navHeight - summaryHeight - timelineHeight]);
+		if (M.timer.resize) window.clearTimeout(M.timer.resize);
+		M.timer.resize = window.setTimeout(function(){
+			layoutResize();
+			window.setTimeout(function(){
 
-		d3.select('#map')
-			.styles({
-				width:width+'px',
-				height:height+'px',
-			})
-			.select('svg')
-				.styles({
-					width:width+'px',
-					height:height+'px',
-				});
+				var width = +sel.style('width').replace('px',''),
+						height = +d3.select('.content-map').style('height').replace(/\D+$/,'');
+
+//				var width = +sel.style('width').replace('px',''),
+//						navHeight = +d3.select('nav').style('height').replace('px',''),
+//						summaryHeight = +d3.select('.content-summary').style('height').replace('px',''),
+//						timelineHeight = +d3.select('.content-timeline').style('height').replace('px',''),
+//						//height = d3.max([200,innerHeight - navHeight - summaryHeight - timelineHeight]);
+//						height = innerHeight - navHeight - summaryHeight - timelineHeight;
+
+				d3.select('#map')
+					.styles({
+						width:width+'px',
+						height:height+'px',
+					})
+					.select('svg')
+						.styles({
+							width:width+'px',
+							height:height+'px',
+						});
+
+			},1);
+
+		},1);
+
+
+
 
 	});
 
@@ -235,7 +254,6 @@ function mapInit(sel, cb)	{
 			    .call(sel=>{
 
 			    	sel.call(defsGooey, 10,10,5,50);
-
 
 					  sel.append("g")
 							.attr("class", "leaflet-zoom-hide markers-container");

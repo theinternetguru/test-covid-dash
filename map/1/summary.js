@@ -111,31 +111,44 @@ function summaryCases(sel, data, date, cb)	{
 			],
 
 		},
-
-		{
-			key:'Countries Affected',
-			color:chroma(M.theme.colors[2]).brighten().hex(),
-			bgcolor:chroma(M.theme.colors[2]).darken().darken().darken().hex(),
-			data:[
-
-				{
-					key:'New',
-					value: latest.length&&prev.length && latestCtry.length - prevCtry.length || 0,
-					bgcolor:chroma(M.theme.colors[2]).darken().hex(),
-					color:chroma(M.theme.colors[2]).brighten().hex(),
-				},
-
-				{
-					key:'Total',
-					value: latestCtry.length,
-					bgcolor:M.theme.colors[2],
-					color:chroma(M.theme.colors[2]).brighten().hex(),
-				},
-
-			],
-		},
-
 	];
+
+
+
+	if (innerWidth > 640)	{
+
+		cases.push(
+			{
+				key:'Countries Affected',
+				color:chroma(M.theme.colors[2]).brighten().hex(),
+				bgcolor:chroma(M.theme.colors[2]).darken().darken().darken().hex(),
+				data:[
+
+					{
+						key:'New',
+						value: latest.length&&prev.length && latestCtry.length - prevCtry.length || 0,
+						bgcolor:chroma(M.theme.colors[2]).darken().hex(),
+						color:chroma(M.theme.colors[2]).brighten().hex(),
+					},
+
+					{
+						key:'Total',
+						value: latestCtry.length,
+						bgcolor:M.theme.colors[2],
+						color:chroma(M.theme.colors[2]).brighten().hex(),
+					},
+
+				],
+			}
+		);
+
+	}
+
+
+
+
+
+	var h = +d3.select('.content-summary').style('height').replace('px','') - 2;
 
 
 	dbg&&console.log('cases', cases);
@@ -148,7 +161,7 @@ function summaryCases(sel, data, date, cb)	{
 			.attr('class','cases')
 			.styles({
 				flex:'1 1 auto',
-				height:'98px',
+				height:h+'px',
 				'text-align':'center',
 				//margin:'1px',
 				'border':'1px solid #000',
@@ -226,7 +239,7 @@ function summaryCases(sel, data, date, cb)	{
 
 									sel.select('.value')
 										.styles({
-											'line-height':(96 - +sel.select('.key').style('height').replace('px','')
+											'line-height':(h - +sel.select('.key').style('height').replace('px','')
 																			- +d3.select(sel.select('.key').node().closest('.cases'))
 																					.select('.cases-title')
 																						.style('height').replace('px','')

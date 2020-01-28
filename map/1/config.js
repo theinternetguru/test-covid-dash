@@ -3,6 +3,8 @@
 // data
 //-----------------
 
+M.datapath = (typeof _v=='number'?'../':'')+'_data';
+
 M.config = {
 
 	data: {
@@ -10,13 +12,13 @@ M.config = {
 		live:0,
 
 		ref:[
-			{ key:'countries', 			type:'tsv', 	url:'../_data/dd_countries.tsv'},
+			{ key:'countries', 			type:'tsv', 	url: M.datapath+'/dd_countries.tsv'},
 		],
 
 		cold: [
-			{ key:'bno', 						type:'text', 	url:'../_data/bno/20200125-bno.txt'},
-			{ key:'jhu', 						type:'csv', 	url:'../_data/jhu/jhu-20200125.csv'},
-			{ key:'martine', 				type:'csv', 	url:'../_data/martinedoesgis/martinedoesgis-20200125.csv'},
+			{ key:'bno', 						type:'text', 	url: M.datapath+'/bno/20200125-bno.txt'},
+			{ key:'jhu', 						type:'csv', 	url: M.datapath+'/jhu/jhu-20200125.csv'},
+			{ key:'martine', 				type:'csv', 	url: M.datapath+'/martinedoesgis/martinedoesgis-20200125.csv'},
 		],
 
 		hot: [

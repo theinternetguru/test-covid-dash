@@ -38,6 +38,16 @@ function timelineCases(sel, data, date, cb)	{
 	dbg&&console.log('date',date);
 
 
+
+//	var w = innerWidth-100,
+	var w = innerWidth-100,
+			h = +d3.select('.content-timeline').style('height').replace('px','') - 2,
+			bh = h - 20;
+
+
+
+
+
 	var nest = d3.nest().key(d=>d.date_str).entries(data);
 	var minDataDate = d3.min(data, d=>d.date_str);
 	var maxDataDate = d3.max(data, d=>d.date_str);
@@ -50,7 +60,6 @@ function timelineCases(sel, data, date, cb)	{
 		maxDate = days100;
 	}
 
-	var w = innerWidth-100;
 	var days = d3.timeDays( moment(minDate), moment(maxDate), 1);
 
 	var dates=[];
@@ -94,11 +103,14 @@ function timelineCases(sel, data, date, cb)	{
 
 	var maxConfirmed = d3.max(dates, d=>d.confirmed);
 
-	var scaleHeight = d3.scaleLinear().domain([0,maxConfirmed]).range([0,70]);
+	var scaleHeight = d3.scaleLinear().domain([0,maxConfirmed]).range([0,bh-10]);
 //	var scaleHeight = d3.scaleSqrt().domain([0,maxConfirmed]).range([0,70]);
 
 	var bw = x( moment(minDate).add(1,'days') ) - x( moment(minDate) );
 	dbg&&console.log('bw', bw);
+
+
+
 
 
 
@@ -110,6 +122,10 @@ function timelineCases(sel, data, date, cb)	{
 			.attr('class','timeline-container')
 			.styles({
 				display:'flex',
+				'align-content':'stretch',
+				width:'100%',
+				height:bh+'px',
+				overflow:'hidden',
 			})
 			.call(sel=>{
 
@@ -117,7 +133,6 @@ function timelineCases(sel, data, date, cb)	{
 				//-----------------------------------
 				// play-btn
 				//-----------------------------------
-
 				sel
 					.append('div')
 					.attr('class','play-btn')
@@ -125,148 +140,22 @@ function timelineCases(sel, data, date, cb)	{
 						flex:'0 0 100px',
 						'text-align':'center',
 					})
-					.append('div')
-						//.attr('class','btn btn-primary')
-						//.attr('type','button')
-						.styles({
-							background:'#000',
-							'border-radius':0,
-							border:'none',
-							'line-height':'80px',
-							cursor:'pointer',
-						})
-						.on('click', function(d){
-
-							M.current.idle = moment();
-
-							var sel = d3.select(this).select('.btn-play'),
-									tf = sel.classed('fa-play');
-
-							sel
-								.classed('fa-play', tf ? false : true)
-								.classed('fa-pause', tf ? true : false)
-								.style('color','magenta');
-
-
-							if (!tf)	{
-								playStop();
-							}
-
-							function playStop()	{
-
-									d3.selectAll('.bar-bg')
-											.transition()
-												.attr('fill','#171717')
-												.attr('opacity',(d,i)=>i%2==0?.5:.25);
-
-
-							}
-
-
-							function play(){
-
-								dbg&&console.log('dates[M.current.idx].key',
-									dates[M.current.idx].key,
-									maxDataDate,
-									moment(dates[M.current.idx].key)>moment(maxDataDate)
-								);
-
-								var stop = false;
-
-								if (M.current.idx >= dates.length|| moment(dates[M.current.idx].key)>moment(maxDataDate)) {
-
-									M.current.idx = dates.map(d=>d.key).indexOf(minDataDate) - 1;
-
-									// loop
-									if (M.current.loop)	{
-										stop = false;
-
-									// stop at last data
-									}else	{
-										stop = true;
-									}
-
-								}
-
-
-								if (stop)	{
-
-									//M.current.idx = 0;
-									if (M.timer.play) window.clearTimeout(M.timer.play);
-									M.timer.play = null;
-
-									d3.select('.btn-play')
-										.classed('fa-play',true)
-										.classed('fa-pause',false)
-										.style('color','lime')
-
-									playStop();
-
-									d3.selectAll('.bar-confirmed')
-											.transition()
-												.attr('fill','purple');
-
-									d3.selectAll('.bar-deaths')
-											.transition()
-												.attr('fill','crimson');
-
-								}else	{
-
-									var dt = dates[M.current.idx++].key;
-
-									d3.selectAll('.bar-bg')
-											.transition()
-												.attr('fill',(d,i)=>d.key!=dt ? '#171717' : 'lime' )
-												.attr('opacity',(d,i)=>d.key!=dt ? (i%2==0?.5:.25) : .8 );
-
-									d3.selectAll('.bar-confirmed')
-											.transition()
-												.attr('fill',k=>k.key!=dt ? chroma('purple').darken().hex() : 'purple');
-
-									d3.selectAll('.bar-deaths')
-											.transition()
-												.attr('fill',k=>k.key!=dt ? chroma('crimson').darken().hex() : 'crimson');
-
-									renderMap(M.data[M.current.data], dt);
-
-
-									if (M.timer.play) window.clearTimeout(M.timer.play);
-									M.timer.play = window.setTimeout(play, M.current.playSpeed + (dt==maxDataDate ? 10000 : 500));
-								}
-							}
-
-							if (tf)	{
-
-								M.current.playSpeed = 1000;
-
-								//M.current.idx = 0;
-								// set start at minDataDate - 1
-								if (!M.current.idx) M.current.idx = dates.map(d=>d.key).indexOf(minDataDate) - 1;
-								play();
-
-							}else	{
-
-								M.current.playSpeed = 1500;
-
-								if (M.timer.play) window.clearTimeout(M.timer.play);
-								M.timer.play = null;
-							}
-
-
-						})
-						.append('i')
-							.attr('class','fas fa-play fa-2x btn-play')
-							.style('color','lime');
+					.call(timelineCases_playButton);
 
 
 				//-----------------------------------
-				//
+				// timeline
 				//-----------------------------------
 				sel
 					.append('div')
 					.attr('class','timeline')
 					.styles({
-						flex:'1 1 auto',
+						flex:'1 1 '+w+'px',
+						margin:0,
+						padding:0,
+//						width:w+'px',
+//						height:h+'px',
+						overflow:'hidden',
 					});
 
 
@@ -280,153 +169,314 @@ function timelineCases(sel, data, date, cb)	{
 				g.enter()
 					.append('svg')
 						.attrs({
-							width:w,
-							height:100,
+							viewBox:[0,0,w,h].join(' '),
+						})
+						.styles({
+							width:'100%',
+							height:'100%',
 						})
 					.merge(g)
 						.call(sel=>{
 
-							var b = sel.selectAll('.bar').data(d=>d,d=>d.key);
-							b.exit().remove();
-							b.enter()
-								.append('g')
-									.attrs({
-										class:'bar',
-										transform:d=>'translate('+x(moment(d.key))+',0)',
-									})
-									.call(sel=>{
-
-
-
-										//-----------------------------------
-										// bg
-										//-----------------------------------
-										sel.append('rect')
-											.attrs({
-												class:'bar-bg',
-												width:bw,
-												height:80,
-												fill:'#171717',
-												opacity:(d,i)=>i%2==0?.5:.25,
-											})
-											.styles({
-												cursor:'pointer',
-											})
-											.on('mouseover',function(d,i){
-
-												M.current.idle = moment();
-
-												if (!M.timer.play)	{
-													d3.select(this)
-														.transition()
-															.attr('opacity',.8);
-												}
-
-											})
-											.on('mouseout',function(d,i){
-
-												M.current.idle = moment();
-
-												if (!M.timer.play)	{
-													d3.select(this)
-														.transition()
-															.delay(300)
-															.attr('opacity',i%2==0?.5:.25);
-												}
-
-											})
-											.on('click', function(d){
-
-												M.current.idle = moment();
-
-												if (!M.timer.play)	{
-
-													d3.select(this.parentNode.parentNode)
-														.call(sel=>{
-
-															sel.selectAll('.bar-confirmed')
-																.transition()
-																	.attr('fill',k=>k.key!=d.key ? chroma('purple').darken().hex() : 'purple');
-
-															sel.selectAll('.bar-deaths')
-																.transition()
-																	.attr('fill',k=>k.key!=d.key ? chroma('crimson').darken().hex() : 'crimson');
-
-														});
-
-													renderMap(M.data[M.current.data], d.key);
-
-												}
-
-											});
-
-										//-----------------------------------
-										// confirmed
-										//-----------------------------------
-										sel.append('rect')
-											.attrs({
-												class:'bar-confirmed',
-												y:80,
-												width:bw,
-												height:0,
-												fill:'purple',
-												'pointer-events':'none',
-											});
-
-										//-----------------------------------
-										// deaths
-										//-----------------------------------
-										sel.append('rect')
-											.attrs({
-												class:'bar-deaths',
-												y:80,
-												width:bw,
-												height:0,
-												fill:'crimson',
-												'pointer-events':'none',
-											});
-
-									})
-								.merge(b)
-									.call(sel=>{
-
-										//-----------------------------------
-										// confirmed
-										//-----------------------------------
-
-										sel.select('.bar-confirmed')
-											.transition()
-												.delay((d,i)=>i*20)
-												.duration(1000)
-												.attrs({
-													y:d=>80 - scaleHeight(d.confirmed),
-													height:d=>scaleHeight(d.confirmed),
-												});
-
-										//-----------------------------------
-										// deaths
-										//-----------------------------------
-
-										sel.select('.bar-deaths')
-											.transition()
-												.delay((d,i)=>i*20)
-												.duration(1000)
-												.attrs({
-													y:d=>80 - scaleHeight(d.deaths),
-													height:d=>scaleHeight(d.deaths),
-												});
-
-
-									});
-
-
-
+							sel.call(timelineCases_timelineBar);
 
 						});
 
 
 
 			});
+
+
+
+
+
+
+	//-----------------------------------
+	// timelineCases_playButton
+	//-----------------------------------
+
+	function timelineCases_playButton(sel)	{
+
+		sel
+			.append('div')
+				//.attr('class','btn btn-primary')
+				//.attr('type','button')
+				.styles({
+					background:'#000',
+					'border-radius':0,
+					border:'none',
+					'line-height': h+'px',
+					cursor:'pointer',
+				})
+				.on('click', function(d){
+
+					M.current.idle = moment();
+
+					var sel = d3.select(this).select('.btn-play'),
+							tf = sel.classed('fa-play');
+
+					sel
+						.classed('fa-play', tf ? false : true)
+						.classed('fa-pause', tf ? true : false)
+						.style('color','magenta');
+
+
+					if (!tf)	{
+						playStop();
+					}
+
+					function playStop()	{
+
+							d3.selectAll('.bar-bg')
+									.transition()
+										.attr('fill','#171717')
+										.attr('opacity',(d,i)=>i%2==0?.5:.25);
+
+
+					}
+
+
+					function play(){
+
+						dbg&&console.log('dates[M.current.idx].key',
+							dates[M.current.idx].key,
+							maxDataDate,
+							moment(dates[M.current.idx].key)>moment(maxDataDate)
+						);
+
+						var stop = false;
+
+						if (M.current.idx >= dates.length|| moment(dates[M.current.idx].key)>moment(maxDataDate)) {
+
+							M.current.idx = dates.map(d=>d.key).indexOf(minDataDate) - 1;
+
+							// loop
+							if (M.current.loop)	{
+								stop = false;
+
+							// stop at last data
+							}else	{
+								stop = true;
+							}
+
+						}
+
+
+						if (stop)	{
+
+							//M.current.idx = 0;
+							if (M.timer.play) window.clearTimeout(M.timer.play);
+							M.timer.play = null;
+
+							d3.select('.btn-play')
+								.classed('fa-play',true)
+								.classed('fa-pause',false)
+								.style('color','lime')
+
+							playStop();
+
+							d3.selectAll('.bar-confirmed')
+									.transition()
+										.attr('fill','purple');
+
+							d3.selectAll('.bar-deaths')
+									.transition()
+										.attr('fill','crimson');
+
+						}else	{
+
+							var dt = dates[M.current.idx++].key;
+
+							d3.selectAll('.bar-bg')
+									.transition()
+										.attr('fill',(d,i)=>d.key!=dt ? '#171717' : 'lime' )
+										.attr('opacity',(d,i)=>d.key!=dt ? (i%2==0?.5:.25) : .8 );
+
+							d3.selectAll('.bar-confirmed')
+									.transition()
+										.attr('fill',k=>k.key!=dt ? chroma('purple').darken().hex() : 'purple');
+
+							d3.selectAll('.bar-deaths')
+									.transition()
+										.attr('fill',k=>k.key!=dt ? chroma('crimson').darken().hex() : 'crimson');
+
+							renderMap(M.data[M.current.data], dt);
+
+
+							if (M.timer.play) window.clearTimeout(M.timer.play);
+							M.timer.play = window.setTimeout(play, M.current.playSpeed + (dt==maxDataDate ? 10000 : 500));
+						}
+					}
+
+					if (tf)	{
+
+						M.current.playSpeed = 1000;
+
+						//M.current.idx = 0;
+						// set start at minDataDate - 1
+						if (!M.current.idx) M.current.idx = dates.map(d=>d.key).indexOf(minDataDate) - 1;
+						play();
+
+					}else	{
+
+						M.current.playSpeed = 1500;
+
+						if (M.timer.play) window.clearTimeout(M.timer.play);
+						M.timer.play = null;
+					}
+
+
+				})
+				.append('i')
+					.attr('class','fas fa-play fa-2x btn-play')
+					.style('color','lime');
+
+	}
+
+
+
+
+	//-----------------------------------
+	// timelineCases_playButton
+	//-----------------------------------
+
+	function timelineCases_timelineBar(sel)	{
+
+		var b = sel.selectAll('.bar').data(d=>d,d=>d.key);
+		b.exit().remove();
+		b.enter()
+			.append('g')
+				.attrs({
+					class:'bar',
+					transform:d=>'translate('+x(moment(d.key))+',0)',
+				})
+				.call(sel=>{
+
+
+
+					//-----------------------------------
+					// bg
+					//-----------------------------------
+					sel.append('rect')
+						.attrs({
+							class:'bar-bg',
+							width:bw,
+							height:bh,
+							fill:'#171717',
+							opacity:(d,i)=>i%2==0?.5:.25,
+						})
+						.styles({
+							cursor:'pointer',
+						})
+						.on('mouseover',function(d,i){
+
+							M.current.idle = moment();
+
+							if (!M.timer.play)	{
+								d3.select(this)
+									.transition()
+										.attr('opacity',.8);
+							}
+
+						})
+						.on('mouseout',function(d,i){
+
+							M.current.idle = moment();
+
+							if (!M.timer.play)	{
+								d3.select(this)
+									.transition()
+										.delay(300)
+										.attr('opacity',i%2==0?.5:.25);
+							}
+
+						})
+						.on('click', function(d){
+
+							M.current.idle = moment();
+
+							if (!M.timer.play)	{
+
+								d3.select(this.parentNode.parentNode)
+									.call(sel=>{
+
+										sel.selectAll('.bar-confirmed')
+											.transition()
+												.attr('fill',k=>k.key!=d.key ? chroma('purple').darken().hex() : 'purple');
+
+										sel.selectAll('.bar-deaths')
+											.transition()
+												.attr('fill',k=>k.key!=d.key ? chroma('crimson').darken().hex() : 'crimson');
+
+									});
+
+								renderMap(M.data[M.current.data], d.key);
+
+							}
+
+						});
+
+					//-----------------------------------
+					// confirmed
+					//-----------------------------------
+					sel.append('rect')
+						.attrs({
+							class:'bar-confirmed',
+							y:bh,
+							width:bw,
+							height:0,
+							fill:'purple',
+							'pointer-events':'none',
+						});
+
+					//-----------------------------------
+					// deaths
+					//-----------------------------------
+					sel.append('rect')
+						.attrs({
+							class:'bar-deaths',
+							y:bh,
+							width:bw,
+							height:0,
+							fill:'crimson',
+							'pointer-events':'none',
+						});
+
+				})
+			.merge(b)
+				.call(sel=>{
+
+					//-----------------------------------
+					// confirmed
+					//-----------------------------------
+
+					sel.select('.bar-confirmed')
+						.transition()
+							.delay((d,i)=>i*20)
+							.duration(1000)
+							.attrs({
+								y:d=>bh - scaleHeight(d.confirmed),
+								height:d=>scaleHeight(d.confirmed),
+							});
+
+					//-----------------------------------
+					// deaths
+					//-----------------------------------
+
+					sel.select('.bar-deaths')
+						.transition()
+							.delay((d,i)=>i*20)
+							.duration(1000)
+							.attrs({
+								y:d=>bh - scaleHeight(d.deaths),
+								height:d=>scaleHeight(d.deaths),
+							});
+
+
+				});
+
+
+	}
 
 
 	fEnd();
