@@ -4,8 +4,9 @@
 //-----------------
 
 M.datapath = document.location.host.match(/github|coronavirus\.analitik\.my/i)
-							? 'https://raw.githubusercontent.com/nyem69/coronavirus_tracker/master/_data'
+							? 'https://raw.githubusercontent.com/nyem69/coronavirus_dashboard/master/_data'
 							: (typeof _v=='number'?'../':'')+'_data';
+
 
 M.config = {
 
@@ -21,8 +22,20 @@ M.config = {
 //			{ key:'bno', 						type:'text', 	url: M.datapath+'/bno/20200125-bno.txt'},
 //			{ key:'jhu', 						type:'csv', 	url: M.datapath+'/jhu/jhu-20200125.csv'},
 //			{ key:'martine', 				type:'csv', 	url: M.datapath+'/martinedoesgis/martinedoesgis-20200125.csv'},
-			{ key:'martine', 				type:'csv', 	url: 'https://docs.google.com/spreadsheets/d/18X1VM1671d99V_yd-cnUI1j8oSG2ZgfU_q1HfOizErA/gviz/tq?tqx=out:csv&sheet=data_adm1'},
+			{
+				key:'martine',
+				type:'csv',
+				url: 'https://docs.google.com/spreadsheets/d/18X1VM1671d99V_yd-cnUI1j8oSG2ZgfU_q1HfOizErA/gviz/tq?tqx=out:csv&sheet=data_adm1',
+				label:'MartineDoesGIS',
+				site:'',
+			},
 
+			{
+				key:'tencent',
+				type:'json',
+				url:'https://view.inews.qq.com/g2/getOnsInfo?name=wuwei_ww_area_counts&callback=&_=',
+				cors:true,
+			},
 
 
 		],

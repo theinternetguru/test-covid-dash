@@ -293,7 +293,7 @@ function timelineCases(sel, data, date, cb)	{
 																class:'x-tick-confirmed-line',
 																x1:0,
 																y1:0,
-																x2:bw*2,
+																x2:bw*1.5,
 																y2:0,
 																stroke:'#fff',
 															});
@@ -301,7 +301,7 @@ function timelineCases(sel, data, date, cb)	{
 														sel.append('text')
 															.attrs({
 																class:'x-tick-confirmed-text',
-																x:bw*3,
+																x:bw*1.5,
 																y:7,
 																'text-anchor':'begin',
 																transform:'translate(0,0)',
@@ -311,7 +311,7 @@ function timelineCases(sel, data, date, cb)	{
 																sel.append('tspan')
 																	.attrs({
 																		class:'x-tick-confirmed-text-value',
-																		x:bw*2,
+																		x:bw*1.5,
 																		//dy:'1em',
 																		fill:'#fff',
 																		'font-weight':700,
@@ -321,7 +321,7 @@ function timelineCases(sel, data, date, cb)	{
 																sel.append('tspan')
 																	.attrs({
 																		class:'x-tick-confirmed-text-label',
-																		x:bw*2,
+																		x:bw*1.5,
 																		dy:'1em',
 																		fill:'magenta',
 																		'font-weight':600,
@@ -347,7 +347,7 @@ function timelineCases(sel, data, date, cb)	{
 																class:'x-tick-confirmed-line',
 																x1:0,
 																y1:0,
-																x2:bw*2,
+																x2:bw*1.5,
 																y2:0,
 																stroke:'#fff',
 															});
@@ -355,7 +355,7 @@ function timelineCases(sel, data, date, cb)	{
 														sel.append('text')
 															.attrs({
 																class:'x-tick-deaths-text',
-																x:bw*2,
+																x:bw*1.5,
 																y:14,
 																'text-anchor':'begin',
 															})
@@ -365,7 +365,7 @@ function timelineCases(sel, data, date, cb)	{
 																sel.append('tspan')
 																	.attrs({
 																		class:'x-tick-deaths-text-label',
-																		x:bw*2,
+																		x:bw*1.5,
 																		//dy:'1em',
 																		fill:'crimson',
 																		'font-weight':600,
@@ -376,7 +376,7 @@ function timelineCases(sel, data, date, cb)	{
 																sel.append('tspan')
 																	.attrs({
 																		class:'x-tick-deaths-text-value',
-																		x:bw*2,
+																		x:bw*1.5,
 																		dy:'-.5em',
 																		fill:'#fff',
 																		'font-weight':700,
@@ -448,7 +448,7 @@ function timelineCases(sel, data, date, cb)	{
 					.transition()
 						//.delay(M.current.playSpeed/2)
 						.duration(M.current.playSpeed/2)
-							.attr('transform',d=>'translate('+(y(d.confirmed)-y(d.deaths) < 20 ? -bw : 0)+','+(bh-y(d.confirmed))+')')
+							.attr('transform',d=>'translate('+(y(d.confirmed)-y(d.deaths) < 20 ? (-bw *1.5) : 0)+','+(bh-y(d.confirmed))+')')
 							.attr('opacity',d=>d.confirmed==0?0:1);
 
 
@@ -472,7 +472,7 @@ function timelineCases(sel, data, date, cb)	{
 					.transition()
 						.delay(M.current.playSpeed/2)
 						.duration(M.current.playSpeed/2)
-							.attr('transform',d=>y(d.confirmed)-y(d.deaths) < 20 ? 'translate('+(-bw*2.5)+',0)' : 'translate(0,0)')
+							.attr('transform',d=>y(d.confirmed)-y(d.deaths) < 20 ? 'translate('+(-bw * 1.5)+',0)' : 'translate(0,0)')
 
 			});
 
@@ -600,7 +600,8 @@ function timelineCases(sel, data, date, cb)	{
 							d3.select('.svg-timeline')
 								.call(timelineCases_animateTicks, dt);
 
-							//renderMap(M.data[M.current.data], dt);
+							renderMap(M.data[M.current.data], dt);
+
 //							var curdata=M.data[M.current.data].filter(d=>d.date_str==dt);
 //							dbg&&console.log('curdata',curdata);
 //							mapBound(curdata);

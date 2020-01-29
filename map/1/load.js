@@ -10,6 +10,12 @@ function load(cb)	{
 
 	loadCached(fEnd);
 
+   var timer = d3.timer(function(t) {
+      console.log('timer', t);
+//      if (t > 1000*60)
+      timer.stop();
+   }, 1000 * 10);
+
 }
 
 
@@ -21,7 +27,7 @@ function load(cb)	{
 function loadCached(cb)	{
 
 	var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
-			dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+			dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
 	if (dbg){ console.group(f); console.time(f) };
 
 
@@ -30,6 +36,7 @@ function loadCached(cb)	{
 									M.config.data.live ? M.config.data.hot : M.config.data.cold
 								);
 
+	datasets = datasets.filter(d=>!d.cors);
 
 	datasets.forEach(d=>{
 		if (!d.type)	{
@@ -73,6 +80,7 @@ function loadCached(cb)	{
 		});
 
 		dbg&&console.log('M.raw',{...M.raw});
+
 
 		prep(fEnd);
 

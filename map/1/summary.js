@@ -251,7 +251,7 @@ function summaryCases(sel, data, date, cb)	{
 //											);
 
 										.transition()
-											.duration(M.current.playSpeed-200)
+											.duration(M.current.playSpeed-100)
 											.tween("html", function(d) {
 												var curValue = d3.select(this).node().innerText;
 												curValue = curValue.replace(/\D+/g,'');
