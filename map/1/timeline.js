@@ -5,7 +5,7 @@
 //==================================================================
 function timeline(data, date, cb)	{
 	var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
-			dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+			dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
 	if (dbg){ console.group(f); console.time(f) };
 
 
@@ -31,7 +31,7 @@ function timeline(data, date, cb)	{
 //==================================================================
 function timelineCases(sel, data, date, cb)	{
 	var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
-			dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+			dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
 	if (dbg){ console.group(f); console.time(f) };
 
 
@@ -165,7 +165,7 @@ function timelineCases(sel, data, date, cb)	{
 	function timelineCases_layout(sel)	{
 
 		var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
-				dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+				dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
 		if (dbg){ console.group(f); console.time(f) };
 
 
@@ -285,6 +285,7 @@ function timelineCases(sel, data, date, cb)	{
 												//--------------------------
 												sel.append('g').attr('class','x-tick-confirmed')
 													.attr('transform','translate(0,'+bh+')') // animate this along y-axis
+													.attr('opacity',1)
 													.call(sel=>{
 
 														sel.append('line')
@@ -337,7 +338,8 @@ function timelineCases(sel, data, date, cb)	{
 												//--------------------------
 
 												sel.append('g').attr('class','x-tick-deaths')
-													.attr('transform','translate(0,'+bh+')') // animate this along y-axis
+													.attr('transform','translate(0,'+bh+')') // animate this along x-axis
+													.attr('opacity',1)
 													.call(sel=>{
 
 														sel.append('line')
@@ -418,7 +420,7 @@ function timelineCases(sel, data, date, cb)	{
 	function timelineCases_animateTicks(sel, dt)	{
 
 		var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
-				dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+				dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
 		if (dbg){ console.group(f); console.time(f) };
 
 		dbg&&console.log('dt',dt);
@@ -432,7 +434,7 @@ function timelineCases(sel, data, date, cb)	{
 				sel.select('.y-axis')
 					.transition()
 						.duration(M.current.playSpeed/2)
-							.attr('transform',d=>'translate('+x(moment(d.key))+',0)');
+							.attr('transform',d=>'translate('+x(moment(d.key))+',0)')
 
 
 				sel.select('.x-ticks')
@@ -446,14 +448,16 @@ function timelineCases(sel, data, date, cb)	{
 					.transition()
 						//.delay(M.current.playSpeed/2)
 						.duration(M.current.playSpeed/2)
-							.attr('transform',d=>'translate('+(y(d.confirmed)-y(d.deaths) < 20 ? -bw : 0)+','+(bh-y(d.confirmed))+')');
+							.attr('transform',d=>'translate('+(y(d.confirmed)-y(d.deaths) < 20 ? -bw : 0)+','+(bh-y(d.confirmed))+')')
+							.attr('opacity',d=>d.confirmed==0?0:1);
 
 
 				sel.select('.x-tick-deaths')
 					.transition()
 						//.delay(M.current.playSpeed/2)
 						.duration(M.current.playSpeed/2)
-							.attr('transform',d=>'translate(0,'+(bh-y(d.deaths))+')');
+							.attr('transform',d=>'translate(0,'+(bh-y(d.deaths))+')')
+							.attr('opacity',d=>d.deaths==0?0:1);
 
 				sel.select('.x-tick-confirmed-text-value')
 					.text(d=>comma(d.confirmed));
@@ -483,7 +487,7 @@ function timelineCases(sel, data, date, cb)	{
 	function timelineCases_playButton(sel)	{
 
 		var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
-				dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+				dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
 		if (dbg){ console.group(f); console.time(f) };
 
 
@@ -514,9 +518,9 @@ function timelineCases(sel, data, date, cb)	{
 						.style('color','magenta');
 
 
-					if (!tf)	{
-						playStop();
-					}
+//					if (!tf)	{
+//						playStop();
+//					}
 
 					function playStop()	{
 
@@ -596,7 +600,10 @@ function timelineCases(sel, data, date, cb)	{
 							d3.select('.svg-timeline')
 								.call(timelineCases_animateTicks, dt);
 
-							renderMap(M.data[M.current.data], dt);
+							//renderMap(M.data[M.current.data], dt);
+//							var curdata=M.data[M.current.data].filter(d=>d.date_str==dt);
+//							dbg&&console.log('curdata',curdata);
+//							mapBound(curdata);
 
 
 							if (M.timer.play) window.clearTimeout(M.timer.play);
@@ -643,7 +650,7 @@ function timelineCases(sel, data, date, cb)	{
 	function timelineCases_timelineBar(sel)	{
 
 		var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
-				dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+				dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
 		if (dbg){ console.group(f); console.time(f) };
 
 
@@ -733,6 +740,10 @@ function timelineCases(sel, data, date, cb)	{
 									.call(timelineCases_animateTicks, dt);
 
 								renderMap(M.data[M.current.data], dt);
+
+//								var curdata=M.data[M.current.data].filter(d=>d.date_str==dt);
+//								dbg&&console.log('curdata',curdata);
+//								mapBound(curdata);
 
 							}
 

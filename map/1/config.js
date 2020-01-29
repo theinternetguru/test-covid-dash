@@ -18,9 +18,13 @@ M.config = {
 		],
 
 		cold: [
-			{ key:'bno', 						type:'text', 	url: M.datapath+'/bno/20200125-bno.txt'},
-			{ key:'jhu', 						type:'csv', 	url: M.datapath+'/jhu/jhu-20200125.csv'},
-			{ key:'martine', 				type:'csv', 	url: M.datapath+'/martinedoesgis/martinedoesgis-20200125.csv'},
+//			{ key:'bno', 						type:'text', 	url: M.datapath+'/bno/20200125-bno.txt'},
+//			{ key:'jhu', 						type:'csv', 	url: M.datapath+'/jhu/jhu-20200125.csv'},
+//			{ key:'martine', 				type:'csv', 	url: M.datapath+'/martinedoesgis/martinedoesgis-20200125.csv'},
+			{ key:'martine', 				type:'csv', 	url: 'https://docs.google.com/spreadsheets/d/18X1VM1671d99V_yd-cnUI1j8oSG2ZgfU_q1HfOizErA/gviz/tq?tqx=out:csv&sheet=data_adm1'},
+
+
+
 		],
 
 		hot: [

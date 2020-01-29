@@ -116,6 +116,9 @@ function renderMapRedraw(data, date, cb)	{
 
 	data = data.filter(d=>!!d.longitude && !!d.latitude);
 
+
+
+
 	var maxDate = d3.max(data,d=>d.date_str);
 	var maxConfirmed = d3.max(data,d=>d.confirmed);
 	var maxDeaths = d3.max(data,d=>d.deaths);
@@ -155,11 +158,8 @@ function renderMapRedraw(data, date, cb)	{
 	});
 
 	locationData.sort(d3.comparator().order(d3.descending,d=>d['confirmed']));
-//	M.nest.data = locationData;
 
 	dbg&&console.log('locationData', locationData);
-
-//	var deaths = [].concat(confirmed);
 
 
 	//----------
@@ -337,6 +337,108 @@ function renderMapRedraw(data, date, cb)	{
 			.merge(facet)
 				.call(renderMapRedrawMode, fEnd);
 
+
+
+	//-----------
+	// annotation
+	//-----------
+//
+//	var annotations = [
+//    {
+//      note: {
+//        label: "Basic settings with subject position(x,y) and a note offset(dx, dy)",
+//        title: "d3.annotationLabel"
+//      },
+//      x:M.leafletMap.latLngToLayerPoint(new L.LatLng(3, 102)).x,
+//      y:M.leafletMap.latLngToLayerPoint(new L.LatLng(3, 102)).y,
+////      dx:M.leafletMap.latLngToLayerPoint(new L.LatLng(3, 102)).x,
+////      dy:M.leafletMap.latLngToLayerPoint(new L.LatLng(3, 102)).y,
+////      x: 50,
+////      y: 150,
+////      dy: 137,
+////      dx: 162
+//    },
+////    {
+////      note: {
+////          label: "Added connector end 'arrow', note wrap '180', and note align 'left'",
+////          title: "d3.annotationLabel",
+////          wrap: 150,
+////          align: "left"
+////        },
+////        connector: {
+////          end: "arrow"
+////        },
+////        x: 170,
+////        y: 150,
+////        dy: 137,
+////        dx: 162
+////    },{
+////      note: {
+////        label: "Changed connector type to 'curve'",
+////        title: "d3.annotationLabel",
+////       wrap: 150
+////      },
+////      connector: {
+////        end: "dot",
+////        type: "curve",
+////        points: [[100, 14],[190, 52]]
+////      },
+////      x: 350,
+////      y: 150,
+////      dy: 137,
+////      dx: 262
+////    },{
+////      type: d3.annotationCalloutCircle,
+////      note: {
+////        label: "A different annotation type",
+////        title: "d3.annotationCalloutCircle",
+////        wrap: 190
+////      },
+////      subject: {
+////        radius: 50
+////      },
+////      x: 620,
+////      y: 150,
+////      dy: 137,
+////      dx: 102
+////    }
+//   ];
+
+
+
+//
+//	var k = {
+//		note: {
+//			label: "Basic settings with subject position(x,y) and a note offset(dx, dy)",
+//			title: "d3.annotationLabel"
+//		},
+//		x:M.leafletMap.latLngToLayerPoint(new L.LatLng(0, 0)).x,
+//		y:M.leafletMap.latLngToLayerPoint(new L.LatLng(0, 0)).y,
+//  };
+//
+//	k.dy = k.y + 10;
+//	k.dx = k.x + 10;
+//
+//	dbg&&console.log('k annotation', k);
+//
+////      dx:M.leafletMap.latLngToLayerPoint(new L.LatLng(3, 102)).x,
+////      dy:M.leafletMap.latLngToLayerPoint(new L.LatLng(3, 102)).y,
+////      x: 50,
+////      y: 150,
+////      dy: 137,
+////      dx: 162
+////    },
+//
+//
+//  var makeAnnotations = d3.annotation()
+//    .type(d3.annotationLabel)
+//    .annotations([k]);
+//
+////  d3.select("svg")
+//  d3.select('.markers-container')
+//    .append("g")
+//    	.attr("class", "annotation-group")
+//    	.call(makeAnnotations)
 
 
 }

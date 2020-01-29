@@ -111,39 +111,43 @@ function prep(cb)	{
 	//----------
 	// BNO
 	//----------
-	M.data.bno = parse_bno(M.raw.bno);
+	if (M.raw.bno)	{
 
-	M.data.bno.forEach(d=>{
+		M.data.bno = parse_bno(M.raw.bno);
 
-	});
+		M.data.bno.forEach(d=>{
 
+		});
+
+	}
 
 	//----------
 	// JHU
 	//----------
-	M.data.jhu = [];
-	M.raw.jhu
-		.filter(d=>!!(d['Province/State']||d['Country/Region']))
-		.forEach(d=>{
+	if (M.raw.jhu)	{
+		M.data.jhu = [];
+		M.raw.jhu
+			.filter(d=>!!(d['Province/State']||d['Country/Region']))
+			.forEach(d=>{
 
-			var k = {
-				country		: d['Country/Region'],
-				region		: d['Province/State'],
-				confirmed	: +d['Confirmed']||null,
-				suspected	: +d['Suspected']||null,
-				recovered	: +d['Recovered']||null,
-				deaths		: +d['Deaths']||null,
+				var k = {
+					country		: d['Country/Region'],
+					region		: d['Province/State'],
+					confirmed	: +d['Confirmed']||null,
+					suspected	: +d['Suspected']||null,
+					recovered	: +d['Recovered']||null,
+					deaths		: +d['Deaths']||null,
 
-				// : "1/25/2020 12:00 AM"
-				date_str 	: d['Last Update'],
-				date			: Date.parse( d['Last Update'] ),
-				date_tz		: null,
-			};
+					// : "1/25/2020 12:00 AM"
+					date_str 	: d['Last Update'],
+					date			: Date.parse( d['Last Update'] ),
+					date_tz		: null,
+				};
 
-			M.data.jhu.push(k);
+				M.data.jhu.push(k);
 
-		});
-
+			});
+	}
 
 	//----------
 	// martinedoesgis
@@ -191,85 +195,88 @@ function prep(cb)	{
 }
 	*/
 
-	var list = [];
-	M.raw.martine
-		.filter(d=>!!d.country)
-		.forEach(d=>{
+	if (M.raw.martine)	{
+		var list = [];
+		M.raw.martine
+			.filter(d=>!!d.country)
+			.forEach(d=>{
 
-			var k = {
-				country			: d['country'] 			|| null,
-				location_id	: d['location_id'] 	|| null,
-				location		: d['location'] 		|| null,
-				latitude		: +d['latitude'] 		|| null,
-				longitude		: +d['longitude'] 	|| null,
-			};
+				var k = {
+					country			: d['country'] 			|| null,
+					location_id	: d['location_id'] 	|| null,
+					location		: d['location'] 		|| null,
+					latitude		: +d['latitude'] 		|| null,
+					longitude		: +d['longitude'] 	|| null,
+				};
 
 
-			// -------------------   
-			// by dates
-			// -------------------  
+				// -------------------   
+				// by dates
+				// -------------------  
 
-			var dates = [];
+				var dates = [];
 
-			d3.entries(d).forEach(j=>{
-				var p = j.key.match(/^\s*(\w+?)_(\d+)-(\d+)-(\d+)\s*$/);
-				if (p && p.length==5)	{
+				d3.entries(d).forEach(j=>{
+					var p = j.key.match(/^\s*(\w+?)_(\d+)-(\d+)-(\d+)\s*$/);
+					if (p && p.length==5)	{
 
-					var l={};
-					l.date_str = [p[4],p[3],p[2]].join('-');
+						var l={};
+						l.date_str = [p[4],p[3],p[2]].join('-');
 
-					if (p[1].match(/confirm/i))	{
-						l.confirmed = +j.value;
-						dates.push(l);
-					}else if (p[1].match(/death/i))	{
-						l.deaths = +j.value;
-						dates.push(l);
-					}else	{
-						l[p[1]] = +j.value;
-						dates.push(l);
-					}
-				}
-			});
-
-			d3.nest().key(d=>d.date_str).entries(dates)
-				.forEach(j=>{
-
-					var l={...k};
-					l.date_str = j.key;
-					l.date = Date.parse(l.date_str);
-					l.date_tz = null;
-
-					j.values.forEach(t=>{
-						for (var i in t)	{
-							if (i!='date_str')	{
-								l[i] = t[i];
-							}
+						if (p[1].match(/confirm/i))	{
+							l.confirmed = +j.value;
+							dates.push(l);
+						}else if (p[1].match(/death/i))	{
+							l.deaths = +j.value;
+							dates.push(l);
+						}else	{
+							l[p[1]] = +j.value;
+							dates.push(l);
 						}
-					});
-
-					list.push(l);
-
+					}
 				});
 
+				d3.nest().key(d=>d.date_str).entries(dates)
+					.forEach(j=>{
 
+						var l={...k};
+						l.date_str = j.key;
+						l.date = Date.parse(l.date_str);
+						l.date_tz = null;
+
+						j.values.forEach(t=>{
+							for (var i in t)	{
+								if (i!='date_str')	{
+									l[i] = t[i];
+								}
+							}
+						});
+
+						list.push(l);
+
+					});
+
+
+			});
+
+		// check for missing fields
+
+		'location_id,location,country,date_str'.split(',').forEach(k=>{
+			dbg&&console.log( 'missing fields for '+k, list.filter(d=>!d[k]||d[k]=='') );
 		});
 
-	// check for missing fields
+	//	var nest = d3.nest().key(d=>[d.country,d.location_id,d.location,d.date_str].join('-'))
+	//		.entries(list);
 
-	'location_id,location,country,date_str'.split(',').forEach(k=>{
-		dbg&&console.log( 'missing fields for '+k, list.filter(d=>!d[k]||d[k]=='') );
-	});
+	//	nest.forEach(d=>{
+	//		d.m = d3.merge(d.values);
+	//	});
 
-//	var nest = d3.nest().key(d=>[d.country,d.location_id,d.location,d.date_str].join('-'))
-//		.entries(list);
+	//	dbg&&console.log('nest', nest);
 
-//	nest.forEach(d=>{
-//		d.m = d3.merge(d.values);
-//	});
+		M.data.martine = list;
 
-//	dbg&&console.log('nest', nest);
-
-	M.data.martine = list;
+	}
 
 	dbg&&console.log('M.data',{...M.data});
 

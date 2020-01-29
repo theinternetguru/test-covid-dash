@@ -32,14 +32,6 @@ function mapInit(sel, cb)	{
 			dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
 	if (dbg){ console.group(f); console.time(f) };
 
-//
-//	var width = +sel.style('width').replace('px',''),
-//			navHeight = +d3.select('nav').style('height').replace('px',''),
-//			summaryHeight = +d3.select('.content-summary').style('height').replace('px',''),
-//			timelineHeight = +d3.select('.content-timeline').style('height').replace('px',''),
-//			//height = d3.max([200,innerHeight - navHeight - summaryHeight - timelineHeight]);
-//			height = innerHeight - navHeight - summaryHeight - timelineHeight;
-
 	var width = +sel.style('width').replace('px',''),
 			height = +d3.select('.content-map').style('height').replace(/\D+$/,'');
 
@@ -55,13 +47,6 @@ function mapInit(sel, cb)	{
 
 				var width = +sel.style('width').replace('px',''),
 						height = +d3.select('.content-map').style('height').replace(/\D+$/,'');
-
-//				var width = +sel.style('width').replace('px',''),
-//						navHeight = +d3.select('nav').style('height').replace('px',''),
-//						summaryHeight = +d3.select('.content-summary').style('height').replace('px',''),
-//						timelineHeight = +d3.select('.content-timeline').style('height').replace('px',''),
-//						//height = d3.max([200,innerHeight - navHeight - summaryHeight - timelineHeight]);
-//						height = innerHeight - navHeight - summaryHeight - timelineHeight;
 
 				d3.select('#map')
 					.styles({
@@ -144,6 +129,7 @@ function mapInit(sel, cb)	{
 
 	dbg&&console.log('getBounds()', M.leafletMap.getBounds());
 
+	//M.leafletMap.setMaxBounds(M.leafletMap.getBounds());
 	//M.leafletMap.setMaxBounds(M.leafletMap.getBounds());
 
 
@@ -307,24 +293,36 @@ function mapInit(sel, cb)	{
 //==================================================================
 //
 //==================================================================
-function mapBound()	{
+function mapBound(data)	{
+	var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
+			dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+	if (dbg){ console.group(f); console.time(f) };
 
-	if (innerWidth > 640)	{
+//	if (innerWidth > 640)	{
 
-		var lat = d3.extent(M.data.martine,d=>d.latitude),
-				lng = d3.extent(M.data.martine,d=>d.longitude);
+		dbg&&console.log('data', data);
 
-		//M.leafletMap.setMaxBounds(M.leafletMap.getBounds());
-		var bounds = [
-		    [lat[0], lng[0]],
-		    [lat[1], lng[1]]
-		];
+		var lat = d3.extent(data,d=>d.latitude),
+				lng = d3.extent(data,d=>d.longitude);
 
-		dbg&&console.log('bounds', bounds);
-		M.leafletMap.fitBounds(bounds);
+		dbg&&console.log('lat', JSON.stringify(lat,null,2) );
 
-	}
+		if (lat[0]&&lng[0])	{
 
+			//M.leafletMap.setMaxBounds(M.leafletMap.getBounds());
+			var bounds = [
+			    [lat[0], lng[0]],
+			    [lat[1], lng[1]]
+			];
+
+			dbg&&console.log('bounds', JSON.stringify(bounds,null,2) );
+			M.leafletMap.fitBounds(bounds);
+
+		}
+
+//	}
+
+	fEnd();
 }
 
 
