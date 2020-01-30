@@ -44,6 +44,32 @@ function loadCache(cb)	{
 			// use latest case_tracking
 			//M.data.martine
 
+			d3.select('.select-dataset')
+				.on('input',function(d){
+					var p = d3.select(this).property('value');
+					M.current.data = p;
+					render(p);
+
+				})
+				.selectAll('option').data([
+					{
+						key:'martine',
+						label:'Martine',
+						last_update:moment(d3.max(M.data.martine,d=>d.date_str)).format('DD/MM/YYYY')
+					},
+					{
+						key:'case_tracking',
+						label:'Case Tracking',
+						last_update:moment(M.meta['case_tracking'].updated).format('DD/MM/YYYY hh:mm A'),
+					},
+				])
+					.enter()
+					.append('option')
+						.attr('value',d=>d.key)
+						.attr('selected',d=>M.current.data && M.current.data==d.key)
+						.html(d=>d.label+' ('+d.last_update+')');
+
+
 		}
 
 		fEnd();

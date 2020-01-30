@@ -9,7 +9,9 @@ M.meta={};
 M.requireds='config,events,load,map,render'.split(/\s*,\s*/).concat([
 	'bno',
 	'summary',
+
 	'timeline',
+	'timeline_components',
 
 	'parser',
 	'parser_martine',
@@ -220,6 +222,57 @@ function layoutBoostrap(sel, cb)	{
 						});
 
 
+			//---------------------------
+			// date-info
+			//---------------------------
+			sel.append('div').attr('class','date-info')
+				.styles({
+					//background:'#000',
+					//color:'#fff',
+					position:'absolute',
+					bottom: ((innerHeight * .2)-10) +'px',
+					left: '0px',
+					//padding:'12px',
+					width:'100px',
+				})
+				.append('svg')
+					.attrs({
+						viewBox:'0 0 100 50',
+					})
+					.call(sel=>{
+
+						sel.append('rect')
+							.attrs({
+								width:100,
+								height:40,
+								fill:chroma(M.theme.colors[0]).darken().hex(),
+							});
+
+						sel.append('path')
+							.attrs({
+								fill:chroma(M.theme.colors[0]).darken().hex(),
+								d:'M25 40 L75 40 L50 50 L25 40z'
+							});
+
+
+						sel.append('text')
+							.attrs({
+								class:'date-info-text',
+								x:'50%',
+								y:'50%',
+								fill:'#fff',
+								'text-anchor':'middle',
+								'font-weight':700,
+								'font-size':'12px',
+							})
+							;
+					});
+
+					;
+
+
+
+
 		});
 
 
@@ -239,6 +292,20 @@ function layoutBoostrap(sel, cb)	{
 		})
 		.call(sel=>{
 
+
+			sel
+				.append('div')
+					.styles({
+						flex:'1 1 auto',
+						'text-align':'left',
+						color:'crimson',
+						'text-shadow': '#000 1px 0 10px',
+						'font-weight':700,
+						padding:'0 0 0 24px',
+					})
+					.html('Novel Coronavirus (2019-nCoV)');
+
+
 			sel
 				.append('div')
 					.attr('class','today-date')
@@ -248,23 +315,12 @@ function layoutBoostrap(sel, cb)	{
 						color:'#fff',
 						'text-shadow': '#000 1px 0 10px',
 						'font-weight':700,
-						padding:'0 0 0 24px',
+						padding:'0 24px 0 24px',
 					})
 //					.html('Today: '+moment().format('DD MMM YYYY'));
-					.html('&nbsp;');
-
-			sel
-				.append('div')
-					.styles({
-						flex:'1 1 auto',
-						'text-align':'center',
-						color:'crimson',
-						'text-shadow': '#000 1px 0 10px',
-						'font-weight':700,
-						//padding:'0 0 0 24px',
-					})
-					.html('Novel Coronavirus (2019-nCoV)');
-
+//					.html('&nbsp;');
+					.append('select')
+						.attr('class','form-control form-control-sm select-dataset');
 
 			sel
 				.append('div')

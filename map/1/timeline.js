@@ -14,13 +14,14 @@ function timeline(data, date, cb)	{
 		.call(sel=>{
 
 
-			sel.call(timelineCases, data, date);
+			sel.call(timelineCases, data, date, fEnd);
+
 
 
 		});
 
 
-	fEnd();
+//	fEnd();
 
 }
 
@@ -50,6 +51,9 @@ function timelineCases(sel, data, date, cb)	{
 
 
 	var nest = d3.nest().key(d=>d.date_str).entries(data);
+
+	dbg&&console.log('nest', nest);
+
 	var minDataDate = d3.min(data, d=>d.date_str);
 	var maxDataDate = d3.max(data, d=>d.date_str);
 
@@ -97,7 +101,7 @@ function timelineCases(sel, data, date, cb)	{
 
 	});
 
-	dbg&&console.log('dates', dates);
+	//dbg&&console.log('dates', dates);
 
 
 //
@@ -121,7 +125,7 @@ function timelineCases(sel, data, date, cb)	{
 
 
 	var bw = x( moment(minDate).add(1,'days') ) - x( moment(minDate) );
-	dbg&&console.log('bw', bw);
+	//dbg&&console.log('bw', bw);
 
 
 //
@@ -153,7 +157,8 @@ function timelineCases(sel, data, date, cb)	{
 	// layout
 	//-----------------------------------
 
-	sel.call(timelineCases_layout, w, h, bh, dates, minDate, maxDate, minDataDate, maxDataDate);
+	sel.call(timelineCases_layout);
+
 
 
 	fEnd();
@@ -168,10 +173,10 @@ function timelineCases(sel, data, date, cb)	{
 	// timelineCases_layout
 	//-----------------------------------
 
-	function timelineCases_layout(sel)	{
+	function timelineCases_layout(sel, cb)	{
 
 		var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
-				dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+				dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
 		if (dbg){ console.group(f); console.time(f) };
 
 
@@ -282,58 +287,10 @@ function timelineCases(sel, data, date, cb)	{
 					.attr('pointer-events','none')
 					.call(sel=>{
 
-
 						//--------------------------
 						// axes
 						//--------------------------
-						sel.append('g').attr('class','axes')
-							.call(sel=>{
-
-								sel.append('line')
-									.attrs({
-										class:'y-axis',
-										x1:0,
-										y1:0,
-										x2:0,
-										y2:bh,
-										stroke:'#ccc',
-										transform:'translate(0,0)',
-									});
-
-								sel.append('line')
-									.attrs({
-										class:'x-axis',
-										x1:0,
-										y1:bh,
-										x2:w,
-										y2:bh,
-										stroke:'#666',
-									});
-
-
-								sel.append('g')
-									.attrs({
-										class:'x-axis-label',
-									})
-									.selectAll('text').data(dates.filter(d=>moment(d.key).date()%7==1),d=>d.key)
-										.enter()
-											.append('text')
-												.attrs({
-													x:d=>x(moment(d.key)),
-													y:bh+12,
-													fill:'#999',
-													'font-size':'10px',
-												})
-												.text(d=>{
-													var t = moment(d.key);
-													return t.date()==1
-														? t.format('MMM')
-														: t.format('D')
-												});
-
-
-							});
-
+						sel.call(timeline_axes,bw,bh,w,dates,x,y);
 
 						//--------------------------
 						// x-ticks
@@ -344,173 +301,28 @@ function timelineCases(sel, data, date, cb)	{
 							.call(sel=>{
 
 								//--------------------------
-								// x-ticks-confirmed
+								// x-ticks-*
 								//--------------------------
-								sel.append('g').attr('class','x-tick-confirmed')
-									.attr('transform','translate(0,'+bh+')') // animate this along y-axis
-									.attr('opacity',1)
-									.call(sel=>{
+								sel.call(timeline_xTicksDeaths,bw,bh);
+								sel.call(timeline_xTicksConfirmed,bw,bh);
 
-										sel.append('line')
-											.attrs({
-												class:'x-tick-confirmed-line',
-												x1:0,
-												y1:0,
-												x2:bw*1.5,
-												y2:0,
-												stroke:'#ccc',
-											});
-
-										sel.append('text')
-											.attrs({
-												class:'x-tick-confirmed-text',
-												x:bw*1.5,
-												y:7,
-												'text-anchor':'begin',
-												transform:'translate(0,0)',
-											})
-											.call(sel=>{
-
-												sel.append('tspan')
-													.attrs({
-														class:'x-tick-confirmed-text-value-bg',
-														x:bw*1.5,
-														//dy:'1em',
-														fill:'#fff',
-														'font-weight':700,
-														stroke:'#000',
-														'stroke-width':5,
-													});
-
-												sel.append('tspan')
-													.attrs({
-														class:'x-tick-confirmed-text-value',
-														x:bw*1.5,
-														//dy:'1em',
-														fill:'#fff',
-														'font-weight':700,
-													});
-
-
-												sel.append('tspan')
-													.attrs({
-														class:'x-tick-confirmed-text-label',
-														x:bw*1.5,
-														y:16,
-														fill:'#ff0',
-														'font-weight':600,
-														'font-size':'8px',
-														stroke:'#000',
-														'stroke-width':5,
-													})
-													.text('CONFIRMED');
-
-												sel.append('tspan')
-													.attrs({
-														class:'x-tick-confirmed-text-label',
-														x:bw*1.5,
-														y:16,
-														fill:'magenta',
-														'font-weight':600,
-														'font-size':'8px',
-													})
-													.text('CONFIRMED');
-
-
-											});
-
-									});
-
-								//--------------------------
-								// x-ticks-deaths
-								//--------------------------
-
-								sel.append('g').attr('class','x-tick-deaths')
-									.attr('transform','translate(0,'+bh+')') // animate this along x-axis
-									.attr('opacity',1)
-									.call(sel=>{
-
-										sel.append('line')
-											.attrs({
-												class:'x-tick-confirmed-line',
-												x1:0,
-												y1:0,
-												x2:bw*1.5,
-												y2:0,
-												stroke:'#ccc',
-											});
-
-										sel.append('text')
-											.attrs({
-												class:'x-tick-deaths-text',
-												x:bw*1.5,
-												y:7,
-												'text-anchor':'begin',
-											})
-											.call(sel=>{
-
-
-												sel.append('tspan')
-													.attrs({
-														class:'x-tick-deaths-text-value-bg',
-														x:bw*1.5,
-														//dy:'-.5em',
-														fill:'#fff',
-														'font-weight':700,
-														stroke:'#000',
-														'stroke-width':5,
-													});
-
-												sel.append('tspan')
-													.attrs({
-														class:'x-tick-deaths-text-value',
-														x:bw*1.5,
-														//dy:'-.5em',
-														fill:'#fff',
-														'font-weight':700,
-													});
-
-												sel.append('tspan')
-													.attrs({
-														class:'x-tick-deaths-text-label',
-														x:bw*1.5,
-														y:16,
-														//dy:'1em',
-														fill:'crimson',
-														'font-weight':600,
-														'font-size':'8px',
-														stroke:'#000',
-														'stroke-width':5,
-													})
-													.text('DEATHS');
-
-												sel.append('tspan')
-													.attrs({
-														class:'x-tick-deaths-text-label',
-														x:bw*1.5,
-														y:16,
-														//dy:'1em',
-														fill:'crimson',
-														'font-weight':600,
-														'font-size':'8px',
-													})
-													.text('DEATHS');
-
-											});
-
-									});
+								//sel.call(timeline_xTicksDeaths,bw,bh);
 
 							});
 
 					});
 
 
-				sel.call(timelineCases_animateTicks, maxDataDate);
+				//sel.call(timelineCases_animateTicks, maxDataDate);
 
 			})
 
 		fEnd();
 	}
+
+
+
+
 
 	//-----------------------------------
 	// animateTicks
@@ -518,10 +330,15 @@ function timelineCases(sel, data, date, cb)	{
 	function timelineCases_animateTicks(sel, dt)	{
 
 		var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
-				dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+				dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
 		if (dbg){ console.group(f); console.time(f) };
 
-//		dbg&&console.log('dt',dt);
+
+
+
+
+
+		dbg&&console.log('dt',dt);
 //		dbg&&console.log('datum',dates.find(d=>d.key==dt));
 
 		sel.select('.decor')
@@ -591,7 +408,12 @@ function timelineCases(sel, data, date, cb)	{
 
 			});
 
-		fEnd();
+
+
+
+		timeline_annotations(dt, fEnd);
+
+
 	}
 
 
@@ -599,26 +421,6 @@ function timelineCases(sel, data, date, cb)	{
 
 
 
-
-
-
-	//-----------------------------------
-	// annotations
-	//-----------------------------------
-
-	function timeline_annotations(sel)	{
-
-		var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
-				dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
-		if (dbg){ console.group(f); console.time(f) };
-
-
-
-
-
-
-		fEnd();
-	}
 
 
 
@@ -805,8 +607,6 @@ function timelineCases(sel, data, date, cb)	{
 
 
 
-
-
 		var b = sel.selectAll('.bar').data(d=>d,d=>d.key);
 		b.exit().remove();
 		b.enter()
@@ -957,6 +757,11 @@ function timelineCases(sel, data, date, cb)	{
 
 				});
 
+
+		d3.select('.svg-timeline')
+			.call(timelineCases_animateTicks, date);
+
+		timeline_annotations(date);
 
 
 
