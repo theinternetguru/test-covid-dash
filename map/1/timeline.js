@@ -115,7 +115,9 @@ function timelineCases(sel, data, date, cb)	{
 	var x = d3.scaleTime().domain([ moment(minDate),moment(maxDate) ]).range([0,w]);
 
 	var maxConfirmed = d3.max(dates, d=>d.confirmed);
-	var y = d3.scaleLinear().domain([0,maxConfirmed]).range([0,bh-10]);
+
+//	var y = d3.scaleLinear().domain([0,maxConfirmed]).range([0,bh-10]);
+	var y = d3.scaleSqrt().domain([0,maxConfirmed]).range([0,bh]);
 
 
 	var bw = x( moment(minDate).add(1,'days') ) - x( moment(minDate) );
