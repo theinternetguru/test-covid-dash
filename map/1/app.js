@@ -4,11 +4,19 @@ M.nest={};
 M.hash={};
 M.timer = {};
 M.filters={};
+M.meta={};
 
 M.requireds='config,events,load,map,render'.split(/\s*,\s*/).concat([
 	'bno',
 	'summary',
 	'timeline',
+
+	'parser',
+	'parser_martine',
+	'parser_case_tracking',
+
+	'worksheets',
+
 ]);
 
 
@@ -16,6 +24,9 @@ M.current.playSpeed = 1500;
 //M.current.loop = !!M.current.loop;
 M.current.loop = true;
 M.current.idle = moment();
+
+
+var db = {};
 
 
 //#############################################################################
@@ -67,7 +78,8 @@ requirejs(required, function() {
 
 var comma = d3.format(','),
 		f1 = d3.format(',.1f'),
-		f2 = d3.format(',.2f');
+		f2 = d3.format(',.2f'),
+		z2 = d3.format('02d');
 
 //moment.locale('ms');
 
@@ -106,7 +118,8 @@ function main(cb)	{
 
 function checkIdle() {
 
-	d3.select('.today-date').html('Today: '+moment().format('DD MMM YYYY'));
+//	d3.select('.today-date')
+//		.html('Today: '+moment().format('DD MMM YYYY'));
 
 	if (!M.current.play)	{
 		if (moment().diff(M.current.idle,'minutes') > 1)	{
@@ -237,7 +250,8 @@ function layoutBoostrap(sel, cb)	{
 						'font-weight':700,
 						padding:'0 0 0 24px',
 					})
-					.html('Today: '+moment().format('DD MMM YYYY'));
+//					.html('Today: '+moment().format('DD MMM YYYY'));
+					.html('&nbsp;');
 
 			sel
 				.append('div')

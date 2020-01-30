@@ -10,9 +10,7 @@ function render(cb)	{
 
 
 	if (!M.current.data) M.current.data = 'martine';
-
-
-	var data = M.data[M.current.data];
+	var data = M.data[M.current.data]||[];
 
 	renderMap(data, null, fEnd);
 
@@ -123,7 +121,7 @@ function renderMapRedraw(data, date, cb)	{
 	var maxConfirmed = d3.max(data,d=>d.confirmed);
 	var maxDeaths = d3.max(data,d=>d.deaths);
 
-	var scaleRadius = d3.scaleSqrt().domain([0, d3.max([maxConfirmed,maxDeaths]) ]).range([2,20]);
+	var scaleRadius = d3.scaleSqrt().domain([0, d3.max([maxConfirmed,maxDeaths]) ]).range([2,30]);
 //	var scaleColorConfirmed = d3.scaleSqrt().domain([0, d3.max([maxConfirmed,maxDeaths]) ]).range(['purple','purple']);
 	var scaleColorConfirmed = d3.scaleSqrt().domain([0, d3.max([maxConfirmed,maxDeaths]) ]).range(['purple','purple']);
 	var scaleColorDeaths = d3.scaleSqrt().domain([0, d3.max([maxConfirmed,maxDeaths]) ]).range(['crimson','crimson']);

@@ -5,16 +5,56 @@
 //==================================================================
 function load(cb)	{
 	var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
-			dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+			dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
 	if (dbg){ console.group(f); console.time(f) };
 
-	loadCached(fEnd);
+	loadCache(fEnd);
+//	loadLive(fEnd);
 
-   var timer = d3.timer(function(t) {
-      console.log('timer', t);
-//      if (t > 1000*60)
-      timer.stop();
-   }, 1000 * 10);
+//
+//   var timer = d3.timer(function(t) {
+//      console.log('timer', t);
+////      if (t > 1000*60)
+//      timer.stop();
+//   }, 1000 * 10);
+
+
+
+//	window.setTimeout(function(){
+//		worksheets();
+//	},1000);
+
+}
+
+
+
+//==================================================================
+//
+//==================================================================
+function loadCache(cb)	{
+	var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
+			dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+	if (dbg){ console.group(f); console.time(f) };
+
+
+	function consolidate()	{
+
+		if (M.data['martine'] && M.data['case_tracking'])	{
+
+			// use latest case_tracking
+			//M.data.martine
+
+		}
+
+		fEnd();
+	}
+
+	load_countries();
+	load_airports();
+	load_martine(function(){
+		load_case_tracking(consolidate);
+	});
+
 
 }
 
@@ -24,7 +64,7 @@ function load(cb)	{
 //==================================================================
 //
 //==================================================================
-function loadCached(cb)	{
+function loadLive(cb)	{
 
 	var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
 			dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
@@ -100,34 +140,93 @@ function loadCached(cb)	{
 function prep(cb)	{
 
 	var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
-			dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+			dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
 	if (dbg){ console.group(f); console.time(f) };
-
 
 
 	//----------
 	// countries
 	//----------
+//	if (!M.data.countries)	{
+//		M.data.countries = M.raw.countries.filter(d=>d.name&&d.name!='');
+//		M.data.countries.forEach(d=>{
+//
+//												d._id = d.id.toString();
+//												d.latitude = +d.latitude;
+//												d.longitude = +d.longitude;
+//
+//												//db.countries.put(d,function(err,res){
+//													//if (err) console.warn('err',err);
+//													//dbg&&console.log('res',res);
+//												//});
+//
+//												db.countries.put(d);
+//
+//											});
+//	}
 
-	M.data.countries = M.raw.countries.filter(d=>d.name&&d.name!='');
-	M.data.countries.forEach(d=>{
-											d.latitude = +d.latitude;
-											d.longitude = +d.longitude;
-										});
+	//----------
+	// airports
+	//----------
+//	M.raw.airports.forEach(d=>{
+//		for (var i in d)	{
+//			if (typeof d[i]=='string' && (d[i]=='NULL'||d[i]=='N/A'||d[i]=='')) d[i]=null;
+//		}
+//	});
+//
+//	M.data.airports = M.raw.airports
+//											.filter(d=>d.name&&d.name!=''&&d.iata&&d.icao)
+//											.filter(d=>d.name.match(/international/i));
+//
+//	M.data.airports.forEach(d=>{
+//											d.latitude = +d.latitude;
+//											d.longitude = +d.longitude;
+//											d.altitude = +d.altitude;
+//											d.timezone = +d.timezone;
+//										});
+//
+//	dbg&&console.log('airports type', d3.nest().key(d=>d.type).entries(M.data.airports));
+//	dbg&&console.log('airports country', d3.nest().key(d=>d.country).entries(M.data.airports));
+//	dbg&&console.log('airports malaysia', M.data.airports.filter(d=>d.country.toLowerCase()=='malaysia'));
+//
+
+
+
+	//----------
+	// others
+	//----------
+
+	d3.entries(M.raw).forEach(d=>{
+
+		//ignore
+		if (d.key=='countries')	{
+
+		}else if (d.key=='martine')	{
+
+			parser_martine(d.key, d.value);
+
+
+		}else if (d.key=='case_tracking')	{
+
+			parser_case_tracking(d.key, d.value);
+		}
+
+
+	});
 
 
 	//----------
 	// BNO
 	//----------
-	if (M.raw.bno)	{
-
-		M.data.bno = parse_bno(M.raw.bno);
-
-		M.data.bno.forEach(d=>{
-
-		});
-
-	}
+//	if (M.raw.bno)	{
+//
+//		M.data.bno = parse_bno(M.raw.bno);
+//
+//		M.data.bno.forEach(d=>{
+//
+//		});
+//
+//	}
 
 	//----------
 	// JHU
@@ -160,131 +259,10 @@ function prep(cb)	{
 	//----------
 	// martinedoesgis
 	//----------
-	/*
-
-{
-  "country": "China",
-  "location_id": "911",
-  "location": "Hubei",
-  "latitude": 30.657,
-  "longitude": 114.093,
-  "confirmedcases_10-01-2020": "44",
-  "deaths_10-01-2020": "1",
-  "confirmedcases_11-01-2020": "44",
-  "deaths_11-01-2020": "1",
-  "confirmedcases_12-01-2020": "44",
-  "deaths_12-01-2020": "1",
-  "confirmedcases_13-01-2020": "44",
-  "deaths_13-01-2020": "1",
-  "confirmedcases_14-01-2020": "44",
-  "deaths_14-01-2020": "1",
-  "confirmedcases_15-01-2020": "44",
-  "deaths_15-01-2020": "2",
-  "confirmedcases_16-01-2020": "45",
-  "deaths_16-01-2020": "2",
-  "confirmedcases_17-01-2020": "62",
-  "deaths_17-01-2020": "2",
-  "confirmedcases_18-01-2020": "121",
-  "deaths_18-01-2020": "2",
-  "confirmedcases_19-01-2020": "198",
-  "deaths_19-01-2020": "3",
-  "confirmedcases_20-01-2020": "270",
-  "deaths_20-01-2020": "3",
-  "confirmedcases_21-01-2020": "375",
-  "deaths_21-01-2020": "9",
-  "confirmedcases_22-01-2020": "444",
-  "deaths_22-01-2020": "17",
-  "confirmedcases_23-01-2020": "549",
-  "deaths_23-01-2020": "24",
-  "confirmedcases_24-01-2020": "729",
-  "deaths_24-01-2020": "39",
-  "confirmedcases_25-01-2020": "730",
-  "deaths_25-01-2020": "39"
-}
-	*/
-
-	if (M.raw.martine)	{
-		var list = [];
-		M.raw.martine
-			.filter(d=>!!d.country)
-			.forEach(d=>{
-
-				var k = {
-					country			: d['country'] 			|| null,
-					location_id	: d['location_id'] 	|| null,
-					location		: d['location'] 		|| null,
-					latitude		: +d['latitude'] 		|| null,
-					longitude		: +d['longitude'] 	|| null,
-				};
 
 
-				// -------------------   
-				// by dates
-				// -------------------  
-
-				var dates = [];
-
-				d3.entries(d).forEach(j=>{
-					var p = j.key.match(/^\s*(\w+?)_(\d+)-(\d+)-(\d+)\s*$/);
-					if (p && p.length==5)	{
-
-						var l={};
-						l.date_str = [p[4],p[3],p[2]].join('-');
-
-						if (p[1].match(/confirm/i))	{
-							l.confirmed = +j.value;
-							dates.push(l);
-						}else if (p[1].match(/death/i))	{
-							l.deaths = +j.value;
-							dates.push(l);
-						}else	{
-							l[p[1]] = +j.value;
-							dates.push(l);
-						}
-					}
-				});
-
-				d3.nest().key(d=>d.date_str).entries(dates)
-					.forEach(j=>{
-
-						var l={...k};
-						l.date_str = j.key;
-						l.date = Date.parse(l.date_str);
-						l.date_tz = null;
-
-						j.values.forEach(t=>{
-							for (var i in t)	{
-								if (i!='date_str')	{
-									l[i] = t[i];
-								}
-							}
-						});
-
-						list.push(l);
-
-					});
 
 
-			});
-
-		// check for missing fields
-
-		'location_id,location,country,date_str'.split(',').forEach(k=>{
-			dbg&&console.log( 'missing fields for '+k, list.filter(d=>!d[k]||d[k]=='') );
-		});
-
-	//	var nest = d3.nest().key(d=>[d.country,d.location_id,d.location,d.date_str].join('-'))
-	//		.entries(list);
-
-	//	nest.forEach(d=>{
-	//		d.m = d3.merge(d.values);
-	//	});
-
-	//	dbg&&console.log('nest', nest);
-
-		M.data.martine = list;
-
-	}
 
 	dbg&&console.log('M.data',{...M.data});
 
