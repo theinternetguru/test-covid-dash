@@ -30,9 +30,20 @@ M.config = {
 //			{ key:'martine', 				type:'csv', 	url: M.datapath+'/martinedoesgis/martinedoesgis-20200125.csv'},
 
 
+			//https://raw.githubusercontent.com/nyem69/coronavirus_data/master/data/bno.tsv
+			{
+				key:'bno',
+				description:'daily by region/country; updated multiple times daily',
+				label:'BNO',
+				site:null,
+				spreadsheet:'https://docs.google.com/spreadsheets/d/1qbE-UuJYw5V4FkyMZ-LplvUQZlut4oa5Zl3lrSmN_mk/htmlview?utm_source=share&utm_medium=ios_app&utm_name=iossmf#',
+				url:'https://docs.google.com/spreadsheets/d/1qbE-UuJYw5V4FkyMZ-LplvUQZlut4oa5Zl3lrSmN_mk/gviz/tq?tqx=out:csv&sheet=international cases',
+				type:'csv',
+			},
+
 			{
 				key:'case_tracking',
-				description:'latest statistics by country; updated mulutiple times daily',
+				description:'latest statistics by country; updated multiple times daily',
 				label:'Coronavirus - case tracking',
 				site:null,
 				spreadsheet:'https://docs.google.com/spreadsheets/d/1qbE-UuJYw5V4FkyMZ-LplvUQZlut4oa5Zl3lrSmN_mk/htmlview?utm_source=share&utm_medium=ios_app&utm_name=iossmf#',
