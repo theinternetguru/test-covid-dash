@@ -4,7 +4,7 @@
 // data
 //-----------------
 
-M.datapath = document.location.host.match(/github|coronavirus\.analitik\.my/i)
+M.datapath = document.location.host.match(/github|coronavirus\.analitik\.my|flu\.analitik\.my/i)
 							? 'https://raw.githubusercontent.com/nyem69/coronavirus_dashboard/master/_data'
 							: (typeof _v=='number'?'../':'')+'_data';
 
