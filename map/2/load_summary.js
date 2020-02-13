@@ -14,30 +14,31 @@ function loadSummary(cb)	{
 	//----------
 	var key = 'summary';
 
-	M.db[key]= new PouchDB(key);
-  M.db[key].allDocs({include_docs: true}, function(err, doc) {
-		var key = 'summary';
-		//if (err) throw(err);
-  	dbg&&console.log('M.db.'+key, doc.total_rows);
-    if (err || doc.total_rows==0) {
+//	M.db[key]= new PouchDB(key);
+//  M.db[key].allDocs({include_docs: true}, function(err, doc) {
+//		var key = 'summary';
+//		//if (err) throw(err);
+//  	dbg&&console.log('M.db.'+key, doc.total_rows);
+//    if (err || doc.total_rows==0) {
+//
+//    	loadSummary_latest(key,  fEnd);
+//
+//    }else	{
+//
+//			dbg&&console.group('cache');
+//
+//	    M.data[key] = doc.rows.map(d=>d.doc);
+//	    dbg&&console.log('M.data['+key+']',key,M.data[key]);
+//
+//			dbg&&console.groupEnd('cache');
+//
+//			loadSummary_latest(key);
+//			vizSummary_render(fEnd);
+//
+//	  }
+//  });
 
-    	loadSummary_latest(key,  fEnd);
-
-    }else	{
-
-			dbg&&console.group('cache');
-
-	    M.data[key] = doc.rows.map(d=>d.doc);
-	    dbg&&console.log('M.data['+key+']',key,M.data[key]);
-
-			dbg&&console.groupEnd('cache');
-
-			loadSummary_latest(key);
-			vizSummary_render(fEnd);
-
-	  }
-  });
-
+	loadSummary_latest(key,fEnd);
 
 }
 
@@ -72,12 +73,12 @@ function loadSummary_latest(key, cb)	{
 				d.confirmed = +d.confirmed;
 				d.deaths = +d.deaths;
 				d.recovered = +d.recovered;
-				d._id = [d.source,d.updated].join('_').replace(/\s+/g,'_');
 
-				M.db[key].put(d)
-					.catch(function (err) {
-					  //dbg&&console.log(err);
-					});
+//				d._id = [d.source,d.updated].join('_').replace(/\s+/g,'_');
+//				M.db[key].put(d)
+//					.catch(function (err) {
+//					  //dbg&&console.log(err);
+//					});
 
 			});
 

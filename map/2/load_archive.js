@@ -33,29 +33,29 @@ function loadArchive_first41(cb)	{
 	// archive
 	//----------
 	var key = 'first41';
+//
+//	M.db[key]= new PouchDB(key);
+//  M.db[key].allDocs({include_docs: true}, function(err, doc) {
+//
+//		//dbg&&console.log('key', key);
+//  	//dbg&&console.log('M.db.'+key, doc.total_rows);
+//
+//    if (err || doc.total_rows==0) {
+//
+//    	loadLatest(key,  fEnd);
+//
+//    }else	{
+//
+//	    M.data[key] = doc.rows.map(d=>d.doc);
+//	    dbg&&console.log('[db]',key,M.data[key]);
+//
+//
+//	    loadCheck(fEnd);
+//
+//	  }
+//  });
 
-	M.db[key]= new PouchDB(key);
-  M.db[key].allDocs({include_docs: true}, function(err, doc) {
-
-		//dbg&&console.log('key', key);
-  	//dbg&&console.log('M.db.'+key, doc.total_rows);
-
-    if (err || doc.total_rows==0) {
-
-    	loadLatest(key,  fEnd);
-
-    }else	{
-
-	    M.data[key] = doc.rows.map(d=>d.doc);
-	    dbg&&console.log('[db]',key,M.data[key]);
-
-
-	    loadCheck(fEnd);
-
-	  }
-  });
-
-
+	loadLatest(key,  fEnd);
 
 	//-----------------------------
 	// loadLatest
@@ -141,8 +141,8 @@ function loadArchive_first41(cb)	{
 					d.wetmarket_no 	= d.diff_wetmarket_no + dates[i-1].wetmarket_no;
 				}
 
-				d._id = [d.date_str].join('_');
-				M.db[key].put(d).catch(err=>{});
+//				d._id = [d.date_str].join('_');
+//				M.db[key].put(d).catch(err=>{});
 
 			});
 
@@ -193,27 +193,27 @@ function loadArchive_ncovinfo(cb)	{
 	//----------
 	var key = 'ncovinfo';
 
-	M.db[key]= new PouchDB(key);
-  M.db[key].allDocs({include_docs: true}, function(err, doc) {
+//	M.db[key]= new PouchDB(key);
+//  M.db[key].allDocs({include_docs: true}, function(err, doc) {
+//
+//		//dbg&&console.log('key', key);
+//  	//dbg&&console.log('M.db.'+key, doc.total_rows);
+//
+//    if (err || doc.total_rows==0) {
+//
+//    	loadLatest(key,  fEnd);
+//
+//    }else	{
+//
+//	    M.data[key] = doc.rows.map(d=>d.doc);
+//	    dbg&&console.log('[db]',key,M.data[key]);
+//
+//	   	//loadLatest(key,  fEnd);
+//
+//	  }
+//  });
 
-		//dbg&&console.log('key', key);
-  	//dbg&&console.log('M.db.'+key, doc.total_rows);
-
-    if (err || doc.total_rows==0) {
-
-    	loadLatest(key,  fEnd);
-
-    }else	{
-
-	    M.data[key] = doc.rows.map(d=>d.doc);
-	    dbg&&console.log('[db]',key,M.data[key]);
-
-	   	//loadLatest(key,  fEnd);
-
-	  }
-  });
-
-
+	loadLatest(key,  fEnd);
 
 	//-----------------------------
 	// loadLatest
@@ -348,8 +348,8 @@ function loadArchive_ncovinfo(cb)	{
 					d.recovered 		= dates[i-1].recovered;
 				}
 
-				d._id = [d.date_str].join('_');
-				M.db[key].put(d).catch(err=>{});
+//				d._id = [d.date_str].join('_');
+//				M.db[key].put(d).catch(err=>{});
 
 			});
 
