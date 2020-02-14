@@ -78,7 +78,7 @@ function layoutBoostrap(sel, cb)	{
 									margin:0,
 									padding:0,
 									//height:(innerHeight*(.2+.2+.05))+'px',
-									//background:'#000',
+									background:'#3F448E',
 								});
 
 							sel.append('div').attr('class','content-timeline')
@@ -107,6 +107,7 @@ function layoutBoostrap(sel, cb)	{
 					width:'100px',
 					cursor:'grab',
 					display:'none',
+					'z-index':99999,
 				})
 				.append('svg')
 					.attrs({

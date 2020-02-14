@@ -61,6 +61,8 @@ function loadCheck(cb)	{
 		prep(function(){
 
 			vizTimeline('daily', M.nest.daily, fEnd);
+			map();
+
 
 		});
 	}
@@ -210,9 +212,10 @@ function prepAll(cb)	{
 		// custom filter
 		//-----------------------------
 		var filteredData = d.values;
-		if (d.key>'2020-02-10')	{
-			filteredData = filteredData.filter(d=>d.key!='martine');
-		}
+
+//		if (d.key>'2020-02-10')	{
+//			filteredData = filteredData.filter(d=>d.key!='martine');
+//		}
 
 		d.confirmed = d3.max([prev.confirmed||0, 	d3.max(filteredData, d=>d.confirmed) ]);
 		d.deaths 		= d3.max([prev.deaths||0, 		d3.max(filteredData, d=>d.deaths) ]);

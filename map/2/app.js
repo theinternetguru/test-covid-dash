@@ -22,6 +22,7 @@ M.requireds='config,layout,events'.split(/\s*,\s*/).concat([
 	'viz_summary',
 	'viz_timeline',
 
+	'map',
 
 ]);
 
