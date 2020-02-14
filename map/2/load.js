@@ -48,7 +48,7 @@ function loadCache(cb)	{
 function loadCheck(cb)	{
 
 	var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
-	dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+	dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
 	if (dbg){ console.group(f); console.time(f) };
 
 	if (
@@ -73,7 +73,7 @@ function loadCheck(cb)	{
 function prep(cb)	{
 
 	var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
-	dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+	dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
 	if (dbg){ console.group(f); console.time(f) };
 
 	var all=[];
@@ -180,7 +180,7 @@ Anhui,Beijing,Chongqing,Fujian,Gansu,Guangdong,Guangxi,Guizhou,Hainan,Hebei,Heil
 function prepAll(cb)	{
 
 	var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
-	dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+	dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
 	if (dbg){ console.group(f); console.time(f) };
 
 
@@ -206,10 +206,18 @@ function prepAll(cb)	{
 		});
 
 
-		d.confirmed = d3.max([prev.confirmed||0, 	d3.max(d.values, d=>d.confirmed) ]);
-		d.deaths 		= d3.max([prev.deaths||0, 		d3.max(d.values, d=>d.deaths) ]);
-		d.recovered = d3.max([prev.recovered||0, 	d3.max(d.values, d=>d.recovered) ]);
-		d.countries	= d3.max([prev.countries||0,	d3.max(d.values, d=>d.countries.length) ]);
+		//-----------------------------
+		// custom filter
+		//-----------------------------
+		var filteredData = d.values;
+		if (d.key>'2020-02-10')	{
+			filteredData = filteredData.filter(d=>d.key!='martine');
+		}
+
+		d.confirmed = d3.max([prev.confirmed||0, 	d3.max(filteredData, d=>d.confirmed) ]);
+		d.deaths 		= d3.max([prev.deaths||0, 		d3.max(filteredData, d=>d.deaths) ]);
+		d.recovered = d3.max([prev.recovered||0, 	d3.max(filteredData, d=>d.recovered) ]);
+		d.countries	= d3.max([prev.countries||0,	d3.max(filteredData, d=>d.countries.length) ]);
 
 		prev = d;
 

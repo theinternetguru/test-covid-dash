@@ -33,7 +33,7 @@ M.config = {
 
 	},
 
-	datapath: document.location.host.match(/github|coronavirus\.analitik\.my|flu\.analitik\.my/i)
+	datapath: document.location.host.match(/github|analitik/i)
 								? 'https://raw.githubusercontent.com/nyem69/coronavirus_dashboard/master/_data'
 								: (typeof _v=='number'?'../':'')+'_data',
 
@@ -43,6 +43,17 @@ M.config = {
 
 };
 
+
+//-----------------------------
+//  user timezone
+//-----------------------------
+
+try {
+  M.config.tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+}
+catch(error) {
+  console.error(error);
+}
 
 
 //-----------------
