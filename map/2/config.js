@@ -1,4 +1,5 @@
 
+console.log('document.location.host', document.location.host);
 
 //-----------------
 // data
