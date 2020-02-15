@@ -223,10 +223,11 @@ function vizCountries(data, maxValue, cb)	{
 						.attrs({
 							class:'label',
 							x:100,
-							y:(bh/2)+3,
+							y:(bh/2)+2,
 							fill:M.theme.hud[2],
 							'text-anchor':'end',
 							'font-size':'10px',
+							'font-weight':400,
 						})
 						.text(d=>d.key.toUpperCase());
 
@@ -235,10 +236,11 @@ function vizCountries(data, maxValue, cb)	{
 							class:'value',
 							transform:'translate(0,0)',
 							x:100,
-							y:(bh/2)+3,
+							y:(bh/2)+2,
 							fill:M.theme.hud[2],
 							'text-anchor':'begin',
 							'font-size':'10px',
+							'font-weight':500,
 						});
 
 
