@@ -395,7 +395,7 @@ function vizTimeline_chart(sel, bb, cb)	{
 
 
 
-	//window.setTimeout(animatePlotsInit,500);
+	window.setTimeout(animatePlotsInit,500);
 
 
 
