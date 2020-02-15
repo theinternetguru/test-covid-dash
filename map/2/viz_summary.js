@@ -67,12 +67,13 @@ function vizSummary_bars(key,data,colorIdx, mdate, dur, cb)	{
 			bh	= 70,
 			beg = d3.min(data,d=>d.key),
 			tdy	= d3.max(data,d=>d.key),
-			max = d3.max([10, d3.max(data,d=>d['diff_'+key]) ]),
+			mxv = d3.max(data,d=>d['diff_'+key]),
+			max = d3.max([10, mxv ]),
 			x		= d3.scaleTime().domain([ moment(tdy).add(-30,'days'), moment(tdy) ]).range([0,w]),
 			y		= d3.scaleLinear().domain([0,max]).range([0,bh]),
 			bw 	= parseInt(x( moment(beg).add(1,'days') ) - x( moment(beg) ));
 
-	bw = 180/30;
+	bw = (180/30)/2;
 	if (!dur) dur = 150;
 
 	var yScale = d3.scaleLinear().domain([max,0]).range([0,bh]);
@@ -88,11 +89,12 @@ function vizSummary_bars(key,data,colorIdx, mdate, dur, cb)	{
 					.duration(100)
 						.call(xTicks);
 
-
-			sel.select('.axis')
-				.transition()
-					.duration(100)
-						.call(yTicks);
+			if (mxv)	{
+				sel.select('.axis')
+					.transition()
+						.duration(100)
+							.call(yTicks);
+			}
 
 			sel.select('.axis')
 				.selectAll('.tick')
@@ -115,7 +117,8 @@ function vizSummary_bars(key,data,colorIdx, mdate, dur, cb)	{
 						})
 					.merge(bar)
 						.attrs({
-							fill:d=>d.key==moment(mdate).format('YYYY-MM-DD') ? '#fff' : chroma(M.theme.colors[colorIdx]).darken().hex(),
+							//fill:d=>d.key==moment(mdate).format('YYYY-MM-DD') ? '#fff' : chroma(M.theme.colors[colorIdx]).darken().hex(),
+							fill:d=>d.key==moment(mdate).format('YYYY-MM-DD') ? '#fff' : M.theme.hud[1],
 						})
 //						.transition()
 //							.duration(dur)
@@ -129,7 +132,8 @@ function vizSummary_bars(key,data,colorIdx, mdate, dur, cb)	{
 		});
 
 
-	var max2 	= d3.max([10, d3.max(data,d=>d[key]) ]),
+	var mxv2	= d3.max(data,d=>d[key]),
+			max2 	= d3.max([10, mxv2 ]),
 			y2		= d3.scaleLinear().domain([0,max2]).range([0,bh]);
 
 	var yScale2 = d3.scaleLinear().domain([max2,0]).range([0,bh]);
@@ -143,10 +147,12 @@ function vizSummary_bars(key,data,colorIdx, mdate, dur, cb)	{
 					.duration(100)
 						.call(xTicks);
 
-			sel.select('.axis')
-				.transition()
-					.duration(100)
-						.call(yTicks2);
+			if (mxv2)	{
+				sel.select('.axis')
+					.transition()
+						.duration(100)
+							.call(yTicks2);
+			}
 
 			sel.select('.axis')
 				.selectAll('.tick')
@@ -169,7 +175,8 @@ function vizSummary_bars(key,data,colorIdx, mdate, dur, cb)	{
 						})
 					.merge(bar)
 						.attrs({
-							fill:d=>d.key==moment(mdate).format('YYYY-MM-DD') ? '#fff' : chroma(M.theme.colors[colorIdx]).darken().darken().hex(),
+							//fill:d=>d.key==moment(mdate).format('YYYY-MM-DD') ? '#fff' : chroma(M.theme.colors[colorIdx]).darken().darken().hex(),
+							fill:d=>d.key==moment(mdate).format('YYYY-MM-DD') ? '#fff' : M.theme.hud[1],
 						})
 //						.transition()
 //							.duration(dur)

@@ -6,14 +6,40 @@
 //==================================================================
 function map(cb)	{
 	var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
-			dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+			dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
 	if (dbg){ console.group(f); console.time(f) };
+
+	var width = 1137.78
+			height = 429.792;
+
+	dbg&&console.log('width x height',width, height);
+
+
+	var ratio = width/height;
+	dbg&&console.log('ratio',ratio);
+
+	var mapContentWidth = +d3.select('.content-map').style('height').replace(/^\D+|\D+$/g,''),
+			mapContentHeight = +d3.select('.content-map').style('height').replace(/^\D+|\D+$/g,'');
+
+
+	dbg&&console.log('mapContentHeight',mapContentHeight);
+
+	dbg&&console.log('mapContentHeight * ratio',mapContentHeight * ratio);
+
+	var showInfoPanel = false;
+	if (mapContentWidth - (mapContentHeight * ratio) > 300)	{
+		showInfoPanel = true;
+	}
+
+
 
 
 
 	d3.select('.content-map')
 		.call(sel=>{
 			sel.selectAll('*').remove();
+
+			sel.append('div')
 			sel.call(mapInit, fEnd);
 		});
 
@@ -29,7 +55,7 @@ function map(cb)	{
 //==================================================================
 function mapInit(sel, cb)	{
 	var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
-			dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+			dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
 	if (dbg){ console.group(f); console.time(f) };
 
 	var width = +sel.style('width').replace('px',''),
@@ -100,7 +126,7 @@ function mapInit(sel, cb)	{
 								width:1e6,
 								height:1e6,
 								opacity:1,
-								fill:'#D4DADC',
+								fill:'#000',
 								//fill:chroma('purple').darken(30).hex(),
 							});
 
@@ -186,7 +212,9 @@ function mapInit(sel, cb)	{
 		CartoDB_DarkMatterNoLabels:L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
 			attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
 			subdomains: 'abcd',
-			maxZoom: 19
+			maxZoom: 19,
+			minZoom:2,
+			opacity:1,
 		}),
 
 	};
@@ -205,7 +233,7 @@ function mapInit(sel, cb)	{
 	    'CartoDB_DarkMatterNoLabels'						: layers.CartoDB_DarkMatterNoLabels,
 	};
 
-	L.control.layers(baseLayers).addTo(M.leafletMap);
+//	L.control.layers(baseLayers).addTo(M.leafletMap);
 //  layers.CartoDB_Positron.addTo(M.leafletMap);
   layers.CartoDB_DarkMatterNoLabels.addTo(M.leafletMap);
 
@@ -313,7 +341,7 @@ function mapInit(sel, cb)	{
 //==================================================================
 function mapBound(data)	{
 	var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
-			dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+			dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
 	if (dbg){ console.group(f); console.time(f) };
 
 //	if (innerWidth > 640)	{
@@ -387,6 +415,10 @@ function defsGooey(sel, w, h, stdDeviation, r)	{
 
 
 
+//-----------------------------
+//
+//-----------------------------
+
 /*
  * Workaround for 1px lines appearing in some browsers due to fractional transforms
  * and resulting anti-aliasing.
@@ -400,8 +432,8 @@ function defsGooey(sel, w, h, stdDeviation, r)	{
 
             var tileSize = this.getTileSize();
 
-            tile.style.width = tileSize.x + 1 + 'px';
-            tile.style.height = tileSize.y + 1 + 'px';
+            tile.style.width = tileSize.x + 1.5 + 'px';
+            tile.style.height = tileSize.y + 1.5 + 'px';
         }
     });
 })();

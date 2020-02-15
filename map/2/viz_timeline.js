@@ -120,7 +120,7 @@ function vizTimeline_layout(sel, cb)	{
 function vizTimeline_chart(sel, bb, cb)	{
 
 	var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
-	dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+	dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
 	if (dbg){ console.group(f); console.time(f) };
 
 
@@ -206,6 +206,10 @@ function vizTimeline_chart(sel, bb, cb)	{
 		j.diff_countries 	= j.countries - prev.countries;
 
 
+		j.countries_data = j.values[0]&&j.values[0].values.find(d=>d.key=='first41') ? j.values[0].values.find(d=>d.key=='first41').countries
+												: j.values[0]&&j.values[0].values.find(d=>d.key=='martine') ? j.values[0].values.find(d=>d.key=='martine').countries
+												: j.values[0]&&j.values[0].values.find(d=>d.key=='jhu') ? j.values[0].values.find(d=>d.key=='jhu').countries
+												: prev.countries_data;
 
 		dates.push(j);
 
@@ -245,7 +249,7 @@ function vizTimeline_chart(sel, bb, cb)	{
 
 	var yTicks = d3.axisRight(yScale).ticks(5);
 
-	var bw = x( moment(minDate).add(1,'days') ) - x( moment(minDate) );
+	var bw = x( moment(minDate).add(1,'days') ) - x( moment(minDate) ) - 1;
 
 	//-----------------------------------
 	// tests
@@ -273,14 +277,17 @@ function vizTimeline_chart(sel, bb, cb)	{
 			})
 			.call(sel=>{
 
-				sel.append('rect')
-					.attrs({
-						class:'plotarea-bg',
-						width:w,
-						height:h,
-						fill:chroma('#43459D').darken(50).hex(),
-						opacity:1,
-					});
+//				sel.append('rect')
+//					.attrs({
+//						class:'plotarea-bg',
+//						width:w,
+//						height:h,
+//						//fill:chroma('#43459D').darken(50).hex(),
+//						//fill:chroma('steelblue').darken(50).hex(),
+//						fill:'#262626',
+//						opacity:1,
+//
+//					});
 
 				sel.append('g')
 					.attr('class','bg-container');
@@ -374,7 +381,7 @@ function vizTimeline_chart(sel, bb, cb)	{
 	//-----------------------------------
 	function bgRects(sel)	{
 
-		var bg = sel.selectAll('.bg').data(dates,d=>d.key);
+		var bg = sel.selectAll('.bg').data(dates.filter(d=>d.cny),d=>d.key);
 		bg.exit().remove();
 		bg.enter()
 			.append('rect')
@@ -383,12 +390,12 @@ function vizTimeline_chart(sel, bb, cb)	{
 					x:d=>x(moment(d.key)),
 					width:bw-1,
 					height:bh,
-					opacity:.5,
+					opacity:1,
 					fill:d=>d.cny
 									? chroma.mix(M.theme.colors[1],'#000',.8,'rgb').hex()
 									: moment(d.key).format('d').match(/5|6/) ? chroma('#000').brighten(1).hex() : '#000',
 					//'shape-rendering':'geometricPrecision',
-					'shape-rendering':'crispEdges',
+					//'shape-rendering':'crispEdges',
 				})
 			.merge(bg)
 				.transition()
@@ -433,8 +440,10 @@ function vizTimeline_chart(sel, bb, cb)	{
 					y:bh,
 					height:0,
 
+					stroke:'#000',
+
 					fill:M.theme.colors[colorIdx],
-					'shape-rendering':'crispEdges',
+					//'shape-rendering':'crispEdges',
 					//'shape-rendering':'optimizeSpeed',
 					//'shape-rendering':'geometricPrecision',
 				})
@@ -540,14 +549,14 @@ function vizTimeline_chart(sel, bb, cb)	{
 							.append('text')
 						.merge(txt)
 							.attrs({
-								x:d=>x(moment(d.key)) + (moment(d.key).date()==1 ? 1 : (bw/2)),
+								x:d=>x(moment(d.key)) + (moment(d.key).date()==1 ? (bw/2)-3 : (bw/2)),
 								y:bh+10,
 								fill:'#999',
 								'font-size':'9px',
 								'text-anchor':d=>moment(d.key).date()==1 ? 'begin' : 'middle',
 								'font-weight':400,
 							})
-							.text(d=>moment(d.key).date()==1 ? moment(d.key).format('D MMM') : moment(d.key).format('D'));
+							.text(d=>moment(d.key).date()==1 ? moment(d.key).format('D MMMM') : moment(d.key).format('D'));
 
 				});
 
@@ -824,6 +833,11 @@ function vizTimeline_chart(sel, bb, cb)	{
 				vizSummary_bars('recovered', 	last14days, 2, mdate, dur);
 				vizSummary_bars('countries', 	last14days, 3, mdate, dur);
 
+				//-----------------------------
+				// vizCountries
+				//-----------------------------
+				//var maxValue = d3.max(k.countries_data, d=>d.confirmed);
+				vizCountries(k.countries_data);
 
 
 			},100);
@@ -1064,6 +1078,14 @@ function vizTimeline_chart(sel, bb, cb)	{
 								vizSummary_bars('deaths', 		last14days, 1, mdate, dur);
 								vizSummary_bars('recovered', 	last14days, 2, mdate, dur);
 								vizSummary_bars('countries', 	last14days, 3, mdate, dur);
+
+
+
+								//-----------------------------
+								// vizCountries
+								//-----------------------------
+								//var maxValue = d3.max(k.countries_data, d=>d.confirmed);
+								vizCountries(k.countries_data);
 
 							}
 

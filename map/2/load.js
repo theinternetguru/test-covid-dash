@@ -30,11 +30,15 @@ function loadCache(cb)	{
 
 	loadSummary();
 	loadArchive();
-	loadMartine();
 
+	loadJHU('hot', 'jhu');
+
+	loadMartine('hot','martine');
 	loadGeneric('hot', 'bnoregion');
-	loadGeneric('hot', 'bnoplace');
-	loadGeneric('hot', 'casetracking');
+//	loadGeneric('hot', 'bnoplace');
+//	loadGeneric('hot', 'casetracking');
+
+
 
 	loadCheck(fEnd);
 
@@ -55,13 +59,14 @@ function loadCheck(cb)	{
 		M.data['first41']
 		&& M.data['martine']
 		&& M.data['bnoregion']
-		&& M.data['bnoplace']
-		&& M.data['casetracking']
+//		&& M.data['bnoplace']
+//		&& M.data['casetracking']
+		&& M.data['jhu']
 	){
 		prep(function(){
 
-			vizTimeline('daily', M.nest.daily, fEnd);
-			map();
+			vizTimeline('daily', M.nest.daily);
+			map(fEnd);
 
 
 		});
@@ -103,14 +108,14 @@ function prep(cb)	{
 
 	if (M.data.first41)	{
 
+		var k = M.data.jhu.find(d=>d.region.match(/hubei/i));
+
 		all = all.concat(M.data.first41);
 		all.forEach(d=>{
-			d.vicinity = 'Hubei',
-			d.location = 'Wuhan';
-			d.region = 'Mainland China';
-			d.country = 'China';
-			d.latitude = 31.118;
-			d.longitude = 112.293;
+			d.region = 'Hubei';
+			d.country = 'Mainland China';
+			d.latitude = k.latitude;
+			d.longitude = k.longitude;
 			d._source = 'first41';
 		});
 
@@ -120,42 +125,11 @@ function prep(cb)	{
 
 
 
-	//-----------------------------
-	// martine
-	//-----------------------------
-
-
-/*
-{
-  "country": "Germany",
-  "location_id": "1309",
-  "location": "Bavaria",
-  "latitude": 48.81,
-  "longitude": 11.6,
-  "date_str": "2020-01-19",
-  "date": 1579392000000,
-  "date_tz": null,
-  "confirmed": 0,
-  "deaths": 0,
-  "_id": "1309_2020-01-19",
-  "_rev": "1-a9327a51822fc26eb41f7627c48a7b08"
-}
-
-d3.nest().key(d=>d.country).entries(M.data.martine).map(d=>d.key).join(',')
-"Finland,France,Germany,India,Italy,Japan,Macau,Malaysia,Nepal,Phillipines,South Korea,Russia,Singapore,Spain,Sri Lanka,Sweden,Thailand,United Arab Emirates,United Kingdom,United States of America,Vietnam,Australia,Belgium,Cambodia,Canada,China,Hong-Kong,Taiwan"
-
-d3.nest().key(d=>d.location).entries(M.data.martine.filter(d=>d.country=='China')).map(d=>d.key).join(',')
-Anhui,Beijing,Chongqing,Fujian,Gansu,Guangdong,Guangxi,Guizhou,Hainan,Hebei,Heilongjiang,Henan,Hubei,Hunan,Jiangsu,Jiangxi,Jilin,Liaoning,Nei Mongol,Ningxia,Qinghai,Shaanxi,Shandong,Shanghai,Shanxi,Sichuan,Tianjin,Xinjiang,Tibet,Yunnan,Zhejiang"
-
-
-*/
-
-
-
 	all = all.concat(M.data['martine']);
-	all = all.concat(M.data['bnoregion']);
-	all = all.concat(M.data['bnoplace']);
-	all = all.concat(M.data['casetracking']);
+//	all = all.concat(M.data['bnoregion']);
+//	all = all.concat(M.data['bnoplace']);
+//	all = all.concat(M.data['casetracking']);
+	all = all.concat(M.data['jhu']);
 
 	//-----------------------------
 	//
@@ -204,7 +178,23 @@ function prepAll(cb)	{
 			k.confirmed = d3.sum(k.values, d=>d.confirmed);
 			k.deaths 		= d3.sum(k.values, d=>d.deaths);
 			k.recovered = d3.sum(k.values, d=>d.recovered);
-			k.countries	= d3.nest().key(k=>k.country).entries(k.values);
+
+			k.countries	= d3.nest()
+											.key(k=>k.country.replace(/Mainland China/i,'China')
+												.replace(/United Arab Emirates/i,'UAE')
+												.replace(/United States of America/i,'USA')
+												.replace(/\bUS\b/i,'USA')
+												.replace(/\bOthers\b/i,'Japan')
+												.replace(/\bUnited Kingdom\b/i,'UK')
+											)
+											//.key(k=>k.country.replace(/United Arab Emirates/i,'UAE').toUpperCase())
+											.entries(k.values);
+
+			k.countries.forEach(k=>{
+				k.confirmed = d3.sum(k.values, d=>d.confirmed);
+				k.deaths 		= d3.sum(k.values, d=>d.deaths);
+				k.recovered = d3.sum(k.values, d=>d.recovered);
+			});
 		});
 
 
@@ -213,9 +203,9 @@ function prepAll(cb)	{
 		//-----------------------------
 		var filteredData = d.values;
 
-//		if (d.key>'2020-02-10')	{
-//			filteredData = filteredData.filter(d=>d.key!='martine');
-//		}
+		if (d.key>'2020-02-10')	{
+			filteredData = filteredData.filter(d=>d.key.match(/first41|jhu|bno|martine/i));
+		}
 
 		d.confirmed = d3.max([prev.confirmed||0, 	d3.max(filteredData, d=>d.confirmed) ]);
 		d.deaths 		= d3.max([prev.deaths||0, 		d3.max(filteredData, d=>d.deaths) ]);
@@ -229,36 +219,11 @@ function prepAll(cb)	{
 
 	dbg&&console.log('M.nest.daily', M.nest.daily);
 
-	dbg&&console.log('confirmed', M.nest.daily.map(d=>d.confirmed));
-	dbg&&console.log('deaths', M.nest.daily.map(d=>d.deaths));
-	dbg&&console.log('recovered', M.nest.daily.map(d=>d.recovered));
+//	dbg&&console.log('confirmed', M.nest.daily.map(d=>d.confirmed));
+//	dbg&&console.log('deaths', M.nest.daily.map(d=>d.deaths));
+//	dbg&&console.log('recovered', M.nest.daily.map(d=>d.recovered));
 
 
-//
-//		// populate missing days
-//		if (M.data.martine)	{
-//
-//			var last = all[all.length-1];
-//			var minDate = d3.min(M.data.martine, d=>d.date_str);
-//
-//			dbg&&console.log( 'minDate', minDate, last.date_str );
-//
-//			var missingDays = d3.timeDays( moment(last.date).add(1,'days'), moment(minDate), 1).map(d=>+d);
-//			dbg&&console.log('missingDays',missingDays);
-//
-//			missingDays.forEach(d=>{
-//
-//				var j = {...last};
-//				j.date = +moment(d);
-//				j.date_str = moment(d).format('YYYY-MM-DD');
-//				j._source = 'missing';
-//				all.push(j);
-//
-//			});
-//
-//			dbg&&console.log('all',[...all]);
-//
-//		}
 
 	fEnd();
 }

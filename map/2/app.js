@@ -12,15 +12,17 @@ M.requireds='config,layout,events'.split(/\s*,\s*/).concat([
 
 	'load',
 	'load_summary',
-	'load_jhudaily',
+//	'load_jhudaily',
 	'load_martine',
 	'load_archive',
 	'load_bno',
+	'load_jhu',
 	'load_generic',
 
 	'viz',
 	'viz_summary',
 	'viz_timeline',
+	'viz_countries',
 
 	'map',
 

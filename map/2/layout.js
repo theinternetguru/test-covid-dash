@@ -78,7 +78,7 @@ function layoutBoostrap(sel, cb)	{
 									margin:0,
 									padding:0,
 									//height:(innerHeight*(.2+.2+.05))+'px',
-									background:'#3F448E',
+									//background:'#3F448E',
 								});
 
 							sel.append('div').attr('class','content-timeline')
@@ -86,7 +86,7 @@ function layoutBoostrap(sel, cb)	{
 									margin:0,
 									padding:0,
 									height:(innerHeight*.2)+'px',
-									//background:'#000',
+									background:'#000',
 									color:'#fff',
 								});
 
@@ -115,22 +115,22 @@ function layoutBoostrap(sel, cb)	{
 					})
 					.call(sel=>{
 
-						sel.append('rect')
-							.attrs({
-								width:100,
-								height:40,
-								fill:chroma(M.theme.colors[0]).hex(),
-							});
+//						sel.append('rect')
+//							.attrs({
+//								width:100,
+//								height:40,
+//								fill:chroma(M.theme.colors[0]).hex(),
+//							});
+
+//						sel.append('path')
+//							.attrs({
+//								fill:chroma(M.theme.colors[0]).hex(),
+//								d:'M25 40 L75 40 L50 50 L25 40z'
+//							});
 
 						sel.append('path')
 							.attrs({
 								fill:chroma(M.theme.colors[0]).hex(),
-								d:'M25 40 L75 40 L50 50 L25 40z'
-							});
-
-						sel.append('path')
-							.attrs({
-								fill:'none',
 								stroke:'#333',
 								'stroke-width':1,
 								d:'M0 0 L100 0 L100 40 L75 40 L50 50 L25 40 L0 40 L0 0Z',

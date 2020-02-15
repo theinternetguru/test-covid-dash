@@ -168,7 +168,7 @@ function vizSummary_renderPanel(sel, key, label, clrIdx, cb)	{
 									.attrs({
 										width:400,
 										height:30,
-										fill:chroma(clr).darken().darken().darken().hex()
+										fill:chroma(clr).darken(50).hex()
 									});
 
 								sel.append('rect')
@@ -176,7 +176,7 @@ function vizSummary_renderPanel(sel, key, label, clrIdx, cb)	{
 										y:30,
 										width:200,
 										height:30,
-										fill:chroma(clr).darken().hex()
+										fill:chroma(clr).darken(30).hex()
 									});
 
 								sel.append('rect')
@@ -185,7 +185,7 @@ function vizSummary_renderPanel(sel, key, label, clrIdx, cb)	{
 										y:30,
 										width:200,
 										height:30,
-										fill:chroma(clr).darken().darken().hex()
+										fill:chroma(clr).darken(40).hex()
 									});
 
 
@@ -194,7 +194,7 @@ function vizSummary_renderPanel(sel, key, label, clrIdx, cb)	{
 										y:60,
 										width:200,
 										height:170,
-										fill:chroma(clr).hex()
+										fill:chroma(clr).darken(10).hex()
 									});
 
 								sel.append('rect')
@@ -203,7 +203,7 @@ function vizSummary_renderPanel(sel, key, label, clrIdx, cb)	{
 										y:60,
 										width:200,
 										height:170,
-										fill:chroma(clr).darken().hex()
+										fill:chroma(clr).darken(20).hex()
 									});
 
 
@@ -240,22 +240,17 @@ function vizSummary_renderPanel(sel, key, label, clrIdx, cb)	{
 										})
 										.call(sel=>{
 
+//											sel.append('rect')
+//												.attrs({
+//													y:5,
+//													width:180,
+//													height:70,
+//													fill:chroma(clr).darken(15).hex(),
+//												});
+
 											sel.append('g')
 												.attr('class','bars-holder')
 												.attr('transform','translate(0,5)');
-
-//											sel.append('g')
-//												.attr('class','static')
-//												.attr('transform','translate(0,5)')
-//												.call(sel=>{
-//													sel.append('line')
-//														.attrs({
-//															x1:0, x2:180,
-//															y1:71, y2:71,
-//															stroke:'#fff',
-//															'shape-rendering':'crispEdges',
-//														});
-//												});
 
 											sel.append('g')
 												.attr('class','axis')
@@ -281,6 +276,14 @@ function vizSummary_renderPanel(sel, key, label, clrIdx, cb)	{
 											overflow:'visible',
 										})
 										.call(sel=>{
+
+//											sel.append('rect')
+//												.attrs({
+//													y:5,
+//													width:180,
+//													height:70,
+//													fill:chroma(clr).darken(25).hex(),
+//												});
 
 											sel.append('g')
 												.attr('class','bars-holder')
@@ -323,7 +326,7 @@ function vizSummary_renderPanel(sel, key, label, clrIdx, cb)	{
 										'font-weight':400,
 										'font-size':'14px',
 									})
-									.text('DAILY ADDITION');
+									.text('DAILY');
 
 								sel.append('text')
 									.attrs({

@@ -2,21 +2,15 @@
 //------------------------------------------------------------------
 //
 //------------------------------------------------------------------
-function loadMartine(cb)	{
+function loadMartine(grp,key,cb)	{
 
 	var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
 	dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
 	if (dbg){ console.group(f); console.time(f) };
 
-	//----------
-	// martine
-	//----------
-	var key = 'martine';
 
-	var reqs = [
-		d3.tsv(M.config.cvdata+'/data/martine_places.tsv'),
-		d3.tsv(M.config.cvdata+'/data/martine_timeseries.tsv'),
-	];
+	var reqs = M.config.data[grp].find(d=>d.key==key).urls.map(d=>d3.tsv(d));
+
 
 	Promise.all(reqs).then(loaded);
 

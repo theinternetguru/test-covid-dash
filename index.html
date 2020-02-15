@@ -92,8 +92,8 @@ html,body {
   body {
 		font-family: 'League Spartan Variable', 'Helvetica Neue', 'Helvetica', sans-serif;
 		font-variation-settings: "wght" 345;
-		background:#000;
-		color:#000;
+		background:#262626;
+		color:#fff;
 
 		/*
 		background-image:linear-gradient(to bottom,
@@ -110,11 +110,6 @@ html,body {
 		*/
 
 		overflow:hidden;
-  }
-
-  .leaflet-control-attribution.leaflet-control {
-  	background:#333;
-  	color:#ccc;
   }
 
 	.cookieConsentContainer {
@@ -144,10 +139,33 @@ html,body {
     	display:none;
     }
 
-    .tick line {
-    	stroke:#ccc;
-    	stroke-width:.2;
+    .tick line, path {
+    	stroke:#33E9E0;
+    	stroke-width:.5;
     }
+
+    .tick text {
+    	fill:#33E9E0;
+    }
+
+		.leaflet-container {
+		    background-color:rgba(0,0,0,0.0);
+		}
+
+		.leaflet-control-zoom-in {
+			opacity:.5;
+		}
+
+		.leaflet-control-zoom-out {
+			opacity:.5;
+		}
+
+
+	  .leaflet-control-attribution.leaflet-control {
+	  	background:#262626;
+	  	color:#ccc;
+	  }
+
 
 </style>
 
