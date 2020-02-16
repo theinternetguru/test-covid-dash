@@ -426,7 +426,7 @@ function vizTimeline_chart(sel, bb, cb)	{
 
 
 	M.current.play=true;
-	window.setTimeout(animatePlotsInit,1000);
+	window.setTimeout(animatePlotsInit,2000);
 
 
 
@@ -898,11 +898,15 @@ function vizTimeline_chart(sel, bb, cb)	{
 				//-----------------------------
 				// vizCountries
 				//-----------------------------
+				var cur = mdate.format('YYYY-MM-DD');
+
 				//var maxValue = d3.max(k.countries_data, d=>d.confirmed);
 				vizCountries(k&&k.countries_data||[]);
-				vizPatients(minDate, mdate.format('YYYY-MM-DD'));
+				vizPatients(minDate, cur);
 
-				mapRender(mdate.format('YYYY-MM-DD'));
+				mapRender(cur);
+				vizEvents(cur);
+
 
 
 			},100);
@@ -1193,6 +1197,7 @@ function vizTimeline_chart(sel, bb, cb)	{
 								vizPatients(minDate,cur);
 
 								mapRender(cur);
+								vizEvents(cur);
 
 							}
 

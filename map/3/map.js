@@ -330,6 +330,7 @@ function mapInit(sel, cb)	{
 	function mapmovestart(e){
 		M.current.idle = moment();
 		svgmap.style('display','none');
+		vizEvents();
 	}
 
   function mapmove(e) {
@@ -346,6 +347,7 @@ function mapInit(sel, cb)	{
 	function mapzoomstart(e){
 		M.current.idle = moment();
 		svgmap.style('display','none');
+		vizEvents();
 	}
 
   function mapzoom(e) {

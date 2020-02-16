@@ -39,7 +39,7 @@ function loadCache(cb)	{
 //	loadGeneric('hot', 'casetracking');
 
 	loadCK('hot', 'cryptokass');
-
+	loadBNOEvents('hot','bnoevents');
 
 	loadCheck(fEnd);
 

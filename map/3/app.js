@@ -20,6 +20,7 @@ M.requireds='config,layout,events'.split(/\s*,\s*/).concat([
 	'load_jhu',
 	'load_generic',
 	'load_cryptokass',
+	'load_bnoevents',
 
 	'viz',
 	'viz_summary',
@@ -27,6 +28,7 @@ M.requireds='config,layout,events'.split(/\s*,\s*/).concat([
 	'viz_countries',
 	'viz_patients',
 	'viz_patients_renderer',
+	'viz_events',
 
 	'map',
 	'map_render',
@@ -34,7 +36,7 @@ M.requireds='config,layout,events'.split(/\s*,\s*/).concat([
 ]);
 
 
-M.current.playSpeed = 15000;
+M.current.playSpeed = 20000;
 M.current.barSpeed = 300;
 
 //M.current.loop = !!M.current.loop;

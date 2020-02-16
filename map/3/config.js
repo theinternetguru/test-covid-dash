@@ -228,6 +228,18 @@ M.config.data = {
 			}
 		},
 
+		{
+			key:'bnoevents',
+			type:'tsv',
+			urls: [
+				M.config.path.cvdata+'/data/bno-cities.tsv',
+				M.config.path.cvdata+'/data/bno-events.tsv',
+			],
+			source:{
+				url:'https://bnonews.com/index.php/2020/02/the-latest-coronavirus-cases/',
+				label:'BNO News',
+			}
+		},
 
 		{
 			key:'casetracking',
