@@ -83,7 +83,6 @@ render like UIs do in movies.
 
 */
 
-/*
 
 M.current.audio = true;
 
@@ -117,5 +116,3 @@ function mute()	{
 	M.current.audio = !M.current.audio;
 }
 
-
-*/
