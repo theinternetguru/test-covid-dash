@@ -215,7 +215,7 @@ function layoutBoostrap(sel, cb)	{
 					.styles({
 						flex:'1 1 auto',
 						'text-align':'left',
-						color:M.theme.colors[1],
+						color:M.theme.hud[2],
 						'text-shadow': '#000 1px 0 10px',
 						'font-weight':700,
 						padding:'0 0 0 24px',

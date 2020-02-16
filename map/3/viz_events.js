@@ -30,7 +30,7 @@ function vizEvents(date, cb)	{
 		}
 	}
 
-//	data = data.filter(d=>d.description.match(/first/i)||d.country_code=='MYS');
+	data = data.filter(d=>d.description.match(/first|who|death/i)||d.country_code!='MYS');
 
 	dbg&&console.log('data', date, data);
 
