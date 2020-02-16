@@ -78,7 +78,7 @@ function vizCountries(data, maxValue, cb)	{
 	//-----------------------------
 	// viz-countries
 	//-----------------------------
-	var v = d3.select('body').selectAll('.viz-countries').data(countries_data, d=>d.key);
+	var v = d3.select('.annotations').selectAll('.viz-countries').data(countries_data, d=>d.key);
 	v.exit().remove();
 	v.enter()
 		.append('div')
@@ -200,7 +200,6 @@ function vizCountries(data, maxValue, cb)	{
 			.transition()
 				.duration(200)
 					.attr('opacity',0)
-					.attr('transform',(d,i)=>'translate(-200,'+(i*bh)+')')
 						.remove();
 
 
@@ -209,7 +208,7 @@ function vizCountries(data, maxValue, cb)	{
 				.attrs({
 					class:'g-bar',
 					//transform:d=>'translate(0,'+d.bb.height+')',
-					transform:(d,i)=>'translate(-200,'+(i*bh)+')',
+					transform:(d,i)=>'translate(0,'+(i*bh)+')',
 					opacity:0,
 				})
 				.call(sel=>{

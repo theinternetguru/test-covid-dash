@@ -96,7 +96,9 @@ function layoutBoostrap(sel, cb)	{
 			//---------------------------
 			// date-info
 			//---------------------------
-			sel.append('div').attr('class','date-info')
+			sel
+				.append('div').attr('class','annotations')
+				.append('div').attr('class','date-info')
 				.styles({
 					//background:'#000',
 					//color:'#fff',
@@ -218,8 +220,10 @@ function layoutBoostrap(sel, cb)	{
 						'font-weight':700,
 						padding:'0 0 0 24px',
 						'font-size':'14px',
+						'white-space':'nowrap',
+						overflow:'hidden',
 					})
-					.html('COVID-19 / 2019-nCov / Novel Coronavirus Pneumonia (NCP)');
+					.html('COVID-19 / Novel Coronavirus Pneumonia (NCP)');
 
 
 //			sel
@@ -236,18 +240,18 @@ function layoutBoostrap(sel, cb)	{
 //					.append('select')
 //						.attr('class','form-control form-control-sm select-dataset');
 
-			sel
-				.append('div')
-					.attr('class','display-date')
-					.styles({
-						flex:'1 1 auto',
-						'text-align':'right',
-						color:'lime',
-						'text-shadow': '#000 1px 0 10px',
-						'font-weight':700,
-						padding:'0 24px 0 0',
-					})
-					.html('');
+//			sel
+//				.append('div')
+//					.attr('class','display-date')
+//					.styles({
+//						flex:'1 1 auto',
+//						'text-align':'right',
+//						color:'lime',
+//						'text-shadow': '#000 1px 0 10px',
+//						'font-weight':700,
+//						padding:'0 24px 0 0',
+//					})
+//					.html('');
 
 		});
 

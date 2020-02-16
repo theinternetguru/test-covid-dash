@@ -59,9 +59,9 @@ function vizTimeline_layout(sel, cb)	{
 
 						sel.append('path')
 							.attrs({
-
 								fill:M.theme.hud[1],
 								d:'M-25 -30 L25 0 -25 30 -25 -30Z',
+								//d:
 								cursor:'pointer',
 							})
 							.on('mouseover',function(d){
@@ -80,7 +80,8 @@ function vizTimeline_layout(sel, cb)	{
 									.transition()
 										.attr('fill',M.theme.hud[0]);
 
-								vizTimeline_play();
+								M.current.play = !M.current.play;
+								if (M.current.play) vizTimeline_play();
 
 							})
 
@@ -96,11 +97,18 @@ function vizTimeline_layout(sel, cb)	{
 				height:'100%',
 				width:'100%',
 			})
+//			.attrs({
+//				viewBox:'0 0 100 100',
+//				preserveAspectRatio:"xMidYMid slice",
+//				width:100,
+//				height:100,
+//			})
 			.call(sel=>{
 
 				sel.select('.play-btn')
 					.select('path')
 						.attr('transform','translate(50,'+bb.height/2+')');
+						//.attr('transform','translate(50,50)');
 
 				sel.call(vizTimeline_chart, bb, fEnd);
 
@@ -203,6 +211,7 @@ function vizTimeline_chart(sel, bb, cb)	{
 		j.cny = cny.indexOf(j.key) > -1 ? 1 : 0;
 
 		if (dt <= tdy)	{
+
 			j.confirmed = d3.sum(j.values, d=>d.confirmed) 	|| prev.confirmed;
 			j.deaths 		= d3.sum(j.values, d=>d.deaths) 		|| prev.deaths;
 			j.recovered = d3.sum(j.values, d=>d.recovered) 	|| prev.recovered;
@@ -210,34 +219,56 @@ function vizTimeline_chart(sel, bb, cb)	{
 		}
 
 
-		j.diff_confirmed 	= j.confirmed - prev.confirmed;
-		j.diff_deaths 		= j.deaths - prev.deaths;
-		j.diff_recovered 	= j.recovered - prev.recovered;
-		j.diff_countries 	= j.countries - prev.countries;
-
-
-//		j.countries_data = j.values[0]&&j.values[0].values.find(d=>d.key=='first41') ? j.values[0].values.find(d=>d.key=='first41').countries
-//												: j.values[0]&&j.values[0].values.find(d=>d.key=='martine') ? j.values[0].values.find(d=>d.key=='martine').countries
-//												: j.values[0]&&j.values[0].values.find(d=>d.key=='jhu') ? j.values[0].values.find(d=>d.key=='jhu').countries
-//												: prev.countries_data;
+		//-----------------------------
+		// latest from summary
+		//-----------------------------
+		if (dt==tdy)	{
+			j.confirmed = d3.max(M.data.summary, d=>d.confirmed);
+			j.deaths = d3.max(M.data.summary, d=>d.deaths);
+			j.recovered = d3.max(M.data.summary, d=>d.recovered);
+		}
 
 
 		//-----------------------------
-		//
+		// no later than today
 		//-----------------------------
-		var tmp = j.values[0]&&j.values[0].values;
-		if (tmp)	{
-			j.countries_data 	= tmp.find(d=>d.key=='first41') ? tmp.find(d=>d.key=='first41').countries
-												: tmp.find(d=>d.key=='jhu') ? tmp.find(d=>d.key=='jhu').countries
-												: tmp.find(d=>d.key=='bnoregion') ? tmp.find(d=>d.key=='bnoregion').countries
-												: tmp.find(d=>d.key=='martine') ? tmp.find(d=>d.key=='martine').countries
-												: prev.countries_data;
+		if (dt <= tdy)	{
 
-		//-----------------------------
-		// data gap
-		//-----------------------------
-		}else	{
-			j.countries_data = prev.countries_data;
+			j.diff_confirmed 	= j.confirmed - prev.confirmed;
+			j.diff_deaths 		= j.deaths - prev.deaths;
+			j.diff_recovered 	= j.recovered - prev.recovered;
+			j.diff_countries 	= j.countries - prev.countries;
+
+
+
+
+			//-----------------------------
+			// countries
+			//-----------------------------
+
+
+	//		j.countries_data = j.values[0]&&j.values[0].values.find(d=>d.key=='first41') ? j.values[0].values.find(d=>d.key=='first41').countries
+	//												: j.values[0]&&j.values[0].values.find(d=>d.key=='martine') ? j.values[0].values.find(d=>d.key=='martine').countries
+	//												: j.values[0]&&j.values[0].values.find(d=>d.key=='jhu') ? j.values[0].values.find(d=>d.key=='jhu').countries
+	//												: prev.countries_data;
+
+			var tmp = j.values[0]&&j.values[0].values;
+			if (tmp)	{
+				j.countries_data 	= tmp.find(d=>d.key=='first41') ? tmp.find(d=>d.key=='first41').countries
+													: tmp.find(d=>d.key=='bnoplace') ? tmp.find(d=>d.key=='bnoplace').countries
+													: tmp.find(d=>d.key=='jhu') ? tmp.find(d=>d.key=='jhu').countries
+													: tmp.find(d=>d.key=='bnoregion') ? tmp.find(d=>d.key=='bnoregion').countries
+													: tmp.find(d=>d.key=='martine') ? tmp.find(d=>d.key=='martine').countries
+													: prev.countries_data;
+
+			//-----------------------------
+			// data gap
+			//-----------------------------
+			}else	{
+				j.countries_data = prev.countries_data;
+			}
+
+
 		}
 
 
@@ -250,7 +281,7 @@ function vizTimeline_chart(sel, bb, cb)	{
 
 
 	dbg&&console.log('dates',dates);
-
+	M.data.dates = dates;
 
 	//-----------------------------------
 	// x,y scales, axis
@@ -394,8 +425,8 @@ function vizTimeline_chart(sel, bb, cb)	{
 		.attr('transform','translate('+(x(moment(k.key)))+',0)');
 
 
-
-	window.setTimeout(animatePlotsInit,500);
+	M.current.play=true;
+	window.setTimeout(animatePlotsInit,1000);
 
 
 
@@ -868,8 +899,10 @@ function vizTimeline_chart(sel, bb, cb)	{
 				// vizCountries
 				//-----------------------------
 				//var maxValue = d3.max(k.countries_data, d=>d.confirmed);
-				vizCountries(k.countries_data);
+				vizCountries(k&&k.countries_data||[]);
 				vizPatients(minDate, mdate.format('YYYY-MM-DD'));
+
+				mapRender(mdate.format('YYYY-MM-DD'));
 
 
 			},100);
@@ -907,12 +940,40 @@ function vizTimeline_chart(sel, bb, cb)	{
 		if (dbg){ console.group(f); console.time(f) };
 
 
-		var curDates = dates.filter(d=>d.confirmed||d.deaths);
-		var dtExtent = d3.extent(curDates, d=>d.key);
-		dbg&&console.log('dtExtent', dtExtent);
+		//-----------------------------
+		// resume from current date
+		//-----------------------------
+		var dateInfo = d3.select('.date-info');
+		var posX = +dateInfo.node().style.left.replace('px','')-50;
+		var curdate = moment(x.invert(posX)).format('YYYY-MM-DD');
 
-		var dur = M.current.playSpeed;
-		var barSpeed = M.current.barSpeed;
+		dbg&&console.log('curdate', curdate);
+
+		if (curdate < moment().add(-1,'days').format('YYYY-MM-DD'))	{
+
+			var curDates = dates.filter(d=>(d.confirmed||d.deaths) && d.key >= curdate);
+			var dtExtent = d3.extent(curDates, d=>d.key);
+			dbg&&console.log('dtExtent', dtExtent);
+
+			var ttlDates = dates.filter(d=>d.confirmed||d.deaths);
+			var dur = (M.current.playSpeed / ttlDates.length) * curDates.length;
+			var barSpeed = M.current.barSpeed;
+
+		//-----------------------------
+		// play from start
+		//-----------------------------
+
+		}else	{
+
+			var curDates = dates.filter(d=>d.confirmed||d.deaths);
+			var dtExtent = d3.extent(curDates, d=>d.key);
+			dbg&&console.log('dtExtent', dtExtent);
+
+			var dur = M.current.playSpeed;
+			var barSpeed = M.current.barSpeed;
+
+		}
+
 
 		var prev;
 		d3.select('.date-info')
@@ -925,6 +986,17 @@ function vizTimeline_chart(sel, bb, cb)	{
 	      		var i = d3.interpolateNumber(x(moment(dtExtent[0])), x(moment(dtExtent[1])));
 
 	      		return function(t) {
+
+							//-----------------------------
+							// stop
+							//-----------------------------
+							if (!M.current.play) {
+								d3.select('.date-info').transition().duration(0);
+								return;
+							}
+
+
+
 
 							var mdate = moment(x.invert( i(t) ));
 							var cur = mdate.format('YYYY-MM-DD');
@@ -1120,6 +1192,8 @@ function vizTimeline_chart(sel, bb, cb)	{
 								vizCountries(k.countries_data);
 								vizPatients(minDate,cur);
 
+								mapRender(cur);
+
 							}
 
 
@@ -1129,6 +1203,19 @@ function vizTimeline_chart(sel, bb, cb)	{
 							// date-info left
 	      			return  (i(t)+50+(bw/2))+'px';
 	      		};
+	      	}) // styletween
+	      	.on('start',function(){
+	      		dbg&&console.log('transition start');
+	      	})
+	      	.on('end',function(){
+	      		dbg&&console.log('transition end');
+	      		M.current.play = !M.current.play;
+	      	})
+	      	.on('interrupt',function(){
+	      		dbg&&console.log('transition interrupt');
+	      	})
+	      	.on('cancel',function(){
+	      		dbg&&console.log('transition cancel');
 	      	});
 
 
@@ -1262,11 +1349,22 @@ function vizTimeline_chart(sel, bb, cb)	{
 	}
 
 
+	//------------------------------------------------------------------
+	//
+	//------------------------------------------------------------------
+	function getTimelineDate()	{
+		var dateInfo = d3.select('.date-info');
+		var posX = +dateInfo.node().style.left.replace('px','')-50;
+		return moment(x.invert(posX)).format('YYYY-MM-DD');
+	}
+
+
 
 
 	vizTimeline_play = animatePlotsInit;
 	vizTimeline_drag = dragTimeline;
 	vizTimeline_resetScale = resetScale;
+	vizTimeline_curDate = getTimelineDate;
 
 }
 
@@ -1275,3 +1373,4 @@ function vizTimeline_chart(sel, bb, cb)	{
 var vizTimeline_drag;
 var vizTimeline_play;
 var vizTimeline_resetScale;
+var vizTimeline_curDate;

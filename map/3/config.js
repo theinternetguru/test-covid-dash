@@ -125,11 +125,15 @@ M.config.data = {
 			type:'tsv',
 			url: M.config.path.cvdata+'/archive/lancet-first41.tsv',
 			source:{
-				url:'https://www.thelancet.com/coronavirus',
-				label:'The Lancet: 2019-nCoV Resource Centre',
+				url:'https://www.thelancet.com/',
+				label:'The Lancet',
 				source:{
-					url:'https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(20)30183-5/fulltext?utm_source=share&utm_medium=ios_app&utm_name=iossmf',
-					label:'Clinical features of patients infected with 2019 novel coronavirus in Wuhan, China',
+					url:'https://www.thelancet.com/coronavirus',
+					label:'2019-nCoV Resource Centre',
+					source:{
+						url:'https://www.thelancet.com/journals/lancet/article/PIIS0140-6736(20)30183-5/fulltext?utm_source=share&utm_medium=ios_app&utm_name=iossmf',
+						label:'Clinical features of patients infected with 2019 novel coronavirus in Wuhan, China',
+					}
 				}
 			},
 		},
@@ -148,6 +152,26 @@ M.config.data = {
 			},
 		},
 
+		{
+			key:'virological.org',
+			urls:[
+				'',
+				'',
+			],
+			source:{
+				url:'//virological.org',
+				label:'virological.org',
+				source:{
+					url:'http://virological.org/t/epidemiological-data-from-the-ncov-2019-outbreak-early-descriptions-from-publicly-available-data/337',
+					label:'Epidemiological Data from the nCoV-2019 Outbreak: Early Descriptions from Publicly Available Data',
+					source:{
+						url:'https://docs.google.com/spreadsheets/d/1itaohdPiAeniCXNlntNztZ_oRvjh0HsGuJXUJWET008/edit#gid=0',
+						label:'Google Sheet',
+					}
+				}
+			}
+		}
+
 	],
 
 	hot: [
@@ -158,6 +182,16 @@ M.config.data = {
 			url: M.config.path.cvdata+'/data/summary.tsv'
 		},
 
+		{
+			key:'who',
+			type:'tsv',
+			urls:[
+			],
+			source:{
+				label:'WHO',
+				url:'https://www.who.int/emergencies/diseases/novel-coronavirus-2019/situation-reports',
+			}
+		},
 
 		{
 			key:'jhu',

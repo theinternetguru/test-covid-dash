@@ -7,6 +7,7 @@ M.filters={};
 M.meta={};
 M.db = {};
 M.raw={};
+M.map={};
 
 M.requireds='config,layout,events'.split(/\s*,\s*/).concat([
 
@@ -25,8 +26,10 @@ M.requireds='config,layout,events'.split(/\s*,\s*/).concat([
 	'viz_timeline',
 	'viz_countries',
 	'viz_patients',
+	'viz_patients_renderer',
 
 	'map',
+	'map_render',
 
 ]);
 
@@ -84,6 +87,7 @@ requirejs(required, function() {
 var comma = d3.format(','),
 		f1 = d3.format(',.1f'),
 		f2 = d3.format(',.2f'),
+		f3 = d3.format(',.3f'),
 		z2 = d3.format('02d');
 
 //moment.locale('ms');

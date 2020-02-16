@@ -155,6 +155,7 @@ function mapInit(sel, cb)	{
   		innerWidth>1300 ? [cases.y,cases.x] : [wuhan.y, wuhan.x-20],
   		innerWidth>1000 ? 2 : 3
   	);
+
 //  	.setView(
 //  		[wuhan.y, wuhan.x],
 //  		2
@@ -164,6 +165,17 @@ function mapInit(sel, cb)	{
 
 	//M.leafletMap.setMaxBounds(M.leafletMap.getBounds());
 	//M.leafletMap.setMaxBounds(M.leafletMap.getBounds());
+
+
+	//-----------------------------
+	// credits
+	//-----------------------------
+
+	var attribution = d3.nest().key(d=>d.source.label).entries(
+											M.config.data.hot.concat(M.config.data.cold).filter(d=>d.key!='summary')
+										)
+										.map(d=>'<a href="'+d.values[0].source.url+'" target="_blank">'+d.values[0].source.label+'</a>')
+										.join(', ');
 
 
 	//----------
@@ -214,10 +226,14 @@ function mapInit(sel, cb)	{
 		}),
 
 		CartoDB_DarkMatterNoLabels:L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
-			attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+			//attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+			attribution: [
+				'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+				'Data: '+attribution,
+			].join('<br>'),
 			subdomains: 'abcd',
 			maxZoom: 19,
-			minZoom:2,
+			minZoom:1,
 			opacity:1,
 		}),
 
@@ -299,6 +315,86 @@ function mapInit(sel, cb)	{
 			    });
 
 		});
+
+
+
+
+	//-----------------------------------
+	//
+	//-----------------------------------
+	var svgmap = d3.select('.map-container');
+
+  M.leafletMap.on('movestart', mapmovestart);
+  M.leafletMap.on('moveend', mapmove);
+
+	function mapmovestart(e){
+		M.current.idle = moment();
+		svgmap.style('display','none');
+	}
+
+  function mapmove(e) {
+    //renderMapRedraw(data);
+   	mapPlotArea();
+    mapRender();
+		svgmap.style('display','block');
+  }
+
+  M.leafletMap.on('zoomstart', mapzoomstart);
+  M.leafletMap.on('zoomend', mapzoom);
+
+
+	function mapzoomstart(e){
+		M.current.idle = moment();
+		svgmap.style('display','none');
+	}
+
+  function mapzoom(e) {
+   	//renderMapRedraw(data);
+   	mapPlotArea();
+    mapRender();
+		svgmap.style('display','block');
+  }
+
+
+
+
+	mapPlotArea();
+
+	//-----------------------------
+	//  transform svgmap
+	//-----------------------------
+	function mapPlotArea()	{
+
+//		var collection = turf.featureCollection([
+//		  turf.point([-180,-90]),
+//		  turf.point([180,90]),
+//		]);
+
+		var collection = turf.featureCollection([
+		  turf.point([-180*2,-90*2]),
+		  turf.point([180*2,90*2]),
+		]);
+
+	  var bounds = M.point.bounds(collection);
+	  //dbg&&console.log('bounds', bounds);
+
+	  var topLeft = bounds[0];
+	  var bottomRight = bounds[1];
+		var margin = 0;
+
+		var svgmap = d3.select('.map-container');
+
+	  svgmap
+	  	.attr("width", bottomRight[0] - topLeft[0] + (margin*2))
+	    .attr("height", bottomRight[1] - topLeft[1] + (margin*2))
+	    .style("left", topLeft[0] - margin + "px")
+	    .style("top", topLeft[1] - margin + "px");
+
+		var g = d3.select('.markers-container');
+	  g.attr("transform", "translate(" + -(topLeft[0]+margin) + "," + -(topLeft[1]+margin) + ")")
+
+	}
+
 
  //svgmap = d3.select('.map-container');
 

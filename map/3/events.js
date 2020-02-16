@@ -38,6 +38,7 @@ function eventLayoutResize()	{
 
 
 	d3.select('.viz-countries').selectAll('*').remove();
+	d3.select('.viz-patients').selectAll('*').remove();
 
 }
 

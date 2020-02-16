@@ -35,7 +35,7 @@ function loadCache(cb)	{
 
 	loadMartine('hot','martine');
 	loadGeneric('hot', 'bnoregion');
-//	loadGeneric('hot', 'bnoplace');
+	loadGeneric('hot', 'bnoplace');
 //	loadGeneric('hot', 'casetracking');
 
 	loadCK('hot', 'cryptokass');

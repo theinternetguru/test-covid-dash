@@ -403,29 +403,39 @@ undefined (1)
 			if (j.id||j.row||j.row2)	{
 
 				var dt = moment(d['col-reporting date'],'M/D/YYYY');
-				if (dt && dt != 'Invalid date')	{
+				if (dt && dt.isValid)	{
 					j.date = +dt;
 					j.date_str = dt.format('YYYY-MM-DD');
 				}
 
-				var dt = moment(d['col-symptom_onset'],'M/D/YYYY');
-				if (dt.isValid) j.symptom_onset = dt.format('YYYY-MM-DD');
+				var so = moment(d['col-symptom_onset'],'M/D/YYYY');
+				if (so.isValid) j.symptom_onset = so.format('YYYY-MM-DD');
 
-				var dt = moment(d['col-hosp_visit_date'],'M/D/YYYY');
-				if (dt.isValid) j.hosp_visit = dt.format('YYYY-MM-DD');
+				var hp = moment(d['col-hosp_visit_date'],'M/D/YYYY');
+				if (hp.isValid) j.hosp_visit = hp.format('YYYY-MM-DD');
 
-				var dt = moment(d['col-exposure_start'],'M/D/YYYY');
-				if (dt.isValid) j.exposure_start = dt.format('YYYY-MM-DD');
+				var es = moment(d['col-exposure_start'],'M/D/YYYY');
+				if (es.isValid) j.exposure_start = es.format('YYYY-MM-DD');
 
-				var dt = moment(d['col-exposure_end'],'M/D/YYYY');
-				if (dt.isValid) j.exposure_end = dt.format('YYYY-MM-DD');
+				var ee = moment(d['col-exposure_end'],'M/D/YYYY');
+				if (ee.isValid) j.exposure_end = ee.format('YYYY-MM-DD');
 
-				if (moment(j.symptom_onset,'YYYY-MM-DD').isValid)	{
-					if (moment(j.exposure_end,'YYYY-MM-DD').isValid)	{
-						j.onset_days = moment(j.symptom_onset,'YYYY-MM-DD').diff(moment(j.exposure_end,'YYYY-MM-DD'),'days');
-					}else if (moment(j.exposure_start,'YYYY-MM-DD').isValid)	{
-						j.onset_days = moment(j.symptom_onset,'YYYY-MM-DD').diff(moment(j.exposure_start,'YYYY-MM-DD'),'days');
+				if (so.isValid)	{
+
+					if (ee.isValid)	{
+						j.exposure_end_days = Math.abs(so.diff(ee,'days'));
 					}
+
+					if (es.isValid)	{
+						j.exposure_start_days = Math.abs(so.diff(es,'days'));
+
+						if (ee.isValid)	{
+							j.exposure_days = Math.abs(ee.diff(es,'days'));
+						}
+					}
+
+					j.onset_days = j.exposure_start_days || j.exposure_end_days || null;
+
 				}
 
 				/*
@@ -446,8 +456,8 @@ undefined (1)
 					runny nose,
 					shortness of breath,
 					sore body,
-					sore throat,
-					throat pain
+
+					throat pain,sore throat,
 				*/
 
 				j.symptoms 		= d['col-symptom'].split(',').map(d=>d.replace(/^\s+|\s$/g,'')).filter(d=>d!='')
@@ -457,13 +467,20 @@ undefined (1)
 													d = d.replace(/feaver/,'fever');
 													d = d.replace(/myalgias/,'myalgia');
 													if (d=='feve') d='fever';
+
+													if (d.match(/flu/)) d='flu';
+													if (d.match(/cough/)) d='coughs';
+													if (d.match(/throat/)) d='throat pain/sore';
+													if (d.match(/fever/)) d='fever';
+													if (d.match(/muscle/)) d='muscle pain/cramps';
+													if (d.match(/breath/)) d='difficulty breathing';
 													return d;
 												});
 
 				j.age 				= d['col-age'];
 				j.gender			= d['col-gender'];
 				if (j.gender=='emale') j.gender='female';
-				if (j.gender=='') j.gender='?';
+//				if (j.gender=='') j.gender='?';
 
 				j.visit_wuhan = +d['col-visiting Wuhan'];
 				j.from_wuhan 	= +d['col-from Wuhan'];
