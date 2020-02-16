@@ -8,6 +8,7 @@ function vizPatients(from, to, cb)	{
 			dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
 	if (dbg){ console.group(f); console.time(f) };
 
+	if (innerWidth < 800) return;
 
 
 	var bb = d3.select('.content-map').node().getBoundingClientRect();

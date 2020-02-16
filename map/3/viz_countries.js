@@ -9,6 +9,7 @@ function vizCountries(data, maxValue, cb)	{
 	if (dbg){ console.group(f); console.time(f) };
 
 	if (!data||!data.length) return;
+	if (innerWidth < 400) return;
 
 	var bb = d3.select('.content-map').node().getBoundingClientRect();
 
