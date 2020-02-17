@@ -55,10 +55,8 @@ function loadBNOEvents(grp, key, cb)	{
 		//-----------------------------
 		//  add extra cases in december
 		//-----------------------------
-		var xtra;
+		var xtra=[];
 		if (M.data.first41)	{
-
-
 			xtra = M.data.first41.filter(d=>d.diff_confirmed!=0 && d.date_str <= '2019-12-30')
 							.map(d=>{
 								return {

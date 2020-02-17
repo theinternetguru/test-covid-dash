@@ -197,9 +197,18 @@ M.config.data = {
 			key:'jhu',
 			type:'csv',
 			urls:[
-				M.config.path.jhudata+'/archived_data/time_series/time_series_2019-ncov-Confirmed.csv',
-				M.config.path.jhudata+'/archived_data/time_series/time_series_2019-ncov-Deaths.csv',
-				M.config.path.jhudata+'/archived_data/time_series/time_series_2019-ncov-Recovered.csv',
+//				M.config.path.jhudata+'/archived_data/time_series/time_series_2019-ncov-Confirmed.csv',
+//				M.config.path.jhudata+'/archived_data/time_series/time_series_2019-ncov-Deaths.csv',
+//				M.config.path.jhudata+'/archived_data/time_series/time_series_2019-ncov-Recovered.csv',
+
+//				M.config.path.jhudata+'/archived_data/archived_time_series/time_series_2019-ncov-Confirmed.csv',
+//				M.config.path.jhudata+'/archived_data/archived_time_series/time_series_2019-ncov-Deaths.csv',
+//				M.config.path.jhudata+'/archived_data/archived_time_series/time_series_2019-ncov-Recovered.csv',
+
+				M.config.path.jhudata+'/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv',
+				M.config.path.jhudata+'/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv',
+				M.config.path.jhudata+'/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Recovered.csv',
+
 			],
 			source:{
 				url:'https://github.com/CSSEGISandData/COVID-19',

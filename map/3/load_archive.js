@@ -33,27 +33,6 @@ function loadArchive_first41(cb)	{
 	// archive
 	//----------
 	var key = 'first41';
-//
-//	M.db[key]= new PouchDB(key);
-//  M.db[key].allDocs({include_docs: true}, function(err, doc) {
-//
-//		//dbg&&console.log('key', key);
-//  	//dbg&&console.log('M.db.'+key, doc.total_rows);
-//
-//    if (err || doc.total_rows==0) {
-//
-//    	loadLatest(key,  fEnd);
-//
-//    }else	{
-//
-//	    M.data[key] = doc.rows.map(d=>d.doc);
-//	    dbg&&console.log('[db]',key,M.data[key]);
-//
-//
-//	    loadCheck(fEnd);
-//
-//	  }
-//  });
 
 	loadLatest(key,  fEnd);
 
@@ -141,8 +120,6 @@ function loadArchive_first41(cb)	{
 					d.wetmarket_no 	= d.diff_wetmarket_no + dates[i-1].wetmarket_no;
 				}
 
-//				d._id = [d.date_str].join('_');
-//				M.db[key].put(d).catch(err=>{});
 
 			});
 
@@ -193,26 +170,6 @@ function loadArchive_ncovinfo(cb)	{
 	//----------
 	var key = 'ncovinfo';
 
-//	M.db[key]= new PouchDB(key);
-//  M.db[key].allDocs({include_docs: true}, function(err, doc) {
-//
-//		//dbg&&console.log('key', key);
-//  	//dbg&&console.log('M.db.'+key, doc.total_rows);
-//
-//    if (err || doc.total_rows==0) {
-//
-//    	loadLatest(key,  fEnd);
-//
-//    }else	{
-//
-//	    M.data[key] = doc.rows.map(d=>d.doc);
-//	    dbg&&console.log('[db]',key,M.data[key]);
-//
-//	   	//loadLatest(key,  fEnd);
-//
-//	  }
-//  });
-
 	loadLatest(key,  fEnd);
 
 	//-----------------------------
@@ -228,16 +185,6 @@ function loadArchive_ncovinfo(cb)	{
 
 		var reqs = [];
 		var datasource = M.config.data.cold.find(d=>d.key==key);
-
-//		if (datasource.type=='tsv')	{
-//			reqs.push(d3.tsv(datasource.url));
-//		}else if (datasource.type=='csv')	{
-//			reqs.push(d3.csv(datasource.url));
-//		}else if (datasource.url=='json')	{
-//			reqs.push(d3.json(datasource.url));
-//		}else	{
-//			reqs.push(d3.text(datasource.url));
-//		}
 
 		switch(datasource.type) {
 		  case 'tsv':
