@@ -77,10 +77,12 @@ function vizEvents(date, cb)	{
 		rows.forEach((d,i)=>{
 			if (i>0)	{
 				if (d.px - rows[i-1].px < 150)	{
-					if (i==2)	{
-						d.dx = d.dx + 120;
-					}else	{
-						rows[i-1].dx = rows[i-1].dx - 120;
+					if (Math.abs(d.py) - Math.abs(rows[i-1].py)<100)	{
+						if (i==2)	{
+							d.dx = d.dx + 120;
+						}else	{
+							rows[i-1].dx = rows[i-1].dx - 120;
+						}
 					}
 				}
 			}

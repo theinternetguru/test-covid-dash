@@ -229,7 +229,7 @@ function mapInit(sel, cb)	{
 			//attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
 			attribution: [
 				'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-				'Data sources: '+attribution+',...',
+				'Data: '+attribution+',...',
 			].join('<br>'),
 			subdomains: 'abcd',
 			maxZoom: 19,
