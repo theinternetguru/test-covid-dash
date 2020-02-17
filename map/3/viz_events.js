@@ -56,8 +56,8 @@ function vizEvents(date, cb)	{
 //
 //								d.dx = d3.shuffle([-50,-40,-30,30,40,50])[0];
 //								d.dy = d3.shuffle([30,40,50,60,70])[0];
-								d.dx = -50;
-								d.dy = 50;
+								d.dx = d.longitude < 80 ? 50 : -50;
+								d.dy = d.latitude > 31 ? 100 : 50;
 
 								return d;
 							});
