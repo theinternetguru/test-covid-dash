@@ -233,37 +233,117 @@ function vizPatients_symptoms(sel, data, from, to, cb)	{
 	if (dbg){ console.group(f); console.time(f) };
 
 
-	dbg&&console.log('data', data);
-
-	data = data.filter(d=>d.symptoms.length);
-
-	var nest=d3.nest()
-						.key(d=>d)
-						.entries(
-							d3.merge(data.map(d=>d.symptoms))
-						)
-						.map(d=>{
-							var m = data.filter(k=>k.symptoms.indexOf(d.key)>-1)
-							d.perc = (m.length/data.length)*100;
-							return d;
-						});
-
-	nest.sort(d3.comparator().order(d3.descending, d=>d.values.length));
-	nest = nest.slice(0,15);
-
-	dbg&&console.log('nest', nest);
-
-	var max = d3.max(nest,d=>d.values.length)||0;
-	var scale = d3.scaleLinear().domain([0,max]).range([0, d3.min([50,max]) ]);
+	var statuses=['death','recovered','active'];
+	var clr = {
+		active:0,
+		death:1,
+		recovered:2,
+	};
 
 	var bh = 11,
 			bw = 100;
 
-	sel.call(vizPatients_render, nest, scale, bw, bh, 'value', 'string', 'Common Symptoms', '* multiple symptoms per person', fEnd);
+
+
+	dbg&&console.log('data', data);
+
+	data = data.filter(d=>d.symptoms.length);
+
+
+	var nest=d3.nest()
+						.key(d=>d.symptom)
+						.key(d=>d.status)
+						.entries(
+							d3.merge(
+								data.map(d=>
+									d.symptoms.map(k=>{
+										return {
+											status:d.status,
+											symptom:k
+										}
+									})
+								)
+							)
+						)
+						.map(d=>{
+
+							//var m = data.filter(k=>k.symptoms.map(d=>d.symptom).indexOf(d.key)>-1);
+							//d.perc = (m.length/data.length)*100;
+
+							var m = data.filter(k=>k.symptoms.map(d=>d).indexOf(d.key)>-1);
+
+							d.total = m.length;
+							d.perc = (d.total/data.length)*100;
+
+							statuses.forEach(s=>{
+								d[s]={};
+								d[s].total = d3.sum(d.values, j=>j.key==s && j.values.length || 0);
+								d[s].perc = (d[s].total/data.length)*100;
+							});
+
+							return d;
+						});
+
+
+//	nest.sort(d3.comparator().order(d3.descending, d=>d.total));
+//	nest = nest.slice(0,15);
+
+	dbg&&console.log('nest', nest);
+
+	var max = d3.max(nest,d=>d.total)||0;
+	var scale = d3.scaleLinear().domain([0,max]).range([0, d3.min([50,max]) ]);
+
+	sel.call(
+		vizPatients_renderSubStatus,
+		nest, scale, bw, bh, 'value', 'string',
+		'Common Symptoms', '* multiple symptoms per person',
+		statuses, clr,
+		fEnd
+	);
 
 }
 
 
+//
+////==================================================================
+////
+////==================================================================
+//function vizPatients_symptoms(sel, data, from, to, cb)	{
+//	var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
+//			dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+//	if (dbg){ console.group(f); console.time(f) };
+//
+//
+//	dbg&&console.log('data', data);
+//
+//	data = data.filter(d=>d.symptoms.length);
+//
+//	var nest=d3.nest()
+//						.key(d=>d)
+//						.entries(
+//							d3.merge(data.map(d=>d.symptoms))
+//						)
+//						.map(d=>{
+//							var m = data.filter(k=>k.symptoms.indexOf(d.key)>-1)
+//							d.perc = (m.length/data.length)*100;
+//							return d;
+//						});
+//
+//	nest.sort(d3.comparator().order(d3.descending, d=>d.values.length));
+//	nest = nest.slice(0,15);
+//
+//	dbg&&console.log('nest', nest);
+//
+//	var max = d3.max(nest,d=>d.values.length)||0;
+//	var scale = d3.scaleLinear().domain([0,max]).range([0, d3.min([50,max]) ]);
+//
+//	var bh = 11,
+//			bw = 100;
+//
+//	sel.call(vizPatients_render, nest, scale, bw, bh, 'value', 'string', 'Common Symptoms', '* multiple symptoms per person', fEnd);
+//
+//}
+//
 
 
 //==================================================================
@@ -274,11 +354,17 @@ function vizPatients_status(sel, data, from, to, cb)	{
 			dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
 	if (dbg){ console.group(f); console.time(f) };
 
+	var clr = {
+		active:0,
+		death:1,
+		recovered:2,
+	};
 
 	dbg&&console.log('data', data);
 
 	var nest=d3.nest()
-								.key(d=>d.death==1 ? 'death' : d.recovered==1 ? 'recovered' : 'not specified'  )
+								//.key(d=>d.death==1 ? 'death' : d.recovered==1 ? 'recovered' : 'not specified'  )
+								.key(d=>d.status)
 								.entries(data)
 									.map(d=>{
 										d.perc = (d.values.length/data.length)*100;
@@ -293,7 +379,7 @@ function vizPatients_status(sel, data, from, to, cb)	{
 	var bh = 11,
 			bw = 100;
 
-	sel.call(vizPatients_render, nest, scale, bw, bh, 'value', 'string', 'Status', null, fEnd);
+	sel.call(vizPatients_render, nest, scale, bw, bh, 'value', 'string', 'Status', null, clr, fEnd);
 
 }
 
@@ -308,33 +394,91 @@ function vizPatients_gender(sel, data, from, to, cb)	{
 	if (dbg){ console.group(f); console.time(f) };
 
 
+	var statuses=['death','recovered','active'];
+	var clr = {
+		active:0,
+		death:1,
+		recovered:2,
+	};
+
 	dbg&&console.log('data', data);
 
 //	data = data.filter(d=>d.gender!='');
 
 	var nest=d3.nest()
 								.key(d=>d.gender==''? 'not specified' : d.gender  )
+								.key(d=>d.status  )
 								.entries(data)
 									.map(d=>{
-										d.perc = (d.values.length/data.length)*100;
+
+//										d.total = d.values
+//										d.perc = (d.values.length/data.length)*100;
+
+										d.total = 0;
+										statuses.forEach(s=>{
+											d[s]={};
+											d[s].total = d3.sum(d.values, j=>j.key==s && j.values.length || 0);
+											d[s].perc = (d[s].total/data.length)*100;
+											d.total += d[s].total;
+										});
+
+										d.perc = (d.total/data.length)*100;
+
 										return d;
 									});
 
 
 	dbg&&console.log('nest', nest);
 
-	var max = d3.max(nest,d=>d.values.length)||0;
+	var max = d3.max(nest,d=>d.total)||0;
 	var scale = d3.scaleLinear().domain([0,max]).range([0, d3.min([50,max]) ]);
 
 	var bh = 11,
 			bw = 100;
 
-	sel.call(vizPatients_render, nest, scale, bw, bh, 'value', 'string', 'Gender', null, fEnd);
+	sel.call(vizPatients_renderSubStatus, nest, scale, bw, bh, 'value', 'string', 'Gender', null, statuses, clr, fEnd);
 
 
 }
 
 
+
+//
+////==================================================================
+////
+////==================================================================
+//function vizPatients_gender(sel, data, from, to, cb)	{
+//	var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
+//			dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+//	if (dbg){ console.group(f); console.time(f) };
+//
+//
+//	dbg&&console.log('data', data);
+//
+////	data = data.filter(d=>d.gender!='');
+//
+//	var nest=d3.nest()
+//								.key(d=>d.gender==''? 'not specified' : d.gender  )
+//								.entries(data)
+//									.map(d=>{
+//										d.perc = (d.values.length/data.length)*100;
+//										return d;
+//									});
+//
+//
+//	dbg&&console.log('nest', nest);
+//
+//	var max = d3.max(nest,d=>d.values.length)||0;
+//	var scale = d3.scaleLinear().domain([0,max]).range([0, d3.min([50,max]) ]);
+//
+//	var bh = 11,
+//			bw = 100;
+//
+//	sel.call(vizPatients_render, nest, scale, bw, bh, 'value', 'string', 'Gender', null, fEnd);
+//
+//
+//}
+//
 
 
 //==================================================================
@@ -383,26 +527,43 @@ function vizPatients_wuhan(sel, data, from, to, cb)	{
 	if (dbg){ console.group(f); console.time(f) };
 
 
+	var statuses=['death','recovered','active'];
+	var clr = {
+		active:0,
+		death:1,
+		recovered:2,
+	};
+
+
+	var bh = 11,
+			bw = 100;
+
+
 	dbg&&console.log('data', data);
 
 	var nest=d3.nest()
 								.key(d=>d.from_wuhan==1 ? 'from wuhan' : d.visit_wuhan ? 'visited wuhan' : '-'  )
+								.key(d=>d.status  )
 								.entries(data)
 								.map(d=>{
-									d.perc = (d.values.length/data.length)*100;
+									d.total = 0;
+									statuses.forEach(s=>{
+										d[s]={};
+										d[s].total = d3.sum(d.values, j=>j.key==s && j.values.length || 0);
+										d[s].perc = (d[s].total/data.length)*100;
+										d.total += d[s].total;
+									});
+									d.perc = (d.total/data.length)*100;
 									return d;
 								});
 
 
 	dbg&&console.log('nest', nest);
 
-	var max = d3.max(nest,d=>d.values.length)||0;
+	var max = d3.max(nest,d=>d.total)||0;
 	var scale = d3.scaleLinear().domain([0,max]).range([0, d3.min([50,max]) ]);
 
-	var bh = 11,
-			bw = 100;
-
-	sel.call(vizPatients_render, nest, scale, bw, bh, 'key', 'string', 'Wuhan Travellers', null, fEnd);
+	sel.call(vizPatients_renderSubStatus, nest, scale, bw, bh, 'key', 'string', 'Wuhan Travellers', null, statuses, clr, fEnd);
 
 
 }
@@ -425,15 +586,35 @@ function vizPatients_onset(sel, data, from, to, cb)	{
 	if (dbg){ console.group(f); console.time(f) };
 
 
+	var statuses=['death','recovered','active'];
+	var clr = {
+		active:0,
+		death:1,
+		recovered:2,
+	};
+
+
+	var bh = 11,
+			bw = 30;
+
+
 	dbg&&console.log('data', data);
 
 	data = data.filter(d=>d.onset_days);
 
 	var nest=d3.nest()
 								.key(d=>d.onset_days )
+								.key(d=>d.status  )
 								.entries(data)
 								.map(d=>{
-									d.perc = (d.values.length/data.length)*100;
+									d.total = 0;
+									statuses.forEach(s=>{
+										d[s]={};
+										d[s].total = d3.sum(d.values, j=>j.key==s && j.values.length || 0);
+										d[s].perc = (d[s].total/data.length)*100;
+										d.total += d[s].total;
+									});
+									d.perc = (d.total/data.length)*100;
 									return d;
 								});
 
@@ -442,16 +623,10 @@ function vizPatients_onset(sel, data, from, to, cb)	{
 
 
 
-
-
-
-	var max = d3.max(nest,d=>d.values.length)||0;
+	var max = d3.max(nest,d=>d.total)||0;
 	var scale = d3.scaleLinear().domain([0,max]).range([0, d3.min([50,max]) ]);
 
-	var bh = 11,
-			bw = 30;
-
-	sel.call(vizPatients_render, nest, scale, bw, bh, 'key', 'numeric', 'Days before symptoms', 'since exposure date', fEnd);
+	sel.call(vizPatients_renderSubStatus, nest, scale, bw, bh, 'key', 'numeric', 'Days before symptoms', 'since exposure date', statuses, clr, fEnd);
 
 
 }

@@ -488,6 +488,8 @@ undefined (1)
 				j.death 			= +d['col-death'];
 				j.recovered 	= +d['col-recovered'];
 
+				j.status 			= j.death==1 ? 'death' : j.recovered==1 ? 'recovered' : 'active';
+
 				j.country		 	= d['col-country'];
 				j.region		 	= d['col-location'];
 

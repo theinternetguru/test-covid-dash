@@ -39,14 +39,15 @@ function loadBNOEvents(grp, key, cb)	{
 			return d;
 		});
 
-		var loc = M.data.martine.find(d=>d.location=='Hubei');
-		if (loc)	{
-			locations.filter(d=>d.location_id==1).forEach(d=>{
-				d.latitude = loc.latitude;
-				d.longitude = loc.longitude;
-			});
+		if (M.data.martine)	{
+			var loc = M.data.martine.find(d=>d.location=='Hubei');
+			if (loc)	{
+				locations.filter(d=>d.location_id==1).forEach(d=>{
+					d.latitude = loc.latitude;
+					d.longitude = loc.longitude;
+				});
+			}
 		}
-
 
 		dbg&&console.log('locations',locations);
 

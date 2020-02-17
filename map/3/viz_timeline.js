@@ -425,7 +425,8 @@ function vizTimeline_chart(sel, bb, cb)	{
 		.attr('transform','translate('+(x(moment(k.key)))+',0)');
 
 
-	M.current.play=true;
+	if (M.current.disableautoplay) M.current.disableautoplay=true;
+	if (!M.current.disableautoplay) M.current.play=true;
 	window.setTimeout(animatePlotsInit,2000);
 
 
