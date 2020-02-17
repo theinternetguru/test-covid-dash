@@ -229,7 +229,7 @@ function mapInit(sel, cb)	{
 			//attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
 			attribution: [
 				'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-				'Data: '+attribution,
+				'Data sources: '+attribution+',...',
 			].join('<br>'),
 			subdomains: 'abcd',
 			maxZoom: 19,
@@ -393,7 +393,17 @@ function mapInit(sel, cb)	{
 	    .style("top", topLeft[1] - margin + "px");
 
 		var g = d3.select('.markers-container');
-	  g.attr("transform", "translate(" + -(topLeft[0]+margin) + "," + -(topLeft[1]+margin) + ")")
+	  g.attr("transform", "translate(" + -(topLeft[0]+margin) + "," + -(topLeft[1]+margin) + ")");
+
+//
+//	  d3.select('.svg-events')
+//	  	.attr("width", bottomRight[0] - topLeft[0] + (margin*2))
+//	    .attr("height", bottomRight[1] - topLeft[1] + (margin*2))
+//	    .style("left", topLeft[0] - margin + "px")
+//	    .style("top", topLeft[1] - margin + "px")
+//	    .select('.g-events')
+//	    	.attr("transform", "translate(" + -(topLeft[0]+margin) + "," + -(topLeft[1]+margin) + ")");
+
 
 	}
 

@@ -13,65 +13,93 @@ function vizEvents(date, cb)	{
 		return;
 	}
 
-	var data = M.data.bnoevents.filter(d=>d.date_str==date);
-	if (!data||data.length==0)	{
-		data = M.data.bnoevents.filter(d=>d.date_str==moment(date).add(-1,'days').format('YYYY-MM-DD') );
-		if (!data||data.length==0)	{
-			data = M.data.bnoevents.filter(d=>d.date_str==moment(date).add(-2,'days').format('YYYY-MM-DD') );
-			if (!data||data.length==0)	{
-				data = M.data.bnoevents.filter(d=>d.date_str==moment(date).add(-3,'days').format('YYYY-MM-DD') );
-				if (!data||data.length==0)	{
-					data = M.data.bnoevents.filter(d=>d.date_str==moment(date).add(-4,'days').format('YYYY-MM-DD') );
-					if (!data||data.length==0)	{
-						data = M.data.bnoevents.filter(d=>d.date_str==moment(date).add(-5,'days').format('YYYY-MM-DD') );
+	if (!M.prev) M.prev={}
+
+	var cbb = d3.select('.content-map').node().getBoundingClientRect();
+
+	var rows=[];
+
+	d3.selectAll('.modes-points .bubble.key-confirmed')
+		.filter(d=>d.events.length>0)
+		.each(function(d,i){
+
+			var bb = d3.select(this).node().getBoundingClientRect();
+
+			var j = {...d};
+			j.bb = bb;
+			j.x = bb.x+(bb.width/2) - cbb.x;
+			j.y = bb.y+(bb.height/2) - cbb.y;
+
+			j.dx = 0;
+			j.dy = j.y < ((cbb.height/2)-10) ? -50 : 50;
+			if (j.y+j.dy < 100) j.dy = 200 - j.y;
+			if (j.y+j.dy > cbb.height-100) j.dy = cbb.height-100 - j.y;
+
+			j.note = {
+				title: [
+					'['+moment(d.events[0].date).format('D MMM')+']',
+					[
+						d.events[0].location.region||d.events[0].location.location,
+						d.events[0].location.country_code||d.events[0].location.country
+					].join(', '),
+				].join(' '),
+				label: d.events[0].description,
+			};
+
+			rows.push(j);
+		});
+
+
+	if (rows.length==0 && M.prev.events) {
+		rows = M.prev.events;
+	}
+
+
+	rows.sort(d3.comparator().order(d3.descending, d=>d.note.label.length));
+	rows = rows.slice(0,3);
+	rows.sort(d3.comparator().order(d3.ascending, d=>d.x));
+
+	//-----------------------------
+	// simplistic annotation position calculation, need to improve this
+	//-----------------------------
+	var scale = d3.scaleLinear().domain([0,rows.length]).range([
+		-((rows.length*120)/2),
+		((rows.length*120)/2)
+	]);
+
+	rows.forEach((d,i)=>{
+		d.dx = (cbb.width/2) - d.x + scale(i);
+		d.px = d.x + d.dx;
+		d.py = d.y + d.dy;
+	});
+
+	if (rows.length>1)	{
+		rows.forEach((d,i)=>{
+			if (i>0)	{
+				if (d.px - rows[i-1].px < 150)	{
+					if (i==2)	{
+						d.dx = d.dx + 120;
+					}else	{
+						rows[i-1].dx = rows[i-1].dx - 120;
 					}
 				}
 			}
-		}
+		});
 	}
 
-	data = data.filter(d=>d.description.match(/first|who|death/i)||d.country_code!='MYS');
 
-	dbg&&console.log('data', date, data);
+	dbg&&console.log('rows', rows);
 
-	var nest = d3.nest()
-							.key(d=>[f3(d.location.latitude),f3(d.location.longitude)].join('-'))
-							.entries(data)
-							.map(d=>{
-
-
-								d.note = {
-									title: [d.values[0].location.region, d.values[0].location.country_code].join(', '),
-									label: d.values[0].description,
-								};
-
-								d.latitude = d.values[0].location.latitude;
-								d.longitude = d.values[0].location.longitude;
-
-								var p = M.leafletMap.latLngToLayerPoint(new L.LatLng(d.latitude, d.longitude));
-
-
-								d.x = p.x;
-								d.y = p.y;
-//
-//								d.dx = d3.shuffle([-50,-40,-30,30,40,50])[0];
-//								d.dy = d3.shuffle([30,40,50,60,70])[0];
-								d.dx = d.longitude < 80 ? 50 : -50;
-								d.dy = d.latitude > 31 ? 80 : 50;
-
-								return d;
-							});
-
-	dbg&&console.log('nest', nest);
-
-	d3.shuffle(nest);
+	M.prev.events = rows;
 
   var makeAnnotations = d3.annotation()
-    .type(d3.annotationLabel)
-    .annotations(nest.slice(0,1));
+    //.type(d3.annotationLabel)
+    //.type(d3.annotationCalloutElbow)
+    //.type(d3.annotationCalloutCurve)
+    .type(d3.annotationCalloutCircle)
 
+    .annotations(rows);
 
-	var bb = d3.select('.content-map').node().getBoundingClientRect();
 
 	var v = d3.select('.annotations').selectAll('.viz-events').data([1]);
 	v.exit().remove();
@@ -87,32 +115,35 @@ function vizEvents(date, cb)	{
 
 				sel.append('svg')
 					.attrs({
+						class:'svg-events',
 						width	:'100%',
 						height:'100%',
-					});
+						overflow:'visible',
+						'pointer-events':'none',
+					})
+					.append('g')
+						.attr('class','g-events');
 
 			})
 		.merge(v)
 			.styles({
-				left	:bb.x+'px',
-				top		:bb.y+'px',
-				width	:bb.width+'px',
-				height:bb.height+'px',
+				width	:cbb.width+'px',
+				height:cbb.height+'px',
+				left	:cbb.x+'px',
+				top		:cbb.y+'px',
 			})
 			.call(sel=>{
 
-				var c = sel.select('svg')
+				sel.select('.svg-events')
 					.attrs({
-						viewBox:[0,0,bb.width,bb.height].join(' '),
+						viewBox:[0,0,cbb.width,cbb.height].join(' '),
 						overflow:'hidden',
 					})
-					.call(makeAnnotations);
+					.select('.g-events')
+						.call(makeAnnotations);
 
 			});
 
-
-
 	fEnd();
-
 }
 

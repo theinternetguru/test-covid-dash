@@ -311,7 +311,7 @@ function vizTimeline_chart(sel, bb, cb)	{
 
 	var yTicks = d3.axisRight(yScale).ticks(5);
 
-	var bw = d3.max([ 5, x( moment(minDate).add(1,'days') ) - x( moment(minDate) ) - 1 ]);
+	var bw = d3.max([ 3, x( moment(minDate).add(1,'days') ) - x( moment(minDate) ) - 1 ]);
 
 	//-----------------------------------
 	// tests
@@ -427,6 +427,7 @@ function vizTimeline_chart(sel, bb, cb)	{
 
 	if (M.current.disableautoplay) M.current.disableautoplay=true;
 	if (!M.current.disableautoplay) M.current.play=true;
+
 	window.setTimeout(animatePlotsInit,2000);
 
 

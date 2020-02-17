@@ -116,6 +116,8 @@ html,body {
 		z-index: 9999;
 	}
 
+
+/*
     .annotation path {
       stroke: var(--accent-color);
       fill: none;
@@ -132,8 +134,12 @@ html,body {
     }
 
     .annotation-note-title {
-      font-weight: bold;
+      font-weight: 700;
     }
+*/
+
+
+
 
     .y-ticks-right .domain {
     	display:none;
@@ -165,7 +171,7 @@ html,body {
 	  	background:#262626;
 	  	color:steelblue;
 	  	text-align:right;
-	  	max-width:350px;
+	  	max-width:370px;
 	  }
 
 
@@ -180,18 +186,21 @@ html,body {
       stroke: var(--annotation-context-color);
     }
 
-/*
-    .annotation:not(.above):not(.anomaly) path {
-      stroke-dasharray: 1,3;
-    }
-*/
 
+    .annotation:not(.above):not(.anomaly) path {
+      /*stroke-dasharray: 1,3;*/
+      stroke:orange;
+      /*
+      shape-rendering:optimizeSpeed;
+      */
+    }
+
+
+/*
     .annotation text {
       fill: var(--annotation-context-color);
-      font-size:12px;
-			font-weight:400;
     }
-
+*/
     .annotation.above path {
       stroke: var(--annotation-above-color);
     }
@@ -214,8 +223,16 @@ html,body {
     }
 
     .annotation-note-title {
-      font-weight: bold;
+      font-size:12px;
+      font-weight: 500;
+      fill:orange;
     }
+
+		.annotation-note-label {
+      font-size:12px;
+			font-weight:400;
+			fill:#33E9E0;
+		}
 
 </style>
 

@@ -53,7 +53,7 @@ function mapRender(date, cb)	{
 		var scaleRadius = d3.scaleSqrt().domain([0, d3.max([maxConfirmed,maxDeaths])/2 ]).range([2,30]);
 
 //		var scaleColorConfirmed = d3.scaleSqrt().domain([0, d3.max([maxConfirmed,maxDeaths]) ]).range(['purple','purple']);
-		var scaleColorConfirmed = d3.scaleSqrt().domain([0, d3.max([maxConfirmed,maxDeaths]) ]).range(['purple','magenta']);
+		var scaleColorConfirmed = d3.scaleSqrt().domain([0, d3.max([maxConfirmed,maxDeaths]) ]).range(['mediumorchid','magenta']);
 		var scaleColorDeaths = d3.scaleSqrt().domain([0, d3.max([maxConfirmed,maxDeaths]) ]).range(['crimson','crimson']);
 
 		var todays = data.filter(d=>d.date_str==date);
@@ -84,6 +84,10 @@ function mapRender(date, cb)	{
 													var p = M.leafletMap.latLngToLayerPoint(new L.LatLng(d.latitude, d.longitude));
 													d.x = p.x;
 													d.y = p.y;
+
+													// events data
+													//d.events = M.data.bnoevents.filter(k=>k.date_str==date && k.location.region==d.location);
+													d.events = M.data.events.filter(k=>k.date_str==date && k.location.region==d.location);
 
 													return d;
 

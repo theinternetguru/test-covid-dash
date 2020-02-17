@@ -35,7 +35,7 @@ function loadCache(cb)	{
 
 	loadMartine('hot','martine');
 	loadGeneric('hot', 'bnoregion');
-	loadGeneric('hot', 'bnoplace');
+//	loadGeneric('hot', 'bnoplace');
 //	loadGeneric('hot', 'casetracking');
 
 	loadCK('hot', 'cryptokass');
@@ -43,6 +43,8 @@ function loadCache(cb)	{
 
 	loadCheck(fEnd);
 
+
+	window.setInterval(loadSummary, 60 * 10 * 1000);
 
 }
 
@@ -60,7 +62,7 @@ function loadCheck(cb)	{
 		M.data['first41']
 		&& M.data['martine']
 		&& M.data['bnoregion']
-		&& M.data['bnoplace']
+//		&& M.data['bnoplace']
 
 		&& M.data['cryptokass']
 		&& M.data['bnoevents']
@@ -73,6 +75,8 @@ function loadCheck(cb)	{
 
 			vizTimeline('daily', M.nest.daily);
 			map(fEnd);
+
+
 
 
 		});
@@ -231,5 +235,118 @@ function prepAll(cb)	{
 
 
 
+	prepEvents(fEnd);
+
+}
+
+
+
+
+
+//------------------------------------------------------------------
+//
+//------------------------------------------------------------------
+function prepEvents(cb)	{
+
+	var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
+	dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+	if (dbg){ console.group(f); console.time(f) };
+
+
+	//-----------------------------
+	//  filter
+	//-----------------------------
+	M.data.events = [];
+
+	try {
+		M.data.events = M.data.bnoevents
+										.filter(d=>
+											d._source=='first41' ||
+											d.description.match(/WHO|market|lockdown|doctor/i)
+										);
+	}catch(e){};
+
+
+	//-----------------------------
+	// build event narratives based on first confirmed/deaths cases
+	//-----------------------------
+
+	var countries = d3.nest()
+									.key(d=>d.country)
+									//.key(d=>d.date_str)
+									.entries(M.data.martine.filter(d=>d.country!='China'))
+									.map(d=>{
+										d.first_confirmed = d3.min(d.values,d=>d.date_str);
+										d.first_deaths = d3.min(d.values.filter(d=>d.deaths>0),d=>d.date_str)||null;
+
+										d.first_confirmed_cases = d.values.find(k=>k.date_str==d.first_confirmed).confirmed;
+										d.first_deaths_cases = d.values.find(k=>k.date_str==d.first_deaths)&&d.values.find(k=>k.date_str==d.first_deaths).deaths||0;
+
+										//d.values.sort(d3.comparator().order(d3.ascending,d=>d.date));
+
+
+										//-----------------------------
+										//  confirmed
+										//-----------------------------
+										d.values.filter(k=>k.date_str==d.first_confirmed)
+											.slice(0,1)
+											.forEach(k=>{
+
+												var j={
+													date: +moment(k.date_str),
+													date_str:k.date_str,
+													description: [
+														'First',
+														(d.first_confirmed_cases==1?'confirmed case':d.first_confirmed_cases+' confirmed cases'),
+														'in',
+														d.key
+													].join(' '),
+												};
+
+												j.location = {...k};
+												j.location.region = j.location.location;
+
+												M.data.events.push(j);
+
+											});
+
+										//-----------------------------
+										// deaths
+										//-----------------------------
+										if (d.first_deaths){
+
+											d.values.filter(k=>k.date_str==d.first_deaths)
+												.slice(0,1)
+												.forEach(k=>{
+
+													var j={
+														date: +moment(k.date_str),
+														date_str:k.date_str,
+														description: [
+															'First',
+															(d.first_confirmed_cases==1?'death':d.first_confirmed_cases+' deaths'),
+															'in',
+															d.key
+														].join(' '),
+													};
+
+													j.location = {...k};
+													j.location.region = j.location.location;
+
+													M.data.events.push(j);
+
+												});
+
+										}
+
+										return d;
+									});
+
+	dbg&&console.log('countries',countries);
+
+	dbg&&console.log('M.data.events', M.data.events);
+
 	fEnd();
 }
+
+

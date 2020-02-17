@@ -272,7 +272,7 @@ M.config.data = {
 			],
 			source:{
 				url:'https://martinedoesgis.github.io/novel-coronavirus/map.html',
-				label:'Martine Does GIS',
+				label:'MartineDoesGIS',
 				source:{
 					url:'https://docs.google.com/spreadsheets/d/18X1VM1671d99V_yd-cnUI1j8oSG2ZgfU_q1HfOizErA/edit#gid=0',
 					label:'Worksheet',
