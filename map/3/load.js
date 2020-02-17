@@ -60,6 +60,11 @@ function loadCheck(cb)	{
 		M.data['first41']
 		&& M.data['martine']
 		&& M.data['bnoregion']
+		&& M.data['bnoplace']
+
+		&& M.data['cryptokass']
+		&& M.data['bnoevents']
+
 //		&& M.data['bnoplace']
 //		&& M.data['casetracking']
 		&& M.data['jhu']

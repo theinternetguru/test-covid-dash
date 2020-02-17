@@ -6,7 +6,7 @@
 function loadBNOEvents(grp, key, cb)	{
 
 	var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
-	dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+	dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
 	if (dbg){ console.group(f); console.time(f) };
 
 	var reqs = M.config.data[grp].find(d=>d.key==key).urls.map(d=>d3.tsv(d));
@@ -39,6 +39,15 @@ function loadBNOEvents(grp, key, cb)	{
 			return d;
 		});
 
+		var loc = M.data.martine.find(d=>d.location=='Hubei');
+		if (loc)	{
+			locations.filter(d=>d.location_id==1).forEach(d=>{
+				d.latitude = loc.latitude;
+				d.longitude = loc.longitude;
+			});
+		}
+
+
 		dbg&&console.log('locations',locations);
 
 
@@ -47,6 +56,8 @@ function loadBNOEvents(grp, key, cb)	{
 		//-----------------------------
 		var xtra;
 		if (M.data.first41)	{
+
+
 			xtra = M.data.first41.filter(d=>d.diff_confirmed!=0 && d.date_str <= '2019-12-30')
 							.map(d=>{
 								return {
