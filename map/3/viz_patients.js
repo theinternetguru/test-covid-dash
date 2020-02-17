@@ -626,7 +626,7 @@ function vizPatients_onset(sel, data, from, to, cb)	{
 	var max = d3.max(nest,d=>d.total)||0;
 	var scale = d3.scaleLinear().domain([0,max]).range([0, d3.min([50,max]) ]);
 
-	sel.call(vizPatients_renderSubStatus, nest, scale, bw, bh, 'key', 'numeric', 'Days before symptoms', 'since exposure date', statuses, clr, fEnd);
+	sel.call(vizPatients_renderSubStatus, nest, scale, bw, bh, 'key', 'numeric:asc', 'Days before symptoms', 'since exposure date', statuses, clr, fEnd);
 
 
 }

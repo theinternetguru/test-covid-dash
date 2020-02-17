@@ -106,7 +106,8 @@ function vizPatients_renderSubStatus(sel, data, scale, bw, bh, sorter, datatype,
 								width:0,
 								height:bh-1,
 								fill:M.theme.colors[clr[k]],
-								stroke:k=='death'?M.theme.colors[clr[k]]:null,
+								//stroke:k=='death'?M.theme.colors[clr[k]]:null,
+								stroke:k=='death'?'crimson':null,
 							});
 
 					});
@@ -140,7 +141,10 @@ function vizPatients_renderSubStatus(sel, data, scale, bw, bh, sorter, datatype,
 
 				})
 			.merge(bar)
-				.sort(d3.comparator().order(d3.descending, d=>sorter=='key' ? datatype=='numeric' ? +d.key : d.key : d.values.length))
+				.sort(d3.comparator().order(
+					datatype.split(':')[1] && datatype.split(':')[1]=='asc' ? d3.ascending : d3.descending,
+					d=>sorter=='key' ? datatype.split(':')[0]=='numeric' ? +d.key : d.key : d.values.length)
+				)
 				.call(sel=>{
 
 					subs.forEach(s=>{
