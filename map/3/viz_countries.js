@@ -294,7 +294,7 @@ function vizCountries(data, maxValue, cb)	{
 
 					sel.select('.value')
 						.text(d=>[d.confirmed-d.deaths-d.recovered, d.deaths, d.recovered]
-											.map((d,i)=>comma(d)+' '+['active','deaths','recovered'][i])
+											.map((d,i)=>comma(d)+' '+(d==1 ? ['active','death','recovered'][i] : ['active','deaths','recovered'][i]))
 												.filter(d=>!d.match(/^0/))
 													.join(', '))
 						.transition()
