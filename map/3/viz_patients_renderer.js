@@ -143,7 +143,7 @@ function vizPatients_renderSubStatus(sel, data, scale, bw, bh, sorter, datatype,
 			.merge(bar)
 				.sort(d3.comparator().order(
 					datatype.split(':')[1] && datatype.split(':')[1]=='asc' ? d3.ascending : d3.descending,
-					d=>sorter=='key' ? datatype.split(':')[0]=='numeric' ? +d.key : d.key : d.values.length)
+					d=>sorter=='key' ? datatype.split(':')[0]=='numeric' ? +d.key : d.key : d.total)
 				)
 				.call(sel=>{
 

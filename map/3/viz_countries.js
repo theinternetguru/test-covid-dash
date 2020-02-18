@@ -32,11 +32,11 @@ function vizCountries(data, maxValue, cb)	{
 
 	var scaleChina = d3.scaleLinear()
 										.domain([0,maxChina])
-										.range([0, d3.min([ w-120, maxChina ]) ]);
+										.range([0, d3.min([ w-130, maxChina ]) ]);
 
 	var scaleWorld = d3.scaleLinear()
 										.domain([0,maxWorld])
-										.range([0, d3.min([ w-210, maxWorld ]) ]);
+										.range([0, d3.min([ w-230, maxWorld ]) ]);
 
 	var xTick1 = d3.axisTop(scaleChina).ticks(maxChina < 1000 ? 2 : 5);
 	var xTick2 = d3.axisTop(scaleWorld).ticks(maxWorld < 100 ? 2 : 5);

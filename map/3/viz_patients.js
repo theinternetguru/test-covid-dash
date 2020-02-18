@@ -267,8 +267,6 @@ function vizPatients_symptoms(sel, data, from, to, cb)	{
 						)
 						.map(d=>{
 
-							//var m = data.filter(k=>k.symptoms.map(d=>d.symptom).indexOf(d.key)>-1);
-							//d.perc = (m.length/data.length)*100;
 
 							var m = data.filter(k=>k.symptoms.map(d=>d).indexOf(d.key)>-1);
 
@@ -285,9 +283,6 @@ function vizPatients_symptoms(sel, data, from, to, cb)	{
 						});
 
 
-//	nest.sort(d3.comparator().order(d3.descending, d=>d.total));
-//	nest = nest.slice(0,15);
-
 	dbg&&console.log('nest', nest);
 
 	var max = d3.max(nest,d=>d.total)||0;
@@ -303,47 +298,6 @@ function vizPatients_symptoms(sel, data, from, to, cb)	{
 
 }
 
-
-//
-////==================================================================
-////
-////==================================================================
-//function vizPatients_symptoms(sel, data, from, to, cb)	{
-//	var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
-//			dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
-//	if (dbg){ console.group(f); console.time(f) };
-//
-//
-//	dbg&&console.log('data', data);
-//
-//	data = data.filter(d=>d.symptoms.length);
-//
-//	var nest=d3.nest()
-//						.key(d=>d)
-//						.entries(
-//							d3.merge(data.map(d=>d.symptoms))
-//						)
-//						.map(d=>{
-//							var m = data.filter(k=>k.symptoms.indexOf(d.key)>-1)
-//							d.perc = (m.length/data.length)*100;
-//							return d;
-//						});
-//
-//	nest.sort(d3.comparator().order(d3.descending, d=>d.values.length));
-//	nest = nest.slice(0,15);
-//
-//	dbg&&console.log('nest', nest);
-//
-//	var max = d3.max(nest,d=>d.values.length)||0;
-//	var scale = d3.scaleLinear().domain([0,max]).range([0, d3.min([50,max]) ]);
-//
-//	var bh = 11,
-//			bw = 100;
-//
-//	sel.call(vizPatients_render, nest, scale, bw, bh, 'value', 'string', 'Common Symptoms', '* multiple symptoms per person', fEnd);
-//
-//}
-//
 
 
 //==================================================================
