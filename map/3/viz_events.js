@@ -36,14 +36,16 @@ function vizEvents(date, cb)	{
 			if (j.y+j.dy > cbb.height-100) j.dy = cbb.height-100 - j.y;
 
 			j.note = {
-				title: [
-					'['+moment(d.events[0].date).format('D MMM')+']',
-					[
-						d.events[0].location.region||d.events[0].location.location,
-						d.events[0].location.country_code||d.events[0].location.country
-					].join(', '),
+				title: d3.nest()
+								.key(d=>d).entries([
+									d.events[0].location.region||d.events[0].location.location,
+									d.events[0].location.country_code||d.events[0].location.country
+								])
+								.map(d=>d.key).join(', '),
+				label: [
+					moment(d.events[0].date).format('D MMM')+' - ',
+					d.events[0].description
 				].join(' '),
-				label: d.events[0].description,
 			};
 
 			rows.push(j);
