@@ -33,6 +33,8 @@ M.requireds='config,layout,events'.split(/\s*,\s*/).concat([
 	'map',
 	'map_render',
 
+	'filters',
+
 ]);
 
 

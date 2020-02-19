@@ -87,7 +87,7 @@ function vizCountries(data, maxValue, cb)	{
 			.styles({
 				position:'absolute',
 				'z-index':8888,
-				'pointer-events':'none',
+//				'pointer-events':'none',
 			})
 		.merge(v)
 			.styles({
@@ -211,6 +211,13 @@ function vizCountries(data, maxValue, cb)	{
 					//transform:d=>'translate(0,'+d.bb.height+')',
 					transform:(d,i)=>'translate(0,'+(i*bh)+')',
 					opacity:0,
+					cursor:'pointer',
+				})
+				.on('click',d=>{
+					console.group('country');
+					console.log('d',d);
+					filterCountry(d.key);
+					console.groupEnd('country');
 				})
 				.call(sel=>{
 

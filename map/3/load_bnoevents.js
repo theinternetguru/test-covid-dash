@@ -63,7 +63,7 @@ function loadBNOEvents(grp, key, cb)	{
 									_source:'first41',
 									location_id:1,
 									date:d.date_str,
-									description: d.date_str=='2019-12-01' ? 'Patient Zero. First case showing symptoms of a "pneumonia of unknown cause"'
+									description: d.date_str=='2019-12-01' ? 'First patient showing symptoms of a "pneumonia of unknown cause"'
 															: d.date_str=='2019-12-10' ? d.diff_confirmed+' new cases. First patient associated with the wet market'
 															: d.diff_confirmed+' new cases. '+(d.diff_wetmarket_yes ? d.diff_wetmarket_yes+' related to wet market' : '')
 								};

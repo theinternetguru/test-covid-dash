@@ -185,6 +185,9 @@ function prepAll(cb)	{
 		d.date_str = d.key;
 
 		d.values.forEach(k=>{
+
+			k.valuesFiltered = k.values.filter(d=>!!d.country);
+
 			k.confirmed = d3.sum(k.values, d=>d.confirmed);
 			k.deaths 		= d3.sum(k.values, d=>d.deaths);
 			k.recovered = d3.sum(k.values, d=>d.recovered);

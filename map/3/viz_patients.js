@@ -18,11 +18,16 @@ function vizPatients(from, to, cb)	{
 
 	var data = M.data['cryptokass'].filter(d=>d.date_str>=from && d.date_str<=to);
 
+	var datum = {
+		key:'patients',
+		from:from,
+		to:to
+	};
 
 	//-----------------------------
 	// viz-countries
 	//-----------------------------
-	var v = d3.select('.annotations').selectAll('.viz-patients').data([{key:'patients'}], d=>d.key);
+	var v = d3.select('.annotations').selectAll('.viz-patients').data([datum], d=>d.key);
 	v.exit().remove();
 	v.enter()
 		.append('div')

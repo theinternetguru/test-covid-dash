@@ -11,7 +11,8 @@ function vizTimeline(key, data, cb)	{
 	if (dbg){ console.group(f); console.time(f) };
 
 
-	dbg&&console.log('data', data);
+	dbg&&console.log('key', key);
+//	dbg&&console.log('data', [...data]);
 
 
 	d3.select('.content-timeline')
@@ -131,7 +132,7 @@ function vizTimeline_chart(sel, bb, cb)	{
 	dbg=0, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
 	if (dbg){ console.group(f); console.time(f) };
 
-
+	dbg&&console.log('M.filters.country',M.filters.country);
 
 	var w = innerWidth-200,
 			h = parseInt(+d3.select('.content-timeline').style('height').replace('px','') - 2),
@@ -142,25 +143,23 @@ function vizTimeline_chart(sel, bb, cb)	{
 
 
 	var data = sel.data();
+
 	dbg&&console.log('data',data);
 
-	var nest = d3.nest().key(d=>d.date_str).entries(data[0]);
+	var minDataDate = d3.min(data[0], d=>d.date_str);
+	var maxDataDate = d3.max(data[0], d=>d.date_str);
 
-	dbg&&console.log('nest', nest);
+	dbg&&console.log('minDataDate',minDataDate);
+	dbg&&console.log('maxDataDate',maxDataDate);
 
-	var minDataDate = d3.min(data, d=>d.date_str);
-	var maxDataDate = d3.max(data, d=>d.date_str);
 
 
 	var maxSummaryDate = d3.max(M.data.summary, d=>moment(d.updated).format('YYYY-MM-DD'));
-	dbg&&console.log('maxSummaryDate',maxSummaryDate, moment(maxSummaryDate) > moment(maxDate));
-
-
-
-
+//	dbg&&console.log('maxSummaryDate',maxSummaryDate, moment(maxSummaryDate) > moment(maxDate));
 
 //	var minDate = '2020-01-01';
-	var minDate = '2019-11-30';
+//	var minDate = '2019-11-30';
+	var minDate = moment(minDataDate).add(-1,'days').format('YYYY-MM-DD');
 	var maxDate = maxDataDate;
 
 	var days100 = moment(minDate).add(100,'days').format('YYYY-MM-DD')
@@ -193,6 +192,12 @@ function vizTimeline_chart(sel, bb, cb)	{
 //	var datesBnoRegion 	= d3.extent(M.data.bnoregion, d=>d.date_str); // 2020-01-24", "2020-02-15
 
 
+
+	var nest = d3.nest().key(d=>d.date_str).entries(data[0]);
+	dbg&&console.log('nest', [...nest]);
+
+
+
 	days.forEach(d=>{
 
 		var dt = moment(d).format('YYYY-MM-DD');
@@ -222,12 +227,13 @@ function vizTimeline_chart(sel, bb, cb)	{
 		//-----------------------------
 		// latest from summary
 		//-----------------------------
-		if (dt==tdy)	{
-			j.confirmed = d3.max(M.data.summary, d=>d.confirmed);
-			j.deaths = d3.max(M.data.summary, d=>d.deaths);
-			j.recovered = d3.max(M.data.summary, d=>d.recovered);
+		if (!M.filters.country)	{
+			if (dt==tdy)	{
+				j.confirmed = d3.max([ prev.confirmed,  d3.max(M.data.summary, d=>d.confirmed) ]);
+				j.deaths 		= d3.max([ prev.deaths,  d3.max(M.data.summary, d=>d.deaths) ]);
+				j.recovered = d3.max([ prev.recovered,  d3.max(M.data.summary, d=>d.recovered) ]);
+			}
 		}
-
 
 		//-----------------------------
 		// no later than today
@@ -253,6 +259,7 @@ function vizTimeline_chart(sel, bb, cb)	{
 	//												: prev.countries_data;
 
 			var tmp = j.values[0]&&j.values[0].values;
+
 			if (tmp)	{
 				j.countries_data 	= tmp.find(d=>d.key=='first41') ? tmp.find(d=>d.key=='first41').countries
 													: tmp.find(d=>d.key=='bnoplace') ? tmp.find(d=>d.key=='bnoplace').countries
@@ -415,20 +422,24 @@ function vizTimeline_chart(sel, bb, cb)	{
 	var k = dates.filter(d=>d.confirmed||d.deaths||d.recovered)[0];
 	dbg&&console.log('k',k);
 
-	d3.select('.date-info')
-		.style('display','block')
-		.style('left', 100+(x(moment(k.key))-50+(bw/2))+'px')
-		.select('.date-info-text')
-			.text(moment(k.key).format('ddd, D MMM'));
+	if (k)	{
 
-	d3.select('.y-labels-right')
-		.attr('transform','translate('+(x(moment(k.key)))+',0)');
+		d3.select('.date-info')
+			.style('display','block')
+			.style('left', 100+(x(moment(k.key))-50+(bw/2))+'px')
+			.select('.date-info-text')
+				.text(moment(k.key).format('ddd, D MMM'));
 
+		d3.select('.y-labels-right')
+			.attr('transform','translate('+(x(moment(k.key)))+',0)');
+
+	}
 
 	if (M.current.disableautoplay) M.current.disableautoplay=true;
 	if (!M.current.disableautoplay) M.current.play=true;
 
-	window.setTimeout(animatePlotsInit,2000);
+	//window.setTimeout(animatePlotsInit,2000);
+	window.setTimeout(animatePlotsInit,500);
 
 
 
@@ -517,6 +528,7 @@ function vizTimeline_chart(sel, bb, cb)	{
 						x:d=>x(moment(d.key)),
 						width:bw-1,
 						y:bh,
+						height:0,
 					});
 
 

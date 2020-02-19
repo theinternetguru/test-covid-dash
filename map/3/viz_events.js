@@ -59,37 +59,37 @@ function vizEvents(date, cb)	{
 
 	rows.sort(d3.comparator().order(d3.descending, d=>d.note.label.length));
 	rows = rows.slice(0,3);
-	rows.sort(d3.comparator().order(d3.ascending, d=>d.x));
+
 
 	//-----------------------------
-	// simplistic annotation position calculation, need to improve this
+	// simple positioning of annotation, need to improve this
 	//-----------------------------
-	var scale = d3.scaleLinear().domain([0,rows.length]).range([
+	var scaleX = d3.scaleLinear().domain([0,rows.length]).range([
 		-((rows.length*120)/2),
 		((rows.length*120)/2)
 	]);
 
+	var scaleY = d3.scaleLinear().domain([0,rows.length]).range([
+		-((rows.length*80)/2),
+		((rows.length*80)/2)
+	]);
+
+	rows.sort(d3.comparator().order(d3.ascending, d=>d.x));
+
 	rows.forEach((d,i)=>{
-		d.dx = (cbb.width/2) - d.x + scale(i);
+		d.dx = (cbb.width/2) - d.x + scaleX(i);
 		d.px = d.x + d.dx;
-		d.py = d.y + d.dy;
 	});
 
-	if (rows.length>1)	{
-		rows.forEach((d,i)=>{
-			if (i>0)	{
-				if (d.px - rows[i-1].px < 150)	{
-					if (Math.abs(d.py) - Math.abs(rows[i-1].py)<100)	{
-						if (i==2)	{
-							d.dx = d.dx + 120;
-						}else	{
-							rows[i-1].dx = rows[i-1].dx - 120;
-						}
-					}
-				}
-			}
-		});
-	}
+	rows.sort(d3.comparator().order(d3.descending, d=>d.y));
+
+	rows.forEach((d,i)=>{
+		d.dy = (cbb.height/2) - d.y + scaleY(i);
+		d.py = d.y + d.dy;
+		if (d.py < 30) d.dy = d.dy + 30;
+	});
+
+
 
 
 	dbg&&console.log('rows', rows);
