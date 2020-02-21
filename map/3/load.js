@@ -32,10 +32,11 @@ function loadCache(cb)	{
 	loadArchive();
 
 	loadJHU('hot', 'jhu');
+	loadJHU('cold', 'jhuarchive');
 
 	loadMartine('hot','martine');
 	loadGeneric('hot', 'bnoregion');
-//	loadGeneric('hot', 'bnoplace');
+	loadGeneric('hot', 'bnoplace');
 //	loadGeneric('hot', 'casetracking');
 
 	loadCK('hot', 'cryptokass');
@@ -70,16 +71,16 @@ function loadCheck(cb)	{
 //		&& M.data['bnoplace']
 //		&& M.data['casetracking']
 		&& M.data['jhu']
+		&& M.data['jhuarchive']
 	){
+
 		prep(function(){
 
 			vizTimeline('daily', M.nest.daily);
 			map(fEnd);
 
-
-
-
 		});
+
 	}
 
 }
@@ -134,12 +135,16 @@ function prep(cb)	{
 	}
 
 
+	//-----------------------------
+	// include in daily calculations
+	//-----------------------------
 
 	all = all.concat(M.data['martine']);
 //	all = all.concat(M.data['bnoregion']);
 //	all = all.concat(M.data['bnoplace']);
 //	all = all.concat(M.data['casetracking']);
 	all = all.concat(M.data['jhu']);
+	all = all.concat(M.data['jhuarchive']);
 
 	//-----------------------------
 	//
@@ -170,7 +175,7 @@ function prepAll(cb)	{
 	if (dbg){ console.group(f); console.time(f) };
 
 
-
+	dbg&&console.log('_source', d3.nest().key(d=>d._source).entries(M.data.all));
 
 	M.nest.daily = d3.nest()
 								.key(d=>d.date_str)

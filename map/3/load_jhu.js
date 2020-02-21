@@ -92,21 +92,24 @@ function loadJHU(grp, key, cb)	{
 		});
 
 
-		dbg&&console.log('rows',rows);
-
-		M.data[key]=[];
-
-		//-----------------------------
-		//  collect last dataset of the day
-		//-----------------------------
-		d3.nest()
-				.key(d=>d.date_str)
-				.key(d=>d.datetime)
-				.entries(rows)
-					.forEach(d=>{
-						d.values.sort(d3.comparator().order(d3.descending, d=>d.key));
-						M.data[key] = M.data[key].concat(d.values[0].values);
-					});
+		M.data[key]=rows;
+//
+//		dbg&&console.log('rows',rows);
+//
+//		M.data[key]=[];
+//
+//		//-----------------------------
+//		//  collect last dataset of the day
+//		//-----------------------------
+//		d3.nest()
+//				.key(d=>d.date_str)
+//				//.key(d=>d.datetime)
+//				.entries(rows)
+//					.forEach(d=>{
+//						d.values.sort(d3.comparator().order(d3.descending, d=>d.key));
+//						//M.data[key] = M.data[key].concat(d.values[0].values);
+//						M.data[key] = M.data[key].concat(d.values);
+//					});
 
 		dbg&&console.log('M.data['+key+']',M.data[key]);
 
@@ -117,6 +120,8 @@ function loadJHU(grp, key, cb)	{
 
 
 }
+
+
 
 
 

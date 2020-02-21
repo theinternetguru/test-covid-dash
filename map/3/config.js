@@ -170,7 +170,25 @@ M.config.data = {
 					}
 				}
 			}
-		}
+		},
+
+
+
+		{
+			key:'jhuarchive',
+			type:'csv',
+			urls:[
+
+				M.config.path.cvdata+'/archive/jhu/20200220-time_series_19-covid-Confirmed.csv',
+				M.config.path.cvdata+'/archive/jhu/20200220-time_series_19-covid-Deaths.csv',
+				M.config.path.cvdata+'/archive/jhu/20200220-time_series_19-covid-Recovered.csv',
+
+			],
+			source:{
+				url:'https://github.com/CSSEGISandData/COVID-19',
+				label:'Johns Hopkins University',
+			}
+		},
 
 	],
 
@@ -215,7 +233,6 @@ M.config.data = {
 				label:'Johns Hopkins University',
 			}
 		},
-
 
 		{
 			key:'bnoregion',

@@ -263,6 +263,7 @@ function vizTimeline_chart(sel, bb, cb)	{
 			if (tmp)	{
 				j.countries_data 	= tmp.find(d=>d.key=='first41') ? tmp.find(d=>d.key=='first41').countries
 													: tmp.find(d=>d.key=='bnoplace') ? tmp.find(d=>d.key=='bnoplace').countries
+													: tmp.find(d=>d.key=='jhuarchive') ? tmp.find(d=>d.key=='jhuarchive').countries
 													: tmp.find(d=>d.key=='jhu') ? tmp.find(d=>d.key=='jhu').countries
 													: tmp.find(d=>d.key=='bnoregion') ? tmp.find(d=>d.key=='bnoregion').countries
 													: tmp.find(d=>d.key=='martine') ? tmp.find(d=>d.key=='martine').countries
