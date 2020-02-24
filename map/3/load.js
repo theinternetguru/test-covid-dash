@@ -279,10 +279,16 @@ function prepEvents(cb)	{
 	// build event narratives based on first confirmed/deaths cases
 	//-----------------------------
 
+	var max_martine = d3.max(M.data.martine,d=>d.date_str);
+
+	var data = M.data.martine.filter(d=>d.country!='China');
+	data = data.concat(
+		M.data.jhu.filter(k=>k.date_str>max_martine && !k.country.match(/china/i) )
+	);
+
 	var countries = d3.nest()
 									.key(d=>d.country)
-									//.key(d=>d.date_str)
-									.entries(M.data.martine.filter(d=>d.country!='China'))
+									.entries(data)
 									.map(d=>{
 										d.first_confirmed = d3.min(d.values,d=>d.date_str);
 										d.first_deaths = d3.min(d.values.filter(d=>d.deaths>0),d=>d.date_str)||null;
@@ -312,7 +318,7 @@ function prepEvents(cb)	{
 												};
 
 												j.location = {...k};
-												j.location.region = j.location.location;
+												j.location.region = j.location.location||j.location.country;
 
 												M.data.events.push(j);
 
@@ -339,7 +345,7 @@ function prepEvents(cb)	{
 													};
 
 													j.location = {...k};
-													j.location.region = j.location.location;
+													j.location.region = j.location.location||j.location.country;
 
 													M.data.events.push(j);
 

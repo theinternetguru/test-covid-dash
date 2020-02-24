@@ -115,7 +115,10 @@ function mapRender(date, cb)	{
 
 													// events data
 													//d.events = M.data.bnoevents.filter(k=>k.date_str==date && k.location.region==d.location);
-													d.events = M.data.events.filter(k=>k.date_str==date && k.location.region==d.location);
+													d.events = M.data.events.filter(k=>k.date_str==date && (
+														d.location&&k.location.region==d.location
+														|| d.country&&k.location.country==d.country
+													));
 
 													return d;
 
