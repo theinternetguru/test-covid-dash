@@ -269,7 +269,7 @@ function vizCountries(data, maxValue, cb)	{
 				})
 			.merge(bar)
 				.sort(d3.comparator()
-					.order(d3.descending, d=>d.confirmed - d.deaths - d.recovered )
+					.order(d3.descending, d=>d.confirmed ? d.confirmed - d.deaths - d.recovered : 0 )
 					.order(d3.descending, d=>d.deaths )
 					.order(d3.descending, d=>d.recovered )
 				)
