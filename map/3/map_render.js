@@ -42,7 +42,16 @@ function mapRender(date, cb)	{
 
 
 		var data = M.data.martine.concat(M.data.first41);
+
+		var max_martine = d3.max(M.data.martine,d=>d.date_str);
+		data = data.concat(M.data.jhu.filter(k=>k.date_str>max_martine));
+
 		data = data.filter(d=>!!d.longitude && !!d.latitude);
+
+//		dbg&&console.log('data',data);
+
+
+		dbg&&console.log('countries',d3.nest().key(d=>d.country).entries(data));
 
 
 		var maxDate = d3.max(data,d=>d.date_str);
@@ -50,11 +59,22 @@ function mapRender(date, cb)	{
 		var maxDeaths = d3.max(data,d=>d.deaths);
 	//	var maxRecovered = d3.max(data,d=>d.recovered);
 
-		var scaleRadius = d3.scaleSqrt().domain([0, d3.max([maxConfirmed,maxDeaths])/2 ]).range([2,30]);
+
+
+		var maxConfirmedChina = d3.max(data.filter(d=>d.country.match(/china/i)),d=>d.confirmed);
+		var maxConfirmedWorld = d3.max(data.filter(d=>!d.country.match(/china/i)),d=>d.confirmed);
+
+		var scaleRadiusChina = d3.scaleSqrt().domain([0, maxConfirmedChina/2 ]).range([2,30]);
+		var scaleRadius = d3.scaleSqrt().domain([0, maxConfirmedWorld ]).range([2,20]);
 
 //		var scaleColorConfirmed = d3.scaleSqrt().domain([0, d3.max([maxConfirmed,maxDeaths]) ]).range(['purple','purple']);
 		var scaleColorConfirmed = d3.scaleSqrt().domain([0, d3.max([maxConfirmed,maxDeaths]) ]).range(['mediumorchid','magenta']);
 		var scaleColorDeaths = d3.scaleSqrt().domain([0, d3.max([maxConfirmed,maxDeaths]) ]).range(['crimson','crimson']);
+
+		dbg&&console.log('scaleRadiusChina',scaleRadiusChina.domain());
+		dbg&&console.log('scaleRadius',scaleRadius.domain());
+
+
 
 		var todays = data.filter(d=>d.date_str==date);
 
@@ -73,8 +93,16 @@ function mapRender(date, cb)	{
 													d.confirmed = d3.sum(d.values, d=>d.confirmed);
 													d.deaths = d3.sum(d.values, d=>d.deaths);
 
-													d.confirmed_radius = scaleRadius(d.confirmed);
-													d.deaths_radius = scaleRadius(d.deaths);
+
+													if (d.values[0].country.match(/china/i))	{
+														d.scaleRadius = scaleRadiusChina;
+														d.confirmed_radius = scaleRadiusChina(d.confirmed);
+														d.deaths_radius = scaleRadiusChina(d.deaths);
+													}else	{
+														d.scaleRadius = scaleRadius;
+														d.confirmed_radius = scaleRadius(d.confirmed);
+														d.deaths_radius = scaleRadius(d.deaths);
+													}
 
 													d.latitude = d.values[0].latitude;
 													d.longitude = d.values[0].longitude;
@@ -115,7 +143,7 @@ function mapRender(date, cb)	{
 												key:'confirmed',
 												value: 'confirmed',
 												color: scaleColorConfirmed,
-												radius: scaleRadius
+												radius: d.scaleRadius
 											};
 											d.properties = {
 												stroke:'#000',
@@ -135,7 +163,7 @@ function mapRender(date, cb)	{
 												key:'confirmed',
 												value: 'confirmed',
 												color: scaleColorConfirmed,
-												radius: scaleRadius
+												radius: d.scaleRadius
 											};
 //											d.properties = {
 //												stroke:'#fff',
@@ -168,7 +196,7 @@ function mapRender(date, cb)	{
 												key:'deaths',
 												value: 'deaths',
 												color: scaleColorDeaths,
-												radius: scaleRadius
+												radius: d.scaleRadius
 											};
 											d.properties = {
 												stroke:'#000',
@@ -190,7 +218,7 @@ function mapRender(date, cb)	{
 												key:'deaths',
 												value: 'deaths',
 												color: scaleColorDeaths,
-												radius: scaleRadius
+												radius: d.scaleRadius
 											};
 //											d.properties = {
 //												stroke:'#fff',
