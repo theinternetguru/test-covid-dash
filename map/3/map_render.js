@@ -40,11 +40,20 @@ function mapRender(date, cb)	{
 
 	}else	{
 
-
-		var data = M.data.martine.concat(M.data.first41);
-
 		var max_martine = d3.max(M.data.martine,d=>d.date_str);
-		data = data.concat(M.data.jhu.filter(k=>k.date_str>max_martine));
+		var min_jhu = d3.min(M.data.jhu,d=>d.date_str);
+
+		dbg&&console.log('max_martine', max_martine);
+		dbg&&console.log('min_jhu', min_jhu);
+
+//		var data = M.data.martine.concat(M.data.first41);
+//		data = data.concat(M.data.jhu.filter(k=>k.date_str>max_martine));
+
+		var data=[];
+		data = data.concat(M.data.first41);
+		data = data.concat(M.data.martine.filter(d=>d.date_str<min_jhu));
+		data = data.concat(M.data.jhu);
+
 
 		data = data.filter(d=>!!d.longitude && !!d.latitude);
 
