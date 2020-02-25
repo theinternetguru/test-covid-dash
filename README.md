@@ -8,7 +8,7 @@
 
 ## Screenshot
 
-![Screenshot as of 2020-02-26 03:06:00 +0800](//covid19.analitik.my/screenshot_20200226.png)
+![Screenshot as of 2020-02-26 03:06:00 +0800](https://covid19.analitik.my/screenshot_20200226.png)
 
 
 ## Data sources
@@ -20,5 +20,12 @@ Some already in use, some are listed here for possible future use
 
 - https://raw.githubusercontent.com/leebond/Wuhan-zhhh-wuh-outbound-flight-analysis/master/Data/wuhan_int_airport_outbound_Jan2020.csv
 
+- https://docs.google.com/spreadsheets/d/18X1VM1671d99V_yd-cnUI1j8oSG2ZgfU_q1HfOizErA/edit#gid=0
+
+- https://bnonews.com/index.php/2020/01/the-latest-coronavirus-cases/
+
+- https://docs.google.com/spreadsheets/d/169AP3oaJZSMTquxtrkgFYMSp4gTApLTTWqo25qCpjL0/edit#gid=794102682
+
+- https://martinedoesgis.github.io/novel-coronavirus/map.html
 - https://docs.google.com/spreadsheets/d/18X1VM1671d99V_yd-cnUI1j8oSG2ZgfU_q1HfOizErA/edit#gid=0
 
