@@ -204,8 +204,10 @@ function prepAll(cb)	{
 												.replace(/\bUS\b/i,'USA')
 												.replace(/\bOthers\b/i,'Japan')
 												.replace(/\bUnited Kingdom\b/i,'UK')
+												.replace(/\btaiwan\b/i,'China')
+												.replace(/\bmacau\b/i,'China')
+												.replace(/\bhong.*?kong\b/i,'China')
 											)
-											//.key(k=>k.country.replace(/United Arab Emirates/i,'UAE').toUpperCase())
 											.entries(k.values);
 
 			k.countries.forEach(k=>{
