@@ -105,9 +105,16 @@ function vizCountries(data, maxValue, cb)	{
 				var svg=sel.selectAll('svg').data(d=>[d], d=>d.key);
 				svg.enter()
 						.append('svg')
+//							.attrs({
+//								preserveAspectRatio:'none',
+//								//overflow:'hidden',
+//							})
 							.attrs({
-								preserveAspectRatio:'none',
-								//overflow:'hidden',
+								width:'100%',
+								height:'100%',
+								viewBox:'0 0 400 400',
+								preserveAspectRatio:'xMinYMin meet',
+								overflow:'hidden',
 							})
 							.call(sel=>{
 
@@ -135,9 +142,9 @@ function vizCountries(data, maxValue, cb)	{
 
 							})
 					.merge(svg)
-						.attrs({
-							viewBox:d=>[0,0,h,h].join(' '),
-						})
+//						.attrs({
+//							viewBox:d=>[0,0,h,h].join(' '),
+//						})
 						.call(sel=>{
 
 							sel.select('.g-axis-1')
