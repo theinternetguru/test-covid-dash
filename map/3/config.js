@@ -200,16 +200,24 @@ M.config.data = {
 			url: M.config.path.cvdata+'/data/summary.tsv'
 		},
 
-		{
-			key:'who',
-			type:'tsv',
-			urls:[
-			],
-			source:{
-				label:'WHO',
-				url:'https://www.who.int/emergencies/diseases/novel-coronavirus-2019/situation-reports',
-			}
-		},
+
+//		{
+//			notes: [
+//				{
+//					timestamp:'2020-02-26 01:52:49',
+//					note: 'no longer accessible without login',
+//				},
+//			],
+//			key:'who',
+//			type:'tsv',
+//			urls:[
+//				'https://who.maps.arcgis.com/apps/opsdashboard/index.html#/c88e37cfc43b4ed3baf977d77e4a0667',
+//			],
+//			source:{
+//				label:'WHO',
+//				url:'https://www.who.int/emergencies/diseases/novel-coronavirus-2019/situation-reports',
+//			}
+//		},
 
 		{
 			key:'jhu',
