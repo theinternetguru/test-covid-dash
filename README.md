@@ -29,3 +29,7 @@ Some already in use, some are listed here for possible future use
 - https://martinedoesgis.github.io/novel-coronavirus/map.html
 - https://docs.google.com/spreadsheets/d/18X1VM1671d99V_yd-cnUI1j8oSG2ZgfU_q1HfOizErA/edit#gid=0
 
+- https://docs.google.com/spreadsheets/d/e/2PACX-1vR71GS88y23TqAePPsMIyYm12_bkzeCwM5JMiP_qubIzWcrn_CdbTMFCOjorhkQ0Tu4axsU9f8J-5Ag/pubhtml?widget=true&headers=false#gid=0
+
+- https://covid2019.app/
+
