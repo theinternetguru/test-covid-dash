@@ -25,6 +25,8 @@ function loadMalaysia(grp, key, cb)	{
 		nest.forEach(l=>{
 
 				d3.timeDays(moment(dates[0]), moment(dates[1]).add(1,'days'))
+//				d3.timeDays(moment(dates[0]), moment())
+//				d3.timeDays(moment(dates[0]), moment().add(-1,'days'))
 					.forEach(d=>{
 
 						var k = {

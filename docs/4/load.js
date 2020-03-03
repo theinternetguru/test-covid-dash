@@ -104,16 +104,20 @@ function prep(cb)	{
 	//-----------------------------
 	var sets=['jhu'];
 
+	var dates = d3.extent(M.data['jhu'],d=>d.date_str);
+
 	sets.forEach(k=>{
 		M.data[k] = M.data[k].filter(d=>d.country!='Malaysia');
 	});
 
 	M.data.malaysia.forEach(d=>{
-		sets.forEach(k=>{
-			var j = {...d};
-			j._source=k;
-			M.data[k].push(j);
-		});
+		if (d.date_str<=dates[1])	{
+			sets.forEach(k=>{
+				var j = {...d};
+				j._source=k;
+				M.data[k].push(j);
+			});
+		}
 	});
 
 

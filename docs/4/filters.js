@@ -10,11 +10,11 @@ function filterCountry(ctry)	{
 		M.filters.country = ctry;
 	}
 
+
+//
+//	M.nest.daily = filtersTimeline(M.nest.daily);
 //	vizTimeline('daily', M.nest.daily);
 //	map();
-
-
-	M.nest.daily = filtersTimeline(M.nest.daily);
 
 }
 
