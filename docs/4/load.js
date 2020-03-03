@@ -99,19 +99,44 @@ function prep(cb)	{
 	if (dbg){ console.group(f); console.time(f) };
 
 
+
+	var todate = moment().format('YYYY-MM-DD');
+
 	//-----------------------------
-	// replace malaysia data
+	// populate current date with last available date
+	//-----------------------------
+	var sets = ['jhu','malaysia'];
+	sets.forEach(set=>{
+
+		var dates = d3.extent(M.data[set],d=>d.date_str);
+		dbg&&console.log('dates', dates);
+
+		if (dates[1] < todate)	{
+			var lastDates = M.data[set].filter(k=>k.date_str==dates[1]);
+			d3.timeDays(moment(dates[1]).add(1,'days'), moment(todate).add(1,'days')).forEach(k=>{
+				lastDates.forEach(d=>{
+					var j = {...d};
+					j.date = +k;
+					j.date_str = moment(k).format('YYYY-MM-DD');
+					M.data[set].push(j);
+				});
+			});
+
+		}
+
+	});
+
+
+	//-----------------------------
+	// replace with malaysia data
 	//-----------------------------
 	var sets=['jhu'];
-
-	var dates = d3.extent(M.data['jhu'],d=>d.date_str);
-
 	sets.forEach(k=>{
 		M.data[k] = M.data[k].filter(d=>d.country!='Malaysia');
 	});
 
 	M.data.malaysia.forEach(d=>{
-		if (d.date_str<=dates[1])	{
+		if (d.date_str <= todate)	{
 			sets.forEach(k=>{
 				var j = {...d};
 				j._source=k;
