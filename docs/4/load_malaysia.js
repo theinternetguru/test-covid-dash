@@ -12,6 +12,13 @@ function loadMalaysia(grp, key, cb)	{
 	function loaded(raw)	{
 
 		dbg&&console.log('raw[0]', raw[0]);
+
+		raw[0] = raw[0].filter(d=>+d.case_no);
+
+		raw[0].forEach(d=>{
+			d.case_no = +d.case_no;
+		});
+
 		M.raw.malaysia = raw[0];
 
 		var dates = d3.extent(raw[0], d=>d.date_confirmed);

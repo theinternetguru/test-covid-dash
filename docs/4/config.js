@@ -5,17 +5,40 @@
 // data
 //-----------------
 
+
 M.config = {
 
 	theme:{
 
 		colors:[
-			['purple','crimson','green','#5C3292'],
-			['darkcyan','#249196','darkcyan','darkcyan'],
+
+			[
+				d3.schemeCategory10[1],
+				d3.schemeCategory10[3],
+				d3.schemeCategory10[4],
+				d3.schemeCategory10[0],
+			],
+
+			[
+				d3.schemeDark2[1],
+				d3.schemeDark2[3],
+				d3.schemeDark2[0],
+				d3.schemeDark2[2],
+			],
+
+			[
+				d3.schemeTableau10[1],
+				d3.schemeTableau10[2],
+				d3.schemeTableau10[0],
+				d3.schemeTableau10[3],
+			],
 
 			['orange','#D3362D','teal','slategray'],
-			['teal','#D3362D','orange','slategray'],
 
+
+
+
+			['teal','#D3362D','orange','slategray'],
 			['steelblue','#D3362D','darkcyan','slategray'],
 			['darkcyan','orangered','steelblue','darkcyan'],
 
@@ -30,6 +53,9 @@ M.config = {
 			['teal','orangered','darkseagreen','slategray'],
 			['slategray','orangered','#703593','slategray'],
 			['slategray','crimson','purple','slategray'],
+
+			['purple','crimson','green','#5C3292'],
+			['darkcyan','#249196','darkcyan','darkcyan'],
 
 		],
 
@@ -81,7 +107,7 @@ try {
 // M.themeColors
 //-----------------
 
-if (!M.current.theme) M.current.theme = 2;
+if (!M.current.theme) M.current.theme = 0;
 //if (!M.current.theme) M.current.theme = d3.shuffle(M.config.theme.colors)[0];
 if (!M.config.theme.colors[+M.current.theme]) M.current.theme = 0;
 M.theme={
@@ -226,7 +252,7 @@ M.config.data = {
 				M.config.path.cvdata+'/data/malaysia.tsv'
 			],
 			source:{
-				label:'MOH Malaysia',
+				label:'KKM',
 				url:'http://www.moh.gov.my/index.php/pages/view/2274',
 			}
 		},

@@ -959,6 +959,7 @@ function vizTimeline_chart(sel, bb, cb)	{
 		if (dbg){ console.group(f); console.time(f) };
 
 
+
 		//-----------------------------
 		// resume from current date
 		//-----------------------------

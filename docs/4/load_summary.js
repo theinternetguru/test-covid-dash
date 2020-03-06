@@ -402,6 +402,7 @@ function vizSummary_renderPanel(sel, key, label, clrIdx, cb)	{
 						return d3.max( d.data, d=>d[key] ) ? comma( d3.max( d.data, d=>d[key] ) ) : ''
 					});
 
+
 				sel.select('.asof-'+key)
 					.text(d=>{
 						var max=d3.max( d.data, d=>d[key] );

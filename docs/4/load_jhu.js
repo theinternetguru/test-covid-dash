@@ -45,6 +45,8 @@ function loadJHU(grp, key, cb)	{
 				j.longitude = +d['Long'];
 				j._source=key;
 
+
+
 				for (var i in d)	{
 
 					// old format up to Feb 14
@@ -89,6 +91,13 @@ function loadJHU(grp, key, cb)	{
 				}
 
 			});
+		});
+
+
+
+		rows.filter(d=>d.country=='Indonesia').forEach(d=>{
+			d.latitude = -6.2184476;
+			d.longitude = 106.8138756;
 		});
 
 

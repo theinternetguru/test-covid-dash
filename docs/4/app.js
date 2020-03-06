@@ -31,6 +31,8 @@ M.requireds='config,layout,events'.split(/\s*,\s*/).concat([
 	'viz_patients_renderer',
 	'viz_events',
 
+	'viz_clusters',
+
 	'map',
 	'map_render',
 
@@ -127,3 +129,36 @@ function main(cb)	{
 }
 
 
+
+
+
+function mainTimeline()	{
+
+	resetLayout();
+
+	layout();
+	map();
+	vizTimeline('daily', M.nest.daily);
+
+}
+
+
+function mainCluster()	{
+
+	resetLayout();
+	vizClusters();
+
+}
+
+
+function resetLayout()	{
+
+	M.current.play = false;
+	d3.select('.date-info').transition().duration(0);
+
+	d3.select('nav').remove();
+	d3.select('.container-fluid').remove();
+	d3.select('.annotations').remove();
+
+
+}

@@ -39,17 +39,15 @@ function layoutBoostrap(sel, cb)	{
 		.call(function(sel)	{
 
 			//-----------------
-			// heights
+			// nav
 			//-----------------
 			sel
-				.append('nav').attr('class','navbar navbar-expand-lg navbar-light bg-dark')
-					.styles({
-						margin:0,
-						padding:0,
-						height: (innerHeight*.05)+'px',
-						background:'#000',
-					});
+				.call(layoutNav);
 
+
+			//-----------------
+			// container
+			//-----------------
 			sel
 				.append('div').attr('class','container-fluid')
 					.styles({
@@ -94,7 +92,7 @@ function layoutBoostrap(sel, cb)	{
 
 
 			//---------------------------
-			// date-info
+			// annotations
 			//---------------------------
 			sel
 				.append('div').attr('class','annotations')
@@ -186,70 +184,95 @@ function layoutBoostrap(sel, cb)	{
 
 
 
-	//-----------------------------------
-	// nav content
-	//-----------------------------------
-
-	sel.select('nav')
-		.append('div')
-		.styles({
-			display:'flex',
-			width:'100%',
-		})
-		.call(sel=>{
-
-
-			sel
-				.append('div')
-					.styles({
-						flex:'1 1 auto',
-						'text-align':'left',
-						color:M.theme.hud[2],
-						'text-shadow': '#000 1px 0 10px',
-						'font-weight':700,
-						padding:'0 0 0 24px',
-						'font-size':'14px',
-						'white-space':'nowrap',
-						overflow:'hidden',
-					})
-					.html('COVID-19 / Novel Coronavirus Pneumonia (NCP)');
-
-
-//			sel
-//				.append('div')
-//					.attr('class','today-date')
-//					.styles({
-//						flex:'1 1 auto',
-//						'text-align':'left',
-//						color:'#fff',
-//						'text-shadow': '#000 1px 0 10px',
-//						'font-weight':700,
-//						padding:'0 24px 0 24px',
-//					})
-//					.append('select')
-//						.attr('class','form-control form-control-sm select-dataset');
-
-//			sel
-//				.append('div')
-//					.attr('class','display-date')
-//					.styles({
-//						flex:'1 1 auto',
-//						'text-align':'right',
-//						color:'lime',
-//						'text-shadow': '#000 1px 0 10px',
-//						'font-weight':700,
-//						padding:'0 24px 0 0',
-//					})
-//					.html('');
-
-		});
-
-
-
-
 	fEnd();
 
 }
+
+
+//------------------------------------------------------------------
+//
+//------------------------------------------------------------------
+function layoutNav(sel, cb)	{
+
+	sel
+		.append('nav').attr('class','navbar navbar-expand-lg navbar-light bg-dark')
+			.styles({
+				margin:0,
+				padding:0,
+				height: (innerHeight*.05)+'px',
+				background:'#000',
+			})
+			.append('div')
+				.styles({
+					display:'flex',
+					width:'100%',
+				})
+				.call(sel=>{
+
+
+					sel
+						.append('div')
+							.styles({
+								flex:'1 1 auto',
+								'text-align':'left',
+								color:M.theme.hud[2],
+								'text-shadow': '#000 1px 0 10px',
+								'font-weight':700,
+								padding:'0 0 0 24px',
+								'font-size':'14px',
+								'white-space':'nowrap',
+								overflow:'hidden',
+							})
+							.html('COVID-19 / Novel Coronavirus Pneumonia (NCP)');
+
+
+		//			sel
+		//				.append('div')
+		//					.attr('class','today-date')
+		//					.styles({
+		//						flex:'1 1 auto',
+		//						'text-align':'left',
+		//						color:'#fff',
+		//						'text-shadow': '#000 1px 0 10px',
+		//						'font-weight':700,
+		//						padding:'0 24px 0 24px',
+		//					})
+		//					.append('select')
+		//						.attr('class','form-control form-control-sm select-dataset');
+
+//						sel
+//							.append('div')
+//								.attr('class','display-date')
+//								.styles({
+//									flex:'1 1 auto',
+//									'text-align':'right',
+//									color:'lime',
+//									'text-shadow': '#000 1px 0 10px',
+//									'font-weight':700,
+//									padding:'0 24px 0 0',
+//								})
+//								.on('click', mainCluster)
+//								.html('Clusters');
+//
+//
+//						sel
+//							.append('div')
+//								.attr('class','display-date')
+//								.styles({
+//									flex:'1 1 auto',
+//									'text-align':'right',
+//									color:'lime',
+//									'text-shadow': '#000 1px 0 10px',
+//									'font-weight':700,
+//									padding:'0 24px 0 0',
+//								})
+//								.on('click', mainTimeline)
+//								.html('Timeline');
+
+				});
+
+}
+
 
 
 //------------------------------------------------------------------
