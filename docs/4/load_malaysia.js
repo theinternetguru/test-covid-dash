@@ -15,8 +15,14 @@ function loadMalaysia(grp, key, cb)	{
 
 		raw[0] = raw[0].filter(d=>+d.case_no);
 
+		var hsb= raw[0].filter(d=>d.hospital=='HSB');
 		raw[0].forEach(d=>{
 			d.case_no = +d.case_no;
+			if (!d.latitude){
+				d.hospital = hsb[0].hospital;
+				d.latitude = hsb[0].latitude;
+				d.longitude = hsb[0].longitude;
+			}
 		});
 
 		M.raw.malaysia = raw[0];
