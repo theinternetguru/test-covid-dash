@@ -329,6 +329,41 @@ function vizSummary_renderPanel(sel, key, label, clrIdx, cb)	{
 												'font-size':'45px',
 											});
 
+
+										sel.append('g')
+											.attr('transform','translate(0,60)')
+											.call(sel=>{
+
+												sel.append('text')
+													.attrs({
+														fill:'#fff',
+														'text-anchor':'middle',
+														'font-weight':5600,
+														'font-size':'14px',
+														opacity:.7,
+														x:300,
+														y:20,
+													})
+													.call(sel=>{
+
+														sel.append('tspan')
+															.attrs({
+																class:'summary-source source-diff_'+key,
+																x:0,
+															});
+
+														sel.append('tspan')
+															.attrs({
+																class:'summary-asof asof-diff_'+key,
+																x:0,
+																dy:'1em',
+															});
+
+
+													});
+
+											});
+
 									});
 
 

@@ -1256,12 +1256,6 @@ function vizTimeline_chart(sel, bb, cb)	{
 		d3.select('.content-summary')
 			.call(sel=>{
 
-				sel.selectAll('.summary-source')
-					.attr('display','none');
-
-				sel.selectAll('.summary-asof')
-					.attr('display','none');
-
 				sel.select('.new-confirmed')
 					.text(k.diff_confirmed>0 ? (k.diff_confirmed>0?'+':'')+comma(k.diff_confirmed) : '');
 
@@ -1285,6 +1279,52 @@ function vizTimeline_chart(sel, bb, cb)	{
 
 				sel.select('.value-countries')
 					.text(k.countries ? comma(k.countries) : '');
+
+
+				['confirmed','countries'].forEach(j=>{
+
+					sel.selectAll('.source-'+j)
+						.attr('display','none');
+
+					sel.selectAll('.asof-'+j)
+						.attr('display','none');
+
+				});
+
+				['deaths','recovered'].forEach(j=>{
+
+					sel.selectAll('.source-'+j)
+						.attr('font-weight',600)
+						.text( k[j]>0 ? f3((k[j]/k['confirmed'])*100)+'%' : null);
+
+					sel.selectAll('.asof-'+j)
+						.attr('display','none');
+				});
+
+				['diff_confirmed'].forEach(j=>{
+
+					var percChange = k[j] ? (k[j]/(k['confirmed']-k[j]))*100 : 0;
+
+					sel.selectAll('.source-'+j)
+						.attr('font-weight',600)
+						.text( percChange==0 ? null
+										: percChange > 0 ? '+'+f3(percChange)+'%'
+										: percChange < 0 ? f3(percChange)+'%'
+										: null
+						);
+
+
+					sel.selectAll('.asof-'+j)
+						.attr('display','none');
+
+				});
+
+
+//				sel.selectAll('.summary-source')
+//					.attr('display','none');
+//
+//				sel.selectAll('.summary-asof')
+//					.attr('display','none');
 
 			});
 
