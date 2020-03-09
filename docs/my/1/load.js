@@ -68,6 +68,17 @@ function loadMalaysia(grp, key, cb)	{
 				}
 			}
 
+			d.contact_events=[];
+			d3.range(1,8).forEach(k=>{
+				if (d['contact_date'+k])	{
+					d.contact_events.push({
+						date: d['contact_date'+k],
+						event: d['contact_event'+k],
+					});
+				}
+			});
+
+
 		});
 
 		M.raw.malaysia = raw[0];

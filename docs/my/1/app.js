@@ -20,7 +20,7 @@ if (!_v)	{
 }
 
 var version = _v,
-		reqs='config,layout,load,viz'.split(/\s*,\s*/);
+		reqs='config,layout,load,viz,viz_timeline,viz_tree,viz_graph2'.split(/\s*,\s*/);
 
 var required = reqs.map(function(d){
 	return version+'/'+d+'.js?_t='+ _t||parseInt(Math.random()*1e6)
