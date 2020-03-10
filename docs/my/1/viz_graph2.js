@@ -189,6 +189,8 @@ function viz_treeTimeline(sel, data, descendants, cb)	{
 		.tickSize(5)
 	;
 
+	data = data.reverse();
+
 	data.forEach((d,i)=>{
 		d.seq = i+1;
 	});
@@ -689,7 +691,7 @@ function viz_treeTimeline(sel, data, descendants, cb)	{
 					//----------------------------
 
 
-					sel.select('.g-relation')
+					sel.select('.g-tree')
 						.selectAll('.g-line').data(rel)
 						.enter()
 							.append('line')

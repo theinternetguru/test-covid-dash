@@ -50,15 +50,22 @@ function layoutNav(sel, cb)	{
 							.styles({
 								flex:'1 1 auto',
 								'text-align':'left',
-								color:M.theme.hud[2],
-								'text-shadow': '#000 1px 0 10px',
-								'font-weight':700,
 								padding:'0 0 0 24px',
-								'font-size':'14px',
 								'white-space':'nowrap',
 								overflow:'hidden',
+//								'text-shadow': '#000 1px 0 10px',
+
 							})
-							.html('COVID-19 / Novel Coronavirus Pneumonia (NCP)');
+							.append('a')
+								.attrs({
+									href:'../',
+								})
+								.styles({
+									color:M.theme.hud[2],
+									'font-weight':700,
+									'font-size':'14px',
+								})
+								.html('COVID-19 / Novel Coronavirus Pneumonia (NCP)');
 
 
 		//			sel
@@ -75,34 +82,34 @@ function layoutNav(sel, cb)	{
 		//					.append('select')
 		//						.attr('class','form-control form-control-sm select-dataset');
 
-						sel
-							.append('div')
-								.attr('class','display-date')
-								.styles({
-									flex:'1 1 auto',
-									'text-align':'right',
-									color:'lime',
-									'text-shadow': '#000 1px 0 10px',
-									'font-weight':700,
-									padding:'0 24px 0 0',
-								})
-//								.on('click', mainCluster)
-								.html('Clusters');
-
-
-						sel
-							.append('div')
-								.attr('class','display-date')
-								.styles({
-									flex:'1 1 auto',
-									'text-align':'right',
-									color:'lime',
-									'text-shadow': '#000 1px 0 10px',
-									'font-weight':700,
-									padding:'0 24px 0 0',
-								})
-//								.on('click', mainTimeline)
-								.html('Timeline');
+//						sel
+//							.append('div')
+//								.attr('class','display-date')
+//								.styles({
+//									flex:'1 1 auto',
+//									'text-align':'right',
+//									color:'lime',
+//									'text-shadow': '#000 1px 0 10px',
+//									'font-weight':700,
+//									padding:'0 24px 0 0',
+//								})
+////								.on('click', mainCluster)
+//								.html('Clusters');
+//
+//
+//						sel
+//							.append('div')
+//								.attr('class','display-date')
+//								.styles({
+//									flex:'1 1 auto',
+//									'text-align':'right',
+//									color:'lime',
+//									'text-shadow': '#000 1px 0 10px',
+//									'font-weight':700,
+//									padding:'0 24px 0 0',
+//								})
+////								.on('click', mainTimeline)
+//								.html('Timeline');
 
 				});
 

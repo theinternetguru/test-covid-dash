@@ -16,7 +16,7 @@ function viz_tree(sel, cb)	{
 
 	// custom when link is unknown
 	data.filter(d=>d.related_case_no==33 && d.cluster=='Gen-2').forEach(d=>{
-		d.related_case_no = 62;
+		d.related_case_no = 93;
 		d.related_case_no_original = 33;
 	});
 
@@ -50,7 +50,7 @@ function viz_tree(sel, cb)	{
 	// set the dimensions and margins of the diagram
 	var margin = {top: 20, right: 90, bottom: 30, left: 0},
 	    width = (innerWidth-200) - margin.left - margin.right,
-	    height = 900 - margin.top - margin.bottom;
+	    height = 1000 - margin.top - margin.bottom;
 
 	// declares a tree layout and assigns the size
 	var treemap = d3.tree()
@@ -96,7 +96,12 @@ function viz_tree(sel, cb)	{
 	// svg
 	//----------------------------
 
-	var svg = sel.append("svg")
+	var svg, bg, g;
+
+	sel.append('div')
+		.call(sel=>{
+
+			svg = sel.append("svg")
 	      .attr("width", width + margin.left + margin.right)
 	      .attr("height", height + margin.top + margin.bottom),
 
@@ -108,6 +113,10 @@ function viz_tree(sel, cb)	{
 	    g = svg.append("g")
 	      .attr("transform",
 	            "translate(" + margin.left + "," + margin.top + ")");
+
+
+		});
+
 
 
 
@@ -124,22 +133,45 @@ function viz_tree(sel, cb)	{
 //					'stroke-dasharray':'1 4',
 //				});
 
+
+			//----------------------------
+			// title/legend
+			//----------------------------
+
+
+			sel.append('g')
+				.attr('transform','translate('+(y3[0]-depthWidth+30)+',30)')
+				.call(sel=>{
+
+					sel.call(viz_tree_transmission, data);
+
+
+				});
+
+
+
+			//----------------------------
+			// summary
+			//----------------------------
+
+			sel.append('g')
+				.attr('transform','translate('+(y3[0]-depthWidth+30)+',400)')
+				.call(sel=>{
+
+//					sel.call(viz_tree_summary, data);
+
+				});
+
+
+
 			//----------------------------
 			// 2nd-Generation to Case #33
 			//----------------------------
 
 
 			sel.append('g')
-//				.attr('transform','translate(700,320)')
 				.attr('transform','translate('+(y4[0]-(depthWidth-30))+','+(x4[0]-30)+')')
 				.call(sel=>{
-
-//					sel.append('rect')
-//						.attrs({
-//							width:(depthWidth-30),
-//							height:30,
-//							fill:'#ddd',
-//						});
 
 					sel.append('text')
 						.attrs({
@@ -160,105 +192,7 @@ function viz_tree(sel, cb)	{
 				});
 
 
-			//----------------------------
-			// title/legend
-			//----------------------------
 
-
-			sel.append('g')
-				.attr('transform','translate('+(y3[0]-depthWidth+30)+',30)')
-				.call(sel=>{
-
-					sel
-						.append('rect')
-						.attrs({
-							fill:'#f2f2f2',
-							y:-40,
-							width:400,
-							height:190,
-							stroke:'#ccc',
-							'stroke-width':4,
-							//'stroke-dasharray':'2 4',
-						});
-
-					sel.append('text')
-						.attrs({
-							transform:'translate(20,0)',
-							'text-anchor':'begin',
-							fill:'#000',
-							'font-size':'24px',
-						})
-						.text('Coronavirus Infections in Malaysia')
-						.call(sel=>{
-
-
-							sel
-								.append('tspan')
-									.attrs({
-										x:0,
-										dy:'1.2em',
-										'font-size':'18px',
-										fill:'#999',
-									})
-									.text('As of '+ moment(d3.max(data, d=>d3.max([d.date_confirmed, d.date_recovered]) )).format('D MMM YYYY') )
-							sel
-								.append('tspan')
-									.attrs({
-										x:0,
-										dy:'2em',
-										'font-size':'16px',
-										fill:'#000',
-									})
-									.text('Types of Transmission')
-
-						});
-
-
-
-					sel
-						.append('g')
-							.attr('transform','translate(30,80)')
-						.selectAll('.g-legend').data([
-							{
-								key:'imported',
-								label:'Imported cases',
-							},
-							{
-								key:'local',
-								label:'Local transmission',
-							},
-							{
-								key:'',
-								label:'Under investigation',
-							},
-						])
-							.enter()
-								.append('g')
-									.attrs({
-										class:'g-legend',
-										transform:(d,i)=>'translate('+[0,(i*24)]+')',
-									})
-									.call(sel=>{
-
-										sel
-											.append('circle')
-												.attrs({
-													r:8,
-													fill:d=>{return {imported:'#E2431E','local':'#4374E0','':'#F1CA3A'}[d.key]},
-													stroke:'#000',
-												});
-
-										sel.append('text')
-											.attrs({
-												x:15,
-												y:5,
-												'font-size':'14px',
-											})
-											.text(d=>d.label+' ('+data.filter(k=>k.case_no>0 && k.transmission_type==d.key).length+' cases)');
-
-									});
-
-				});
 
 		});
 
@@ -324,7 +258,7 @@ function viz_tree(sel, cb)	{
 		.attr('fill',d=>{ return {imported:'#E2431E','local':'#4374E0','':'#F1CA3A'}[d.data.data.transmission_type] })
 		.attr('stroke',d=>d.data.data.date_recovered ? {imported:'#E2431E','local':'#4374E0','':'#F1CA3A'}[d.data.data.transmission_type] : null)
 		.attr('stroke-width',3)
-	  .attr("r", 5);
+	  .attr("r", 3);
 
 
 	//----------------------------
@@ -358,7 +292,7 @@ function viz_tree(sel, cb)	{
 		//.attr('fill-opacity',.5)
 		.attr('stroke','#fff')
 		//.attr('stroke',d=>d.data.data.date_recovered ? '#fff' : null)
-	  .attr("r", 5);
+	  .attr("r", 3);
 
 
 	// adds the text to the node
@@ -399,4 +333,184 @@ function viz_tree(sel, cb)	{
 	fEnd();
 }
 
+
+
+
+//==================================================================
+//
+//==================================================================
+
+function viz_tree_transmission(sel, data, cb)	{
+	var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
+			dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+	if (dbg){ console.group(f); console.time(f) };
+
+
+
+//				sel
+//						.append('rect')
+//						.attrs({
+//							fill:'#f2f2f2',
+//							y:-40,
+//							width:400,
+//							height:190,
+//							stroke:'#ccc',
+//							'stroke-width':4,
+//							//'stroke-dasharray':'2 4',
+//						});
+
+					sel.append('text')
+						.attrs({
+							transform:'translate(20,0)',
+							'text-anchor':'begin',
+							fill:'#000',
+							'font-size':'24px',
+						})
+						.text('Coronavirus Infections in Malaysia')
+						.call(sel=>{
+
+
+							sel
+								.append('tspan')
+									.attrs({
+										x:0,
+										dy:'1.2em',
+										'font-size':'18px',
+										fill:'#999',
+									})
+									.text('As of '+ moment(d3.max(data, d=>d3.max([d.date_confirmed, d.date_recovered]) )).format('D MMM YYYY') )
+							sel
+								.append('tspan')
+									.attrs({
+										x:0,
+										dy:'2em',
+										'font-size':'16px',
+										fill:'#000',
+									})
+									.text('Types of Transmission')
+
+						});
+
+
+
+					sel
+						.append('g')
+							.attr('transform','translate(30,80)')
+						.selectAll('.g-legend').data([
+							{
+								key:'imported',
+								label:'Imported cases',
+							},
+							{
+								key:'local',
+								label:'Local transmission',
+							},
+//							{
+//								key:'',
+//								label:'Under investigation',
+//							},
+						])
+							.enter()
+								.append('g')
+									.attrs({
+										class:'g-legend',
+										transform:(d,i)=>'translate('+[0,(i*24)]+')',
+									})
+									.call(sel=>{
+
+										sel
+											.append('circle')
+												.attrs({
+													r:8,
+													fill:d=>{return {imported:'#E2431E','local':'#4374E0','':'#F1CA3A'}[d.key]},
+//													stroke:'#000',
+												});
+
+										sel.append('text')
+											.attrs({
+												x:15,
+												y:5,
+												'font-size':'14px',
+											})
+											.text(d=>d.label+' ('+data.filter(k=>k.case_no>0 && k.transmission_type==d.key).length+' cases)');
+
+									});
+
+
+
+	fEnd();
+}
+
+
+//==================================================================
+//
+//==================================================================
+
+function viz_tree_summary(sel, data, cb)	{
+	var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
+			dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
+	if (dbg){ console.group(f); console.time(f) };
+
+
+	data = data.filter(d=>!!+d.case_no);
+
+	var summary = [
+		{
+			key:'total',
+			label:'Total Cases',
+			value: data.length,
+		},
+		{
+			key:'recovered',
+			label:'Recovered',
+			value: data.filter(d=>d.date_recovered ).length,
+		},
+		{
+			key:'active',
+			label:'Active Cases',
+			value: data.filter(d=>!d.date_recovered).length,
+		},
+		{
+			key:'critical',
+			label:'Critical Cases',
+			value: 2,
+		},
+	];
+
+	dbg&&console.log('summary', summary);
+
+	var scale = d3.scaleLinear().domain(d3.extent(summary,d=>d.value)).range([0,100]);
+
+
+
+	sel.append('svg')
+		.attrs({
+			viewBox:'0 0 400, 200',
+		})
+		.call(sel=>{
+
+			sel.selectAll('.bars').data(summary, d=>d.key)
+				.enter()
+					.append('g')
+						.attrs({
+							class:'bars',
+							transform:(d,i)=>'translate('+[50, (i*20)]+')',
+						})
+						.call(sel=>{
+
+							sel.append('rect')
+								.attrs({
+									width:d=>scale(d.value),
+									height:18,
+									fill:'#000',
+								});
+
+						});
+
+		});
+
+
+
+	fEnd();
+}
 
