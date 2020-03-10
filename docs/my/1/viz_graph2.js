@@ -17,9 +17,12 @@ function viz_graph2(sel, cb)	{
 				bottom:20,
 			};
 
+
+
 	// clone data
 	var data = M.raw.malaysia.map(d=>{ return {...d}});
 
+	h = (data.length * 15) + margin.bottom + margin.top;
 
 	var stratify = d3.stratify()
 	    .id(function (d) {
@@ -56,8 +59,11 @@ function viz_graph2(sel, cb)	{
 	    height = 800 - margin.top - margin.bottom;
 
 	// declares a tree layout and assigns the size
+//	var treemap = d3.tree()
+//	    .size([height, width]);
+
 	var treemap = d3.tree()
-	    .size([height, width]);
+	    .size([h, 300]);
 
 	//  assigns the data to a hierarchy using parent-child relationships
 	var nodes = d3.hierarchy(treeData, function(d) {
@@ -114,7 +120,7 @@ function viz_graph2(sel, cb)	{
 	//----------------------------
 
 
-	sel.call(viz_treeTimeline, tree, fEnd);
+	sel.call(viz_treeTimeline, tree, nodes.descendants(), fEnd);
 
 
 }
@@ -129,12 +135,19 @@ function viz_graph2(sel, cb)	{
 //==================================================================
 //
 //==================================================================
-function viz_treeTimeline(sel, data, cb)	{
+function viz_treeTimeline(sel, data, descendants, cb)	{
 	var f = '['+(fc++)+'] '+arguments.callee.toString().replace(/function\s+/,'').split('(')[0],
 			dbg=1, fEnd=function(){ dbg&&console.timeEnd(f); console.groupEnd(f); if (typeof cb=='function') cb() };
 	if (dbg){ console.group(f); console.time(f) };
 
-	var w = d3.max([innerWidth-200, 1024]),
+	dbg&&console.log('data', data);
+
+
+	const iW = innerWidth;
+	dbg&&console.log('innerWidth', iW);
+
+//	var w = d3.max([innerWidth-300, 1024]),
+	var w = innerWidth-300,
 			h = 700,
 			margin = {
 				top:50,
@@ -165,6 +178,16 @@ function viz_treeTimeline(sel, data, cb)	{
 							.range([0,w-margin.left-margin.right]);
 
 
+	var xTicks = d3.axisTop(x)
+		.ticks(2)
+		.tickSize(5)
+	;
+
+
+	var xTicks2 = d3.axisBottom(x)
+		.ticks(2)
+		.tickSize(5)
+	;
 
 	data.forEach((d,i)=>{
 		d.seq = i+1;
@@ -177,20 +200,35 @@ function viz_treeTimeline(sel, data, cb)	{
 			k.related_case_no = +d.related_case_no;
 			k.date_confirmed = d.date_confirmed;
 		});
+
+		d._tree = descendants.filter(k=>+k.data.id == +d.case_no);
 	});
 
 
 	dbg&&console.log('data',data);
 
 
+
+	data
+		.filter(d=>!!d.related_case_no)
+		.forEach(d=>{
+			d.rel = data.filter(k=>d.related_case_no.split(',').map(d=>+d).indexOf(+k.case_no)>-1);
+		});
+
 	var rel=[];
 	data.filter(d=>d.rel).forEach(d=>{
 		d.rel.forEach(k=>{
 
-			rel.push({
+			var j = {
 				source:k,
 				target:d
-			});
+			};
+
+//			j.x = d3.extent([
+//							k.
+//						]);
+
+			rel.push(j);
 
 		});
 	});
@@ -199,6 +237,8 @@ function viz_treeTimeline(sel, data, cb)	{
 	dbg&&console.log('rel',rel);
 
 
+	var spreader = d3.nest().key(d=>d.related_case_no).entries(data);
+	dbg&&console.log('spreader',spreader);
 
 
 	const texture = textures.lines()
@@ -225,12 +265,9 @@ function viz_treeTimeline(sel, data, cb)	{
 
 
 				sel.append('g')
-					.attr('class','axes');
-
-				sel.append('g')
 					.attrs({
-						class:'plot-area',
-						transform:'translate('+[margin.top, margin.left]+')',
+						class:'axes',
+						transform:'translate('+[margin.left, margin.left-20 ]+')',
 					})
 					.call(sel=>{
 
@@ -241,9 +278,45 @@ function viz_treeTimeline(sel, data, cb)	{
 								height:'100%',
 							});
 
+
+						sel.selectAll('.datelines').data([
+							'2020-01-01',
+							'2020-02-01',
+							'2020-03-01',
+						])
+						.enter()
+							 .append('line')
+							 	.attrs({
+							 		transform:d=>'translate('+[ x(moment(d)),0 ]+')',
+							 		y1:0,
+							 		y2:h,
+							 		stroke:'#f7f7f7',
+							 		'stroke-width':3,
+							 		'shape-rendering':'crispEdges',
+							 	});
+
+						sel.call(xTicks);
+						sel
+							.append('g')
+								.attr('transform','translate('+[ 0, h-margin.bottom ]+')')
+							.call(xTicks2);
+
+					});
+
+
+				sel.append('g')
+					.attrs({
+						class:'plot-area',
+						transform:'translate('+[margin.left, margin.top]+')',
+					})
+					.call(sel=>{
+
+
+
 						sel.append('g').attr('class','g-events');
 						sel.append('g').attr('class','g-bubbles');
 						sel.append('g').attr('class','g-relation');
+						sel.append('g').attr('class','g-tree');
 						sel.append('g').attr('class','g-test');
 
 					});
@@ -316,28 +389,62 @@ function viz_treeTimeline(sel, data, cb)	{
 							})
 							.call(sel=>{
 
-								sel.append('line')
-									.attrs({
-										x2:d=>d.travel_date_from ? x(moment(d.travel_date_from)) - x(moment(d.date_confirmed)) : 0,
-										stroke:'#999',
-										'stroke-linecap':"round",
-										'stroke-width':2,
-										'stroke-dasharray':"1 4",
-										'shape-rendering':'geometryPrecision',
-									});
+								//----------------------------
+								// travel date
+								//----------------------------
+								sel.selectAll('.travel-line').data(d=>{
+									var data=[];
+									if (d.travel_date_from)	{
+										data.push(d);
+									}
+									return data;
+								})
+								.enter()
+									.append('line')
+										.attrs({
+											class:'travel-line',
+
+											x1:d=>x(moment(d.travel_date_from)) - x(moment(d.date_confirmed)),
+											//x2:d=>d.date_symptom||d.date_positive ? x(moment(d.date_symptom||d.date_positive)) - x(moment(d.date_confirmed)) : 0,
+											x2:d=>x(moment(
+												(d.contact_events.length&&d.contact_events[0].date)||
+													d.date_symptom||d.date_positive||d.date_confirmed
+												)) - x(moment(d.date_confirmed)),
+
+											stroke:'#E8EFA6',
+											'stroke-linecap':"round",
+											'stroke-width':2,
+											'stroke-dasharray':"1 4",
+											'shape-rendering':'geometryPrecision',
+										});
 
 								//----------------------------
-								// contact
+								// contact date
 								//----------------------------
-								sel.append('line')
-									.attrs({
-										x2:d=>d.contact_events.length ? x(moment(d.contact_events[0].date)) - x(moment(d.date_confirmed)) : 0,
-										stroke:'#999',
-										'stroke-linecap':"round",
-										'stroke-width':2,
-										'stroke-dasharray':"1 4",
-										'shape-rendering':'geometryPrecision',
-									});
+								sel.selectAll('.contact-line').data(d=>{
+									var data = [];
+									if (d.contact_events.length)	{
+										data.push(d);
+									}
+									return data;
+								})
+								.enter()
+									.append('line')
+										.attrs({
+											class:'contact-line',
+
+											x1:d=>x(moment(d.contact_events[0].date)) - x(moment(d.date_confirmed)),
+											//x2:d=>d.date_symptom||d.date_positive ? x(moment(d.date_symptom||d.date_positive)) - x(moment(d.date_confirmed)) : 0,
+											x2:d=>x(moment(
+													d.date_symptom||d.date_positive||d.date_confirmed
+												)) - x(moment(d.date_confirmed)),
+
+											stroke:'#f90',
+											'stroke-linecap':"round",
+											'stroke-width':2,
+											'stroke-dasharray':"1 4",
+											'shape-rendering':'geometryPrecision',
+										});
 
 
 								//----------------------------
@@ -405,20 +512,36 @@ function viz_treeTimeline(sel, data, cb)	{
 
 								sel.append('rect')
 									.attrs({
-										fill:texture.url(),
+										class:'active',
+										//fill:texture.url(),
+										fill:chroma('#ED9D97').hex(),
 										y:-5,
 										height:10,
 										width:d=>d.date_recovered ? null : x(moment()) - x(moment(d.date_confirmed)),
 									});
 //
 
-								sel.append('line')
+//								sel.append('line')
+//									.attrs({
+//										class:'symptom',
+//										x2:d=>d.date_symptom||d.date_positive ? x(moment(d.date_symptom||d.date_positive)) - x(moment(d.date_confirmed)) : 0,
+//										stroke:'orange',
+//										'stroke-width':10,
+//										'stroke-linecap':"round",
+//									});
+
+								sel.append('rect')
 									.attrs({
-										x2:d=>d.date_symptom||d.date_positive ? x(moment(d.date_symptom||d.date_positive)) - x(moment(d.date_confirmed)) : 0,
-										stroke:'orange',
-										'stroke-width':10,
-										'stroke-linecap':"round",
+										class:'symptom',
+										x:d=>d.date_symptom||d.date_positive ? x(moment(d.date_symptom||d.date_positive)) - x(moment(d.date_confirmed)) : 0,
+										y:-5,
+										width:d=>Math.abs(d.date_symptom||d.date_positive ? x(moment(d.date_symptom||d.date_positive)) - x(moment(d.date_confirmed)) : 0),
+										height:10,
+										fill:texture.url(),
 									});
+
+
+
 
 //								sel.append('circle')
 //									.attrs({
@@ -506,7 +629,7 @@ function viz_treeTimeline(sel, data, cb)	{
 										sel.append('text')
 											.attrs({
 //												'font-weight':800,
-												'font-size':'14px',
+												'font-size':'12px',
 												'text-anchor':'begin',
 												fill:'#000',
 												y:d=>(r(+d.age||40)/2),
@@ -542,9 +665,19 @@ function viz_treeTimeline(sel, data, cb)	{
 							.append('line')
 								.attrs({
 									class:'g-line',
-									x1:d=>x(moment(d.source.date_confirmed)),
+									x1:d=>x(moment( d3.max([
+													d.source.date_confirmed ,
+													d.source.date_recovered ? d.source.date_recovered : moment().add(1,'days').format('YYYY-MM-DD'),
+													d.target.date_confirmed ,
+													d.target.date_recovered ? d.target.date_recovered : moment().add(1,'days').format('YYYY-MM-DD')
+												]) )),
 									y1:d=>y(d.source.seq),
-									x2:d=>x(moment(d.target.date_confirmed)),
+									x2:d=>x(moment( d3.max([
+													d.source.date_confirmed ,
+													d.source.date_recovered ? d.source.date_recovered : moment().add(1,'days').format('YYYY-MM-DD'),
+													d.target.date_confirmed ,
+													d.target.date_recovered ? d.target.date_recovered : moment().add(1,'days').format('YYYY-MM-DD')
+												]) )),
 									y2:d=>y(d.target.seq),
 									stroke:'lime',
 									opacity:.5,
@@ -552,8 +685,33 @@ function viz_treeTimeline(sel, data, cb)	{
 
 
 					//----------------------------
-					//
+					// g-trees
 					//----------------------------
+
+
+					sel.select('.g-relation')
+						.selectAll('.g-line').data(rel)
+						.enter()
+							.append('line')
+								.attrs({
+									class:'g-line',
+									x1:d=>x(moment( d3.max([
+													d.source.date_confirmed ,
+													d.source.date_recovered ? d.source.date_recovered : moment().add(1,'days').format('YYYY-MM-DD'),
+													d.target.date_confirmed ,
+													d.target.date_recovered ? d.target.date_recovered : moment().add(1,'days').format('YYYY-MM-DD')
+												]) )),
+									y1:d=>y(d.source.seq),
+									x2:d=>x(moment( d3.max([
+													d.source.date_confirmed ,
+													d.source.date_recovered ? d.source.date_recovered : moment().add(1,'days').format('YYYY-MM-DD'),
+													d.target.date_confirmed ,
+													d.target.date_recovered ? d.target.date_recovered : moment().add(1,'days').format('YYYY-MM-DD')
+												]) )),
+									y2:d=>y(d.target.seq),
+									stroke:'lime',
+									opacity:.5,
+								});
 
 
 

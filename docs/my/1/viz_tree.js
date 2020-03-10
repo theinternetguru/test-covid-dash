@@ -50,7 +50,7 @@ function viz_tree(sel, cb)	{
 	// set the dimensions and margins of the diagram
 	var margin = {top: 20, right: 90, bottom: 30, left: 0},
 	    width = (innerWidth-200) - margin.left - margin.right,
-	    height = 700 - margin.top - margin.bottom;
+	    height = 900 - margin.top - margin.bottom;
 
 	// declares a tree layout and assigns the size
 	var treemap = d3.tree()
@@ -305,6 +305,33 @@ function viz_tree(sel, cb)	{
 				});
 
 
+
+	//----------------------------
+	// bg-circles
+	//----------------------------
+	var bg = g.selectAll(".bg-node")
+	    .data(nodes.descendants())
+	  .enter().append("g")
+	    .attr("class", function(d) {
+	      return "bg-node" +
+	        (d.children ? " node--internal" : " node--leaf"); })
+	    .attr("transform", function(d) {
+	      return "translate(" + d.y + "," + d.x + ")"; })
+	    .attr('display', d=> d.parent ? null : 'none')
+
+	// adds the circle to the node
+	bg.append("circle")
+		.attr('fill',d=>{ return {imported:'#E2431E','local':'#4374E0','':'#F1CA3A'}[d.data.data.transmission_type] })
+		.attr('stroke',d=>d.data.data.date_recovered ? {imported:'#E2431E','local':'#4374E0','':'#F1CA3A'}[d.data.data.transmission_type] : null)
+		.attr('stroke-width',3)
+	  .attr("r", 5);
+
+
+	//----------------------------
+	//
+	//----------------------------
+
+
 	// adds each node as a group
 	var node = g.selectAll(".node")
 	    .data(nodes.descendants())
@@ -316,6 +343,9 @@ function viz_tree(sel, cb)	{
 	      return "translate(" + d.y + "," + d.x + ")"; })
 	    .attr('display', d=> d.parent ? null : 'none')
 
+
+
+
 	// adds the circle to the node
 	node.append("circle")
 		.attr('fill',d=>{
@@ -326,8 +356,10 @@ function viz_tree(sel, cb)	{
 //			}
 		})
 		//.attr('fill-opacity',.5)
-		.attr('stroke','#000')
+		.attr('stroke','#fff')
+		//.attr('stroke',d=>d.data.data.date_recovered ? '#fff' : null)
 	  .attr("r", 5);
+
 
 	// adds the text to the node
 	node.append("text")
@@ -343,7 +375,7 @@ function viz_tree(sel, cb)	{
 	  			//fill:d=>d.data.data.transmission_type=='imported'?'blue':'#000',
 	  			//fill: d=>{ return {imported:'#E2431E','local':'#4374E0','':'orangered'}[d.data.data.transmission_type] },
 	  			fill:'#000',
-	  			'font-size':'12px',
+	  			'font-size':'10px',
 	  		})
 	  		.text(d=>d.data.name)
 
@@ -352,7 +384,7 @@ function viz_tree(sel, cb)	{
 	  			x: 8,
 	  			'text-anchor':'begin',
 	  			fill:'#f00',
-	  			'font-size':'12px',
+	  			'font-size':'10px',
 	  		})
 	  		.text(d=>d.children && d.children.length && d.children[0].data.data.related_case_no_original!=33 ? '('+d.children.length+')': null )
 

@@ -39,10 +39,10 @@ function vizClusters(cb)	{
 					})
 					.call(sel=>{
 
-						var bb = d3.select('nav').node().getBoundingClientRect();
-						sel
-							.style('height', (innerHeight - bb.height) +'px')
-							.style('overflow','auto');
+//						var bb = d3.select('nav').node().getBoundingClientRect();
+//						sel
+//							.style('height', (innerHeight - bb.height) +'px')
+//							.style('overflow','auto');
 
 
 						sel.call(viz_tree);
